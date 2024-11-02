@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{913F963F-CDD8-4088-AEF4-F97798FE1AA6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Catalog.API", "Catalog.API", "{351A6749-83CE-4D6E-9B25-8EFF7D23411E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "src\Catalog.API\Apis\Catalog.API.csproj", "{9CCBEC78-CB29-4DAE-A072-B275612E3790}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "src\Catalog.API\Application\Catalog.Application.csproj", "{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9CCBEC78-CB29-4DAE-A072-B275612E3790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CCBEC78-CB29-4DAE-A072-B275612E3790}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CCBEC78-CB29-4DAE-A072-B275612E3790}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CCBEC78-CB29-4DAE-A072-B275612E3790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{351A6749-83CE-4D6E-9B25-8EFF7D23411E} = {913F963F-CDD8-4088-AEF4-F97798FE1AA6}
+		{9CCBEC78-CB29-4DAE-A072-B275612E3790} = {351A6749-83CE-4D6E-9B25-8EFF7D23411E}
+		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F} = {351A6749-83CE-4D6E-9B25-8EFF7D23411E}
+	EndGlobalSection
+EndGlobal
