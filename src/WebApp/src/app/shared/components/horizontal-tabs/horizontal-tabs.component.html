@@ -1,0 +1,24 @@
+<div class="px-2">
+  <nav
+    class="flex gap-x-2 md:gap-x-4 font-semibold overflow-x-auto [&::-webkit-scrollbar-thumb]:rounded-full"
+  >
+    <ng-container *ngFor="let tab of tabs">
+      <button
+        type="button"
+        [ngClass]="{
+          'py-2 md:py-3 px-1 inline-flex items-center border-b-2 text-sm md:text-base whitespace-nowrap md:hover:text-[#ff0] md:hover:border-b-2 md:hover:border-[#ff0] focus:outline-none': true,
+          'border-[#ff0] text-[#ff0]': tab.isActive,
+          'border-transparent text-white/80': !tab.isActive
+        }"
+        [id]="tab.key + '-button'"
+        (click)="handleTabChanged(tab.key)"
+      >
+        {{ tab.text }}
+      </button>
+    </ng-container>
+  </nav>
+
+  <div class="mt-3">
+    <ng-content></ng-content>
+  </div>
+</div>

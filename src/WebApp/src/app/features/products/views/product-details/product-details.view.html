@@ -1,0 +1,457 @@
+<div
+  class="container mx-auto text-white px-4 lg:px-3 xl:px-0 xl:max-w-[1180px]"
+>
+  <div class="py-2 md:py-2 lg:py-4">
+    <buyez-breadcrumb />
+  </div>
+
+  <!-- Product info -->
+  <section id="product-info">
+    <div class="py-2 sm:py-4 lg:py-6">
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Image Section -->
+        <div class="w-full lg:w-1/2">
+          <product-image-slider />
+        </div>
+
+        <!-- Product Details Section -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-between">
+          <div class="pb-6 border-b border-neutral-400">
+            <h1 class="text-3xl font-bold mb-4">{{ product?.name }}</h1>
+            <div class="mb-8 text-sm">
+              <div class="flex mb-2">
+                <p>SKU:<strong> TS-00123 </strong></p>
+                <span class="mx-3">|</span>
+                <p>
+                  Availability:<strong>
+                    {{ product?.status ?? 0 | text:'product-status' }}
+                  </strong>
+                </p>
+              </div>
+              <div class="flex mb-2">
+                <p class="flex space-x-2 ms-1">
+                  <span class="font-semibold">4.9 ★★★★★</span>
+                  <span class="text-neutral-300">(204 Reviews)</span>
+                </p>
+                <span class="mx-2">-</span>
+                <span class="mb-2 text-neutral-300">
+                  <strong>2k+</strong> sold in this month
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-5">
+                <p class="text-2xl font-semibold">${{ product?.price }}</p>
+                <div class="flex space-x-2 text-sm">
+                  <p class="line-through">$70.00</p>
+                  <p class="text-red-400">-30%</p>
+                </div>
+              </div>
+
+              <div class="flex space-x-3">
+                <buyez-solid-button
+                  [customClasses]="['transition delay-10 duration-220 md:hover:scale-110']"
+                >
+                  Add to Cart
+                </buyez-solid-button>
+
+                <buyez-outline-button
+                  [customClasses]="['font-semibold !border-yellow-400 !text-yellow-400', ' transition delay-10 duration-220 md:hover:scale-110', 'hover:!text-yellow-400 hover:!bg-transparent']"
+                >
+                  Buy now
+                </buyez-outline-button>
+              </div>
+            </div>
+          </div>
+
+          <div class="py-6 border-b border-neutral-400">
+            <div class="flex items-center w-full">
+              <p class="max-w-20 w-full">Color:</p>
+              <p class="text-sm text-neutral-400 flex items-center">
+                Red, Blue, Brown, Yellow
+              </p>
+            </div>
+
+            <div class="flex items-center">
+              <p class="max-w-20 w-full">Size:</p>
+              <p class="text-sm text-neutral-400 flex items-center">
+                XS, S, M, L, XL, XXL
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-6 pb-3 space-y-2">
+            <p class="mb-2">
+              <a href="#" class="font-semibold hover:text-neutral-400">
+                Mike's house
+              </a>
+              <span class="text-neutral-400 text-sm">
+                - online 1 minute ago</span
+              >
+            </p>
+            <div class="flex items-center space-x-6 text-sm">
+              <p class="mb-2">
+                <span class="font-semibold text-orange-300">171</span>
+                Products
+              </p>
+              <p class="mb-2">
+                <span class="font-semibold text-orange-300">4.9</span>
+                Satisfaction
+              </p>
+              <p class="mb-2">
+                <span class="font-semibold text-orange-300">4k+</span>
+                Customers
+              </p>
+            </div>
+          </div>
+
+          <div class="h-full pb-3">
+            <h3 class="font-semibold mb-3">Special offer</h3>
+            <div
+              class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-2 gap-4 xl:max-w-[660px]"
+            >
+              <product-promotion
+                title="10% OFF for the first order"
+                description="This offer is valid for orders of 2 items or more"
+              />
+              <product-promotion
+                title="Get 20% discount for the next time"
+                description="This offer is valid for orders of 5 items or more"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product tabs description -->
+  <section id="product-description">
+    <div class="md:py-4 lg:py-12">
+      <buyez-horizontal-tabs [tabs]="tabs">
+        <buyez-horizontal-tab-content>
+          <div class="flex flex-col lg:flex-row lg:space-x-8 text-white">
+            <div class="w-full lg:w-1/2">
+              <h3 class="text-base lg:text-xl font-semibold mb-2">
+                With the new fashion trends and all the available shopping
+                options, you can order your clothes online and make money
+                without even leaving your house.
+              </h3>
+              <p class="mb-4">
+                These days, you can take your own inspiration and create
+                something new for yourself. All you need to do is read books and
+                magazines about fashion, watch videos on YouTube, keep yourself
+                updated on social media, and, of course, shop online!
+              </p>
+            </div>
+            <div class="w-full lg:w-1/4 mt-6 sm:mt-0">
+              <h3 class="text-lg sm:text-xl font-semibold mb-2 lg:mb-5">
+                Material & Washing
+              </h3>
+              <p class="lg:mb-2 pb-2 lg:border-b border-neutral-400">
+                Material: <span class="font-semibold">100% cotton</span>
+              </p>
+              <p class="lg:mb-2 pb-2 lg:border-b border-neutral-400">
+                Fabric: <span class="font-semibold">Soft jersey</span>
+              </p>
+              <p class="lg:mb-2">
+                Care instructions:
+                <span class="font-semibold"
+                  >Machine wash at 30°C, do not tumble dry, iron on low heat, do
+                  not bleach</span
+                >
+              </p>
+            </div>
+            <div class="w-full lg:w-1/4 mt-6 lg:mt-0">
+              <h3 class="text-lg sm:text-xl font-semibold mb-2 lg:mb-5">
+                Size & Shape
+              </h3>
+              <p class="lg:mb-2 pb-2 lg:border-b border-neutral-400">
+                Model height:
+                <span class="font-semibold"
+                  >Our model is 180 cm tall and is wearing size M</span
+                >
+              </p>
+              <p class="lg:mb-2 pb-2 lg:border-b border-neutral-400">
+                Fit: <span class="font-semibold">Regular</span>
+              </p>
+              <p class="lg:mb-2 pb-2 lg:border-b border-neutral-400">
+                Length: <span class="font-semibold">Standard</span>
+              </p>
+              <p class="mb-2">
+                Sleeve length:
+                <span class="font-semibold">Short sleeves</span>
+              </p>
+            </div>
+          </div>
+        </buyez-horizontal-tab-content>
+
+        <buyez-horizontal-tab-content>
+          <p>{{ product?.description }}</p>
+          <div class="flex flex-col space-y-2 lg:space-y-8 pt-2 lg:pt-6">
+            <div>
+              <h3 class="text-lg font-semibold lg:mb-2">Colors</h3>
+              <p class="text-base text-white">
+                Available colors:
+                <a href="#" class="text-primary hover:underline">Red</a>,
+                <a href="#" class="text-primary hover:underline">Blue</a>,
+                <a href="#" class="text-primary hover:underline">Green</a>,
+                <a href="#" class="text-primary hover:underline">Black</a>,
+                <a href="#" class="text-primary hover:underline">White</a>.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold lg:mb-2">Brand</h3>
+              <p class="text-base text-white">
+                This t-shirt is made by
+                <a href="#" class="text-primary hover:underline">Nike</a>.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold lg:mb-2">Material & Care</h3>
+              <p class="text-base text-white">
+                Material: 100% Cotton
+                <br />
+                Care instructions: Machine wash at 40 °C, do not tumble dry,
+                iron at medium temperature, do not bleach.
+              </p>
+            </div>
+          </div>
+        </buyez-horizontal-tab-content>
+
+        <buyez-horizontal-tab-content>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-transparent text-white">
+              <thead>
+                <tr>
+                  <th
+                    class="px-6 py-3 border-b border-gray-line text-left text-xs leading-4 font-medium uppercase tracking-wider"
+                  >
+                    Size
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-line text-left text-xs leading-4 font-medium uppercase tracking-wider"
+                  >
+                    Chest (inches)
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-line text-left text-xs leading-4 font-medium uppercase tracking-wider"
+                  >
+                    Waist (inches)
+                  </th>
+                  <th
+                    class="px-6 py-3 border-b border-gray-line text-left text-xs leading-4 font-medium uppercase tracking-wider"
+                  >
+                    Sleeve Length (inches)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    Small
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    34-36
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    28-30
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    32-33
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    Medium
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    38-40
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    32-34
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    33-34
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    Large
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    42-44
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    36-38
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    34-35
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    X-Large
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    46-48
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    40-42
+                  </td>
+                  <td
+                    class="px-6 py-4 whitespace-no-wrap border-b border-gray-line text-sm leading-5"
+                  >
+                    35-36
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </buyez-horizontal-tab-content>
+
+        <buyez-horizontal-tab-content>
+          <div>
+            <h3 class="text-lg font-semibold">Customer Reviews</h3>
+            <div id="reviews-list">
+              <div class="py-3 lg:py-4">
+                <div class="flex items-center mb-2">
+                  <span class="font-semibold text-neutral-400">John Doe</span>
+                  <span class="ml-2">★★★★★</span>
+                </div>
+                <p class="text-sm">
+                  Great quality! Fits perfectly and the material feels premium.
+                  Highly recommend this t-shirt.
+                </p>
+              </div>
+
+              <div class="border-t border-neutral-400 py-3 lg:py-4">
+                <div class="flex items-center mb-2">
+                  <span class="font-semibold text-neutral-400">Jane Smith</span>
+                  <span class="ml-2">★★★★☆</span>
+                </div>
+                <p class="text-sm">
+                  I love the design and the fabric is very comfortable. However,
+                  I wish it came in more colors.
+                </p>
+              </div>
+
+              <div class="border-t border-neutral-400 py-3 lg:py-4">
+                <div class="flex items-center mb-2">
+                  <span class="font-semibold text-neutral-400"
+                    >Alice Johnson</span
+                  >
+                  <span class="ml-2">★★★★★</span>
+                </div>
+                <p class="text-sm">
+                  Excellent t-shirt! The size is perfect and it looks great.
+                  Will definitely buy again.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold mb-4">Write a Review</h3>
+            <form id="review-form" class="space-y-4">
+              <div class="space-y-4 md:flex md:space-x-4 md:space-y-0">
+                <div class="md:flex-1">
+                  <label for="review-name" class="block text-sm">Name</label>
+                  <input
+                    type="text"
+                    id="review-name"
+                    name="review-name"
+                    class="mt-1 block w-full px-3 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-neutral-800"
+                  />
+                </div>
+                <div class="md:flex-1">
+                  <label for="review-email" class="block text-sm">Email</label>
+                  <input
+                    type="email"
+                    id="review-email"
+                    name="review-email"
+                    class="mt-1 block w-full px-3 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-neutral-800"
+                  />
+                </div>
+                <div class="md:flex-1">
+                  <label for="review-rating" class="block text-sm"
+                    >Rating</label
+                  >
+                  <select
+                    id="review-rating"
+                    name="review-rating"
+                    class="mt-1 block w-full px-3 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-neutral-800 border-r-[16px]"
+                  >
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★☆</option>
+                    <option value="3">★★★☆☆</option>
+                    <option value="2">★★☆☆☆</option>
+                    <option value="1">★☆☆☆☆</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="review-text" class="block text-sm">Review</label>
+                <textarea
+                  id="review-text"
+                  name="review-text"
+                  rows="4"
+                  class="mt-1 block w-full px-3 py-2 border border-transparent rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-neutral-800"
+                ></textarea>
+              </div>
+              <div>
+                <button
+                  type="submit"
+                  class="bg-[#ff0] border border-transparent text-neutral-800 py-2 px-4 rounded-full focus:outline-none lg:hover:bg-transparent lg:hover:border-[#ff0] lg:hover:text-[#ff0]"
+                >
+                  Submit Review
+                </button>
+              </div>
+            </form>
+          </div>
+        </buyez-horizontal-tab-content>
+      </buyez-horizontal-tabs>
+    </div>
+  </section>
+
+  <!-- Related products -->
+  <section id="related-products">
+    <div class="py-4 md:py-6">
+      <h3 class="text-lg sm:text-xl font-semibold mb-2 md:mb-4 lg:mb-5">
+        Related Products
+      </h3>
+      <product-slider></product-slider>
+    </div>
+  </section>
+</div>
