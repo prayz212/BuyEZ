@@ -6,7 +6,7 @@ import { CatalogService } from 'src/app/core/services/catalog.service';
 import { Breadcrumb } from 'src/app/shared/types/breadcrumb';
 import { ProductDetail } from './models/product.model';
 
-const catalogResolver: ResolveFn<
+const productResolver: ResolveFn<
   Observable<{
     data: ProductDetail | null;
     breadcrumb: Breadcrumb | null;
@@ -37,4 +37,4 @@ const catalogResolver: ResolveFn<
     );
 };
 
-export { catalogResolver };
+export { productResolver };

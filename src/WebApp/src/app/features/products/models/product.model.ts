@@ -1,7 +1,7 @@
 import { ProductStatus } from '../types/product-status';
 import { ProductType } from '../types/product-type';
 
-export interface Product {
+interface Product {
   id: string;
   name: string;
   price: number;
@@ -9,7 +9,7 @@ export interface Product {
   // image: ImageDetail;
 }
 
-export interface ProductDetail {
+interface ProductDetail {
   id: string;
   name: string;
   description: string;
@@ -18,3 +18,5 @@ export interface ProductDetail {
   status: ProductStatus;
   // images: ImageDetail[];
 }
+
+export { Product, ProductDetail };

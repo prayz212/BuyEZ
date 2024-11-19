@@ -1,4 +1,6 @@
-export interface ProductQueryRequest {
+interface ProductQueryRequest {
   pageNumber: number;
   pageSize: number;
 }
+
+export { ProductQueryRequest };
