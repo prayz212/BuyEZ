@@ -79,7 +79,7 @@
       <div class="w-full md:w-3/4 p-2 md:p-4">
         <!-- Products grid -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
-          <ng-container *ngFor="let product of products">
+          <ng-container *ngFor="let product of products; trackBy: trackByProductId">
             <product-item [product]="product"></product-item>
           </ng-container>
         </div>

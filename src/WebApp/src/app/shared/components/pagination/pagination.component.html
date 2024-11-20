@@ -42,7 +42,7 @@
           </svg>
         </button>
       </li>
-      <li *ngFor="let page of pages">
+      <li *ngFor="let page of pages; trackBy: trackByPageNumber">
         <button
           type="button"
           (click)="handlePageChanged(page)"

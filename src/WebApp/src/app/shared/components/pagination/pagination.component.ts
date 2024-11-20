@@ -12,6 +12,10 @@ export class PaginationComponent {
 
   @Output() onPageChange = new EventEmitter<number>();
 
+  trackByPageNumber(index: number, item: number): number {
+    return item;
+  }
+
   get pages(): number[] {
     const availablePages = Array.from(
       { length: this.totalPages },

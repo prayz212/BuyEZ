@@ -55,6 +55,10 @@ export class ProductListComponent implements OnInit {
     this.fetchData();
   }
 
+  trackByProductId(index: number, item: Product): string {
+    return item.id;
+  }
+
   fetchData(page: number = 1, size: number = 10) {
     const payload: ProductQueryRequest = {
       pageNumber: page,
