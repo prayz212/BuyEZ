@@ -11,11 +11,9 @@ export class BreadcrumbService {
   constructor(private router: Router, private route: ActivatedRoute) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        console.log('next navigation');
-
-        this.breadcrumbsSubject.next(this.buildBreadcrumbs(this.route.root));
-      });
+      .subscribe(() =>
+        this.breadcrumbsSubject.next(this.buildBreadcrumbs(this.route.root))
+      );
   }
 
   private buildBreadcrumbs(

@@ -70,8 +70,6 @@ export class ProductListComponent implements OnInit {
         this.totalCount = response.totalCount;
         this.hasPreviousPage = response.hasPreviousPage;
         this.hasNextPage = response.hasNextPage;
-
-        console.log('Query product response: ', response);
       });
   }
 
@@ -84,13 +82,10 @@ export class ProductListComponent implements OnInit {
   }
 
   handleShowFiltersClicked() {
-    console.log('clicked');
-
     this.isShowFilter = !this.isShowFilter;
   }
 
   handlePageChanged(newPage: number) {
-    console.log('New page: ', newPage);
     this.fetchData(newPage);
   }
 }

@@ -36,7 +36,6 @@ export class PaginationComponent {
   }
 
   handlePageChanged(newPage: number) {
-    console.log('Changed to page: ' + newPage);
     this.onPageChange.emit(newPage);
   }
 }

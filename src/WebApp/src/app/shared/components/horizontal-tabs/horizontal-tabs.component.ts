@@ -27,7 +27,7 @@ export class TabsComponent implements AfterContentInit {
   }
 
   handleTabChanged(tabKey: string) {
-    console.log(`Tab selected: ${tabKey}tabKey`);
+    console.log(`Tab selected: ${tabKey} tabKey`);
 
     this.tabs = this.tabs.map((tab) => ({
       ...tab,
