@@ -3,9 +3,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject, filter } from 'rxjs';
 import { Breadcrumb } from 'src/app/shared/types/breadcrumb';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class BreadcrumbService {
   private breadcrumbsSubject = new BehaviorSubject<Breadcrumb[]>([]);
   breadcrumbs$ = this.breadcrumbsSubject.asObservable();
@@ -13,9 +11,11 @@ export class BreadcrumbService {
   constructor(private router: Router, private route: ActivatedRoute) {
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() =>
-        this.breadcrumbsSubject.next(this.buildBreadcrumbs(this.route.root))
-      );
+      .subscribe(() => {
+        console.log('next navigation');
+
+        this.breadcrumbsSubject.next(this.buildBreadcrumbs(this.route.root));
+      });
   }
 
   private buildBreadcrumbs(

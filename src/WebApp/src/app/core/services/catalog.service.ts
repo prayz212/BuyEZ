@@ -8,9 +8,7 @@ import {
 } from 'src/app/features/products/models/product.model';
 import { QueryResponse } from 'src/app/shared/models/query-response.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class CatalogService {
   private readonly prefix = 'products';
 

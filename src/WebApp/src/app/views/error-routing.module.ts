@@ -7,10 +7,6 @@ const routes: Routes = [
   {
     path: 'unexpected-error',
     data: {
-      root: {
-        label: 'Home',
-        url: '',
-      },
       breadcrumb: {
         label: 'Internal Server Error',
         url: 'unexpected-error',
@@ -21,10 +17,6 @@ const routes: Routes = [
   {
     path: 'not-found',
     data: {
-      root: {
-        label: 'Home',
-        url: '',
-      },
       breadcrumb: {
         label: 'Not Found',
         url: 'not-found',

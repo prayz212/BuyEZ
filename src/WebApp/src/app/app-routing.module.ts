@@ -4,11 +4,23 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: 'products',
+    data: {
+      root: {
+        label: 'Home',
+        url: '',
+      },
+    },
     loadChildren: () =>
       import('./features/products/product.module').then((m) => m.ProductModule),
   },
   {
     path: '',
+    data: {
+      root: {
+        label: 'Home',
+        url: '',
+      },
+    },
     loadChildren: () =>
       import('./views/error-views.module').then((m) => m.ErrorViewsModule),
   },

@@ -5,12 +5,8 @@ import { ProductDetailsComponent, ProductListComponent } from './views';
 
 const routes: Routes = [
   {
-    path: 'products',
+    path: '',
     data: {
-      root: {
-        label: 'Home',
-        url: '',
-      },
       breadcrumb: {
         label: 'Products',
         url: 'products',
