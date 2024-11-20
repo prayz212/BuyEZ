@@ -1,0 +1,50 @@
+<div
+  [ngClass]="{
+    'bg-neutral-800 p-2 rounded-lg shadow': true,
+    'sm:p-3': smallSize,
+    'sm:p-4': !smallSize
+  }"
+>
+  <a [routerLink]="'/products/' + product.id">
+    <img
+      src="../../../../../assets/images/2.jpg"
+      alt="Product 1"
+      [ngClass]="{
+        'object-cover mb-3 sm:mb-4 rounded-lg w-full': true,
+        'max-h-48': smallSize,
+        'max-h-52 md:max-h-72': !smallSize
+      }"
+    />
+    <span
+      href="#"
+      [ngClass]="{
+        'font-semibold mb-2 truncate block': true,
+        'text-sm sm:text-base': smallSize,
+        'text-md sm:text-lg': !smallSize
+      }"
+      >{{ product.name }}</span
+    >
+    <ng-container *ngIf="showProductType">
+      <p class="mt-2 mb-1">{{ product.productType | text : "product-type" }}</p>
+    </ng-container>
+    <div class="flex items-center mb-4">
+      <span
+        [ngClass]="{
+          'text-sm font-bold': true,
+          'sm:text-base': smallSize,
+          'sm:text-lg': !smallSize
+        }"
+        >${{ product.price }}</span
+      >
+      <span class="text-xs line-through ml-2">$24.99</span>
+    </div>
+  </a>
+  <buyez-solid-button
+    [customClasses]="[
+      'w-full',
+      'md:hover:bg-transparent md:hover:border-yellow-400 md:hover:text-yellow-400'
+    ]"
+  >
+    Add to Cart
+  </buyez-solid-button>
+</div>

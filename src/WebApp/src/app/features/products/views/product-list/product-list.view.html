@@ -1,0 +1,97 @@
+<section class="pt-2 text-white">
+  <div class="container mx-auto">
+    <!-- Top Filter -->
+    <div
+      class="flex flex-col md:flex-row justify-between items-center py-4 px-4 xl:px-0"
+    >
+      <div class="flex items-center space-x-2 md:space-x-4">
+        <buyez-outline-button
+          [isDisabled]="showOptions === ShowOptions.NewArrivals"
+          [data]="ShowOptions.NewArrivals"
+          (onClick)="handleShowOptionClicked($event)"
+        >
+          New Arrivals
+        </buyez-outline-button>
+
+        <buyez-outline-button
+          [isDisabled]="showOptions === ShowOptions.TopSellers"
+          [data]="ShowOptions.TopSellers"
+          (onClick)="handleShowOptionClicked($event)"
+          >Top Sellers</buyez-outline-button
+        >
+
+        <buyez-outline-button
+          [isDisabled]="showOptions === ShowOptions.PopularProducts"
+          [data]="ShowOptions.PopularProducts"
+          (onClick)="handleShowOptionClicked($event)"
+          >Popular Products</buyez-outline-button
+        >
+      </div>
+      <div class="flex mt-5 md:mt-0 space-x-4">
+        <div class="relative">
+          <buyez-select
+            placeholder="Sort options"
+            [options]="sortOptions"
+            (onSelected)="handleSortOptionChanged($event)"
+          ></buyez-select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Toggle Button for Mobile -->
+    <div class="block md:hidden text-center mb-4">
+      <button
+        id="products-toggle-filters"
+        class="bg-primary text-white py-2 px-4 rounded-full focus:outline-none"
+        (click)="handleShowFiltersClicked()"
+      >
+        {{isShowFilter ? 'Hide Filters' : 'Show Filters'}}
+      </button>
+    </div>
+    <div class="flex flex-col md:flex-row transition duration-300 ease-in-out">
+      <!-- Filters -->
+      <div
+        id="filters"
+        [ngClass]="{
+        'w-full px-7 md:w-1/4 md:p-4 md:block': true,
+        'hidden': !isShowFilter,
+        'block': isShowFilter
+      }"
+      >
+        <!-- Category Filter -->
+        <div class="mb-6 pb-8 border-b border-neutral-400">
+          <products-filter
+            title="Category"
+            [options]="categoryFilterOptions"
+          ></products-filter>
+        </div>
+
+        <!-- Size Filter -->
+        <div class="mb-6 pb-8">
+          <products-filter
+            title="Price"
+            [options]="priceFilterOptions"
+          ></products-filter>
+        </div>
+      </div>
+
+      <!-- Products List -->
+      <div class="w-full md:w-3/4 p-2 md:p-4">
+        <!-- Products grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
+          <ng-container *ngFor="let product of products; trackBy: trackByProductId">
+            <product-item [product]="product"></product-item>
+          </ng-container>
+        </div>
+        <!-- Pagination -->
+        <buyez-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [hasNext]="hasNextPage"
+          [hasPrevious]="hasPreviousPage"
+          (onPageChange)="handlePageChanged($event)"
+        ></buyez-pagination>
+      </div>
+    </div>
+  </div>
+</section>

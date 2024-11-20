@@ -1,0 +1,33 @@
+<section
+  id="error-page"
+  class="py-8 h-full flex items-center justify-center text-white"
+>
+  <div class="mx-auto max-w-screen-lg px-4 md:px-8">
+    <div class="grid gap-2 sm:grid-cols-2">
+      <div
+        class="flex flex-col items-center justify-center sm:items-start py-6 md:py-12"
+      >
+        <h1 class="text-3xl font-bold mb-5">500 - Internal Server Error</h1>
+        <p class="mb-5 text-center sm:text-start sm:max-w-96">
+          We're unable to find out what's happening! We suggest you to go back or
+          visit here later.
+        </p>
+        <a
+          routerLink="/"
+          class="bg-[#ff0] hover:bg-[#ff0]/90 border border-transparent text-neutral-800 font-semibold px-4 py-2 rounded-full inline-block"
+          >Go back</a
+        >
+      </div>
+
+      <div
+        class="relative overflow-hidden shadow-lg md:h-auto flex justify-center items-center"
+      >
+        <img
+          src="../../../assets/icons/internal-server-error.svg"
+          alt="not found image"
+          class="h-72 rounded-lg"
+        />
+      </div>
+    </div>
+  </div>
+</section>

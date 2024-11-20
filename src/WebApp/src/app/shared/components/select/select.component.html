@@ -1,0 +1,15 @@
+<select
+  class="py-2 px-4 block w-full rounded-full text-xs md:text-sm bg-neutral-800 text-neutral-400 placeholder-neutral-500 border-neutral-800 border-r-[16px] outline outline-1 outline-neutral-400 hover:outline hover:outline-[#d6d604] focus:outline focus:outline-[#d6d604]"
+  title="select"
+  (change)="handleSelected($event)"
+>
+  <ng-container *ngIf="showPlaceholder">
+    <option selected hidden>{{ placeholder }}</option>
+  </ng-container>
+
+  <ng-container *ngIf="options.length > 0">
+    <option *ngFor="let option of options" [value]="option.value">
+      {{ option.text }}
+    </option>
+  </ng-container>
+</select>
