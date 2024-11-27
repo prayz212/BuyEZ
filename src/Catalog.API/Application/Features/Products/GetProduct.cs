@@ -20,7 +20,7 @@ public class GetProductController : ApiControllerBase
 }
 
 public record ImageDetailResponse(string Filename, string Url, string AltText, bool IsPrimary, int Size);
-public record ProductDetailResponse(string Id, string Name, string Description, decimal Price, ProductType ProductType, ProductStatus Status, List<ImageDetailResponse>? Images);
+public record ProductDetailResponse(string Id, string Name, string Description, decimal Price, ProductType Type, ProductStatus Status, List<ImageDetailResponse>? Images);
 
 public record GetProductRequest(string Id) : IRequest<ProductDetailResponse>;
 
