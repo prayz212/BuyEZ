@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.API", "src\Catalog.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog.Application", "src\Catalog.API\Application\Catalog.Application.csproj", "{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yarp.Gateway", "src\Yarp.Gateway\Yarp.Gateway.csproj", "{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,10 +30,15 @@ Global
 		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{351A6749-83CE-4D6E-9B25-8EFF7D23411E} = {913F963F-CDD8-4088-AEF4-F97798FE1AA6}
 		{9CCBEC78-CB29-4DAE-A072-B275612E3790} = {351A6749-83CE-4D6E-9B25-8EFF7D23411E}
 		{7B9B52A3-0B3B-41C8-9617-9F6586AE904F} = {351A6749-83CE-4D6E-9B25-8EFF7D23411E}
+		{013E1D96-7B44-4B2B-AFB3-30FCC60FC57F} = {913F963F-CDD8-4088-AEF4-F97798FE1AA6}
 	EndGlobalSection
 EndGlobal
