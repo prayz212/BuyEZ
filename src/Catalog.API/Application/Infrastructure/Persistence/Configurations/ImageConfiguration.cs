@@ -21,5 +21,9 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
 
         builder.Property(x => x.LastModified)
             .HasColumnType("timestamp with time zone");
+
+        builder
+            .HasIndex(x => x.URL)
+            .IsUnique();
     }
 }
