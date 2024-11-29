@@ -1,4 +1,5 @@
 using CatalogAPI.Application.Common;
+using CatalogAPI.Application.Features.Products.Shared.Dtos;
 
 namespace CatalogAPI.Application.Domain.Catalogs;
 
@@ -20,4 +21,7 @@ public class Image : AuditableEntity
 
     // Navigation property for the related Product
     public Product? Product { get; set; }
+
+    public static ImageDetailResponse ToDto(Image image) =>
+        new(image.Filename, image.URL, image.AltText, image.IsPrimary, image.Size);
 }
