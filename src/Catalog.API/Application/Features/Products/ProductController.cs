@@ -23,6 +23,7 @@ public class ProductController : ApiControllerBase
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ProductDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ProductDetailResponse> Get(string id)
@@ -34,7 +35,7 @@ public class ProductController : ApiControllerBase
     [ProducesResponseType(typeof(ProductDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ProductDetailResponse>> AddProduct(AddProductCommand command)
+    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductCommand command)
     {
         var product = await Mediator.Send(command);
         return CreatedAtAction(nameof(Get), new { id = product.Id}, product);
@@ -45,7 +46,7 @@ public class ProductController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateProduct(string id, UpdateProductCommand command)
+    public async Task<ActionResult> Update(string id, UpdateProductCommand command)
     {
         if (id != command.Id) 
             throw new ValidationException("Product Id is not correct.");
