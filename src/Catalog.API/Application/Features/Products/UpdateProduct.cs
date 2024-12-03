@@ -96,9 +96,11 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
 
         var newPrimaryImage = newImages.FirstOrDefault(ni => ni.IsPrimary);
         var deletePrimaryImage = deleteImages.FirstOrDefault(di => di.IsPrimary);
-        if (deletePrimaryImage != null && newPrimaryImage == null)
+        var isMissingPrimaryImage = deletePrimaryImage != null && newPrimaryImage == null;
+        var isExceedingPrimaryImage = deletePrimaryImage == null && newPrimaryImage != null;
+        if (isMissingPrimaryImage || isExceedingPrimaryImage)
         {
-            throw new ValidationException("Missing primary product image.");
+            throw new ValidationException("Missing or exceeding required primary image quantity.");
         }
 
         /* Check if images exceed maximum quantity */
