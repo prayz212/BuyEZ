@@ -5,7 +5,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  productType: ProductType;
+  type: ProductType;
   // image: ImageDetail;
 }
 
@@ -14,7 +14,7 @@ interface ProductDetail {
   name: string;
   description: string;
   price: number;
-  productType: ProductType;
+  type: ProductType;
   status: ProductStatus;
   // images: ImageDetail[];
 }

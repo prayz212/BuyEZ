@@ -109,7 +109,7 @@ namespace Catalog.Application.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(9,2)");
 
-                    b.Property<int>("ProductType")
+                    b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.Property<int>("RestockThreshold")

@@ -67,6 +67,9 @@ namespace Catalog.Application.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("URL")
+                        .IsUnique();
+
                     b.ToTable("Images");
                 });
 
@@ -106,13 +109,13 @@ namespace Catalog.Application.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(9,2)");
 
-                    b.Property<int>("ProductType")
-                        .HasColumnType("integer");
-
                     b.Property<int>("RestockThreshold")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -122,13 +125,16 @@ namespace Catalog.Application.Infrastructure.Migrations
 
             modelBuilder.Entity("CatalogAPI.Application.Domain.Catalogs.Image", b =>
                 {
-                    b.HasOne("CatalogAPI.Application.Domain.Catalogs.Product", "Product")
-                        .WithMany()
+                    b.HasOne("CatalogAPI.Application.Domain.Catalogs.Product", null)
+                        .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.Navigation("Product");
+            modelBuilder.Entity("CatalogAPI.Application.Domain.Catalogs.Product", b =>
+                {
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }
