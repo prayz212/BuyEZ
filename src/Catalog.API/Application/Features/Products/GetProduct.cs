@@ -18,6 +18,9 @@ internal sealed class GetProductRequestHandler(ApplicationDbContext context)
 
     public async Task<ProductDetailResponse> Handle(GetProductRequest request, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(request.Id)) 
+            throw new ValidationException("Invalid product id.");
+
         var product = await _context.Products
             .Include(p => p.Images)
             .FirstOrDefaultAsync(p => p.Id == request.Id);

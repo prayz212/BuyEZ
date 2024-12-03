@@ -26,7 +26,7 @@ public class Product : AuditableEntity, IHasDomainEvent
     public List<DomainEvent> DomainEvents { get; } = [];
 
     // Navigation property for the related Product
-    public List<Image>? Images { get; set; } = [];
+    public List<Image> Images { get; set; } = [];
 
     public static ProductDetailResponse ToDto(Product product) =>
         new(
@@ -36,7 +36,7 @@ public class Product : AuditableEntity, IHasDomainEvent
             product.Price, 
             product.Type, 
             product.Status, 
-            product.Images?.Select(Image.ToDto).ToList()
+            product.Images.Select(Image.ToDto).ToList()
         );
 }
 

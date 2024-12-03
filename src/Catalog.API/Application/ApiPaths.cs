@@ -1,3 +1,5 @@
+namespace CatalogAPI.Application;
+
 internal static class ApiPaths
 {
     internal const string Prefix = "api";

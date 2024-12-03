@@ -125,13 +125,11 @@ namespace Catalog.Application.Infrastructure.Migrations
 
             modelBuilder.Entity("CatalogAPI.Application.Domain.Catalogs.Image", b =>
                 {
-                    b.HasOne("CatalogAPI.Application.Domain.Catalogs.Product", "Product")
+                    b.HasOne("CatalogAPI.Application.Domain.Catalogs.Product", null)
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("CatalogAPI.Application.Domain.Catalogs.Product", b =>
