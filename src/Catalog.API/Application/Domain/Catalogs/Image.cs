@@ -19,9 +19,6 @@ public class Image : AuditableEntity
 
     public string ProductId { get; set; } = string.Empty;
 
-    // Navigation property for the related Product
-    public Product? Product { get; set; }
-
     public static ImageDetailResponse ToDto(Image image) =>
         new(image.Filename, image.URL, image.AltText, image.IsPrimary, image.Size);
 }

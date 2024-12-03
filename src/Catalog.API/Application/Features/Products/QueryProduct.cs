@@ -39,14 +39,14 @@ internal sealed class QueryProductRequestHandler(ApplicationDbContext context)
     public async Task<PaginatedList<ProductBriefResponse>> Handle(QueryProductRequest request, CancellationToken cancellationToken)
     {
         return await _context.Products
-            .Include(p => p.Images!.Where(i => i.IsPrimary))
+            .Include(p => p.Images.Where(i => i.IsPrimary))
             .OrderBy(p => p.Created)
             .Select(p => ToDto(p))
             .PaginatedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
     private static ProductBriefResponse ToDto(Product product) =>
-        new(product.Id, product.Name, product.Price, product.Type, ToDto(product.Images?.FirstOrDefault()));
+        new(product.Id, product.Name, product.Price, product.Type, ToDto(product.Images.FirstOrDefault()));
 
     private static ImageBriefResponse? ToDto(Image? image) => 
         image is not null ? new(image.Filename, image.URL, image.AltText) : null;

@@ -56,10 +56,10 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
     public async Task<ProductDetailResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
         var newProduct = ToEntity(request);
-        var newProductImages = request.Images.Select(i => ToEntity(i, newProduct));
+        var newProductImages = request.Images.Select(i => ToEntity(i));
+        newProduct.Images = newProductImages.ToList();
 
         await _context.Products.AddAsync(newProduct, cancellationToken);
-        await _context.Images.AddRangeAsync(newProductImages, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         return Product.ToDto(newProduct);
@@ -74,14 +74,13 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
         Type = product.Type
     };
 
-    private static Image ToEntity(ProductImageRequest image, Product product) => new()
+    private static Image ToEntity(ProductImageRequest image) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = image.Filename,
         URL = image.URL,
         AltText = image.AltText,
         Size = image.Size,
-        IsPrimary = image.IsPrimary,
-        ProductId = product.Id
+        IsPrimary = image.IsPrimary
     };
 }

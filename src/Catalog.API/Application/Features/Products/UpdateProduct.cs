@@ -42,14 +42,14 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             .IsInEnum().WithMessage("Invalid product status.");
 
         RuleFor(x => x.AvailableStock)
-            .GreaterThan(0).WithMessage("Available stock must be greater than or equal 0.");
+            .GreaterThanOrEqualTo(0).WithMessage("Available stock must be greater than or equal 0.");
 
         RuleFor(x => x.RestockThreshold)
-            .GreaterThan(5).WithMessage("Restock threshold must be greater than or equal 5.");
+            .GreaterThanOrEqualTo(5).WithMessage("Restock threshold must be greater than or equal 5.");
 
         RuleFor(x => x.MaxStockThreshold)
-            .GreaterThan(10).WithMessage("Maximum stock threshold must be greater than or equal 10")
-            .LessThan(1000).WithMessage("Maximum stock threshold must be less than or equal 1000.");
+            .GreaterThanOrEqualTo(10).WithMessage("Maximum stock threshold must be greater than or equal 10")
+            .LessThanOrEqualTo(1000).WithMessage("Maximum stock threshold must be less than or equal 1000.");
 
         RuleFor(x => x.NewImages)
             .Must(NotExceedPrimaryImageQuantity).WithMessage("Exceeding required primary image quantity.")
@@ -75,22 +75,23 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
 
     public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+        var product = await _context.Products
+            .Include(p => p.Images)
+            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
         if (product == null) 
             throw new NotFoundException($"Product with id: {request.Id} not found.");
 
         /* Check if product has primary image */
-        var images = await _context.Images.Where(i => i.ProductId == product.Id).ToListAsync(cancellationToken);
         var deleteImages = Enumerable.Empty<Image>();
         if (request.DeleteImages != null && request.DeleteImages.Any()) 
         {
-            deleteImages = images.Where(i => request.DeleteImages.Any(di => di.URL == i.URL));
+            deleteImages = product.Images.Where(i => request.DeleteImages.Any(di => di.URL == i.URL));
         }
 
         var newImages = Enumerable.Empty<Image>();
         if (request.NewImages != null && request.NewImages.Any())
         {
-            newImages = request.NewImages.Select(ni => ToEntity(ni, product));
+            newImages = request.NewImages.Select(ToEntity);
         }
 
         var newPrimaryImage = newImages.FirstOrDefault(ni => ni.IsPrimary);
@@ -101,8 +102,9 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         }
 
         /* Check if images exceed maximum quantity */
-        var count = images.Count() - deleteImages.Count() + newImages.Count();
-        if (count > ProductConstants.MAXIMUM_IMAGE_QUANTITY) throw new ValidationException("Exceeding maximum image quantity.");
+        var count = product.Images.Count() - deleteImages.Count() + newImages.Count();
+        if (count > ProductConstants.MAXIMUM_IMAGE_QUANTITY) 
+            throw new ValidationException("Exceeding maximum image quantity.");
 
         /* Perform update */
         product.Name = request.Name;
@@ -114,21 +116,24 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         product.RestockThreshold = request.RestockThreshold;
         product.MaxStockThreshold = request.MaxStockThreshold;
 
+        if (deleteImages.Any())
+            product.Images = product.Images.Where(i => !deleteImages.Contains(i)).ToList();
+
+        if (newImages.Any())
+            product.Images.AddRange(newImages);
+
         _context.Update(product);
-        if (deleteImages.Any()) _context.Images.RemoveRange(deleteImages);
-        if (newImages.Any()) _context.Images.AddRange(newImages);
         
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static Image ToEntity(ProductImageRequest image, Product product) => new()
+    private static Image ToEntity(ProductImageRequest image) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = image.Filename,
         URL = image.URL,
         AltText = image.AltText,
         Size = image.Size,
-        IsPrimary = image.IsPrimary,
-        ProductId = product.Id
+        IsPrimary = image.IsPrimary
     };
 }
