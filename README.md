@@ -29,8 +29,27 @@ dotnet ef database update MigrationName --project .\Application --startup-projec
 
 ## API Gateway 
 
-Route mapping rules: 
-http://localhost:5000/{version}/api/{service-name}/... => http://localhost:{service-local-port}/{version}/api/{service-local-name}/...
+### Route Mapping Rules: 
 
-Example 1: http://localhost:5000/v1/api/catalog/query => http://localhost:5205/v1/api/products-shoppings/query
-Example 2: http://localhost:5000/v1/api/admin/catalog => http://localhost:5205/v1/api/products-administrations
+1. **For shopping application:**
+
+    > **Request to:** `http://localhost:5000/{version}/api/{service-name}/...`
+    >
+    > **Forward to:** `http://localhost:{service-local-port}/{version}/api/{service-local-controller}/...`
+
+   *Example:*
+     `http://localhost:5000/v1/api/catalog/query`
+
+     => `http://localhost:5205/v1/api/products-shoppings/query`
+
+
+3. **For administration application:**
+
+    > **Request to:** `http://localhost:5000/{version}/api/admin/{service-name}/...`
+    >
+    > **Forward to:** `http://localhost:{service-local-port}/{version}/api/{service-local-controller}/...`
+
+    *Example 2:*
+     `http://localhost:5000/v1/api/admin/catalog`
+   
+     => `http://localhost:5205/v1/api/products-administrations`
