@@ -49,7 +49,7 @@ dotnet ef database update MigrationName --project .\Application --startup-projec
     >
     > **Forward to:** `http://localhost:{service-local-port}/{version}/api/{service-local-controller}/...`
 
-    *Example 2:*
+    *Example:*
      `http://localhost:5000/v1/api/admin/catalog`
    
      => `http://localhost:5205/v1/api/products-administrations`
