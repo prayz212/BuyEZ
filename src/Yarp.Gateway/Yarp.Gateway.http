@@ -1,0 +1,6 @@
+@Yarp.Gateway_HostAddress = http://localhost:5018
+
+GET {{Yarp.Gateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

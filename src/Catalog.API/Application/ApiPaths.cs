@@ -6,5 +6,5 @@ internal static class ApiPaths
 
     internal const string Version = "v1";
 
-    internal const string Root = $"{Prefix}/{Version}";
+    internal const string Root = $"{Version}/{Prefix}";
 }

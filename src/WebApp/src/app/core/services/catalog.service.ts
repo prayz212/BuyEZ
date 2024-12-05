@@ -10,7 +10,7 @@ import { QueryResponse } from 'src/app/shared/models/query-response.model';
 
 @Injectable()
 export class CatalogService {
-  private readonly prefix = 'products';
+  private readonly prefix = 'catalog';
 
   constructor(private readonly http: HttpClient) {}
 

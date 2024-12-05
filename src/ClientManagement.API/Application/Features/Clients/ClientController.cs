@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientManagementAPI.Application.Features.Clients;
 
 [ApiController]
-[Route($"{ApiPaths.Root}/clients")]
+[Route($"{ApiPaths.Root}/client-managements")]
 public class ClientController : ApiControllerBase
 {
     [HttpGet("{id}")]
