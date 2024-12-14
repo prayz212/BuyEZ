@@ -1,0 +1,23 @@
+[
+  {
+    "Id": "62acbbe0-aa5b-487f-8bed-84fcfad48821",
+    "FirstName": "BuyEZ",
+    "LastName": "Administrator",
+    "UserName": "buyez_administrator",
+    "Email": "administrator@buyez.com"
+  },
+  {
+    "Id": "16069527-2b21-41d0-9d9d-2af4887a2667",
+    "FirstName": "BuyEZ",
+    "LastName": "Supporter S1",
+    "UserName": "buyez_supporter_s1",
+    "Email": "supporter_s1@buyez.com"
+  },
+  {
+    "Id": "d92c6fac-241f-4bc7-9ca8-44bd046350c5",
+    "FirstName": "BuyEZ",
+    "LastName": "Supporter S2",
+    "UserName": "buyez_supporter_s2",
+    "Email": "supporter_s2@buyez.com"
+  }
+]
