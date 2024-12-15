@@ -1,7 +1,6 @@
 // Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
@@ -19,8 +18,8 @@ namespace Identity.WebApp.Pages.Login;
 [AllowAnonymous]
 public class Index : PageModel
 {
-    // private readonly TestUserStore _users;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly IIdentityServerInteractionService _interaction;
     private readonly IEventService _events;
     private readonly IAuthenticationSchemeProvider _schemeProvider;
@@ -36,18 +35,16 @@ public class Index : PageModel
         IAuthenticationSchemeProvider schemeProvider,
         IIdentityProviderStore identityProviderStore,
         IEventService events,
-        // TestUser user,
-        UserManager<User> userManager)
-    {
-        // this is where you would plug in your own custom identity management library (e.g. ASP.NET Identity)
-        // _users = users ?? throw new InvalidOperationException("Please call 'AddTestUsers(TestUsers.Users)' on the IIdentityServerBuilder in Startup or remove the TestUserStore from the AccountController.");
-            
+        UserManager<User> userManager,
+        SignInManager<User> signInManager)
+    {            
         _interaction = interaction;
         _schemeProvider = schemeProvider;
         _identityProviderStore = identityProviderStore;
         _events = events;
 
         _userManager = userManager;
+        _signInManager = signInManager;
     }
 
     public async Task<IActionResult> OnGet(string? returnUrl)
@@ -100,9 +97,6 @@ public class Index : PageModel
 
         if (ModelState.IsValid)
         {
-            string error = "Invalid credentials";
-            // validate username/password against in-memory store
-            // if (_users.ValidateCredentials(Input.Username, Input.Password))
             var user = await _userManager.FindByNameAsync(Input.Username);
             var isValidCredential = user is not null 
                 && await _userManager.CheckPasswordAsync(user, Input.Password);
@@ -119,15 +113,8 @@ public class Index : PageModel
                     props.ExpiresUtc = DateTimeOffset.UtcNow.Add(LoginOptions.RememberMeLoginDuration);
                 };
 
-                // issue authentication cookie with subject ID and username
-                var isuser = new IdentityServerUser(user.Id.ToString())
-                {
-                    DisplayName = user.UserName
-                };
-
-                await HttpContext.SignInAsync(isuser, props);
-
-                if (context != null)
+                var signInResult = await _signInManager.PasswordSignInAsync(user, Input.Password, false, true);
+                if (signInResult.Succeeded && context != null)
                 {
                     // This "can't happen", because if the ReturnUrl was null, then the context would be null
                     ArgumentNullException.ThrowIfNull(Input.ReturnUrl, nameof(Input.ReturnUrl));
@@ -159,6 +146,7 @@ public class Index : PageModel
                 }
             }
             
+            string error = "Invalid credentials";
             await _events.RaiseAsync(new UserLoginFailureEvent(Input.Username, error, clientId:context?.Client.ClientId));
             ModelState.AddModelError(string.Empty, LoginOptions.InvalidCredentialsErrorMessage);
         }
