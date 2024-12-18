@@ -61,21 +61,21 @@ public static class DependencyInjection {
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(nameof(PolicyConstants.ADMIN_POLICY), policy =>
+            options.AddPolicy(nameof(PolicyConstants.SYSTEM_ADMIN_POLICY), policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN);
             });
             
-            options.AddPolicy(nameof(PolicyConstants.SUPPORTER_POLICY), policy =>
+            options.AddPolicy(nameof(PolicyConstants.SYSTEM_SUPPORTER_POLICY), policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_SUPPORT);
             });
 
-            options.AddPolicy(PolicyConstants.ADMIN_OR_SUPPORT_POLICY, policy =>
+            options.AddPolicy(PolicyConstants.SYSTEM_ADMIN_OR_SUPPORTER_POLICY, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
