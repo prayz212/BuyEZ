@@ -1,8 +1,6 @@
 using Identity.Application.Common;
 using Identity.Application.Common.Entities;
 using Identity.Application.Common.Models;
-using Identity.Application.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,12 +14,6 @@ public static class IdentityServerExtension
         if (string.IsNullOrWhiteSpace(authOptions["IssuerUri"]))
             throw new Exception("AuthOptions:IssuerUri is a required configuration.");
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        
-        services.AddIdentity<User, IdentityRole<Guid>>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
-
         var identityServerBuilder = services.AddIdentityServer(options =>
             {
                 options.Events.RaiseErrorEvents = true;
@@ -34,7 +26,8 @@ public static class IdentityServerExtension
             .AddInMemoryApiResources(Config.ApiResources)
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
-            .AddAspNetIdentity<User>();
+            .AddAspNetIdentity<User>()
+            .AddProfileService<ProfileService>();
 
         //ref: https://documentation.openiddict.com/configuration/encryption-and-signing-credentials.html
         identityServerBuilder.AddDeveloperSigningCredential();

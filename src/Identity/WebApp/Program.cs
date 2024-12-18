@@ -1,12 +1,13 @@
 using Identity.Application;
+using Identity.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddServices(builder.Configuration);
+builder.Services.AddCustomIdentityServer(builder.Configuration);
 
 var app = builder.Build();
 

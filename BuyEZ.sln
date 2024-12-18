@@ -21,7 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{80
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.WebApp", "src\Identity\WebApp\Identity.WebApp.csproj", "{4DAB035A-ADC5-4637-A56D-D18A79D3CF0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Application", "src\Identity\Applications\Identity.Application.csproj", "{C29511A2-4481-412E-8A8F-989BFC07BE66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.Application", "src\Identity\Application\Identity.Application.csproj", "{C29511A2-4481-412E-8A8F-989BFC07BE66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "src\Identity\Apis\Identity.API.csproj", "{11283DAE-3D36-421B-B3F7-2156BE65493F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,6 +62,10 @@ Global
 		{C29511A2-4481-412E-8A8F-989BFC07BE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C29511A2-4481-412E-8A8F-989BFC07BE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C29511A2-4481-412E-8A8F-989BFC07BE66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11283DAE-3D36-421B-B3F7-2156BE65493F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11283DAE-3D36-421B-B3F7-2156BE65493F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11283DAE-3D36-421B-B3F7-2156BE65493F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11283DAE-3D36-421B-B3F7-2156BE65493F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{351A6749-83CE-4D6E-9B25-8EFF7D23411E} = {913F963F-CDD8-4088-AEF4-F97798FE1AA6}
@@ -72,5 +78,6 @@ Global
 		{80722A10-3BB3-4270-9B44-E5EB37711312} = {913F963F-CDD8-4088-AEF4-F97798FE1AA6}
 		{4DAB035A-ADC5-4637-A56D-D18A79D3CF0A} = {80722A10-3BB3-4270-9B44-E5EB37711312}
 		{C29511A2-4481-412E-8A8F-989BFC07BE66} = {80722A10-3BB3-4270-9B44-E5EB37711312}
+		{11283DAE-3D36-421B-B3F7-2156BE65493F} = {80722A10-3BB3-4270-9B44-E5EB37711312}
 	EndGlobalSection
 EndGlobal
