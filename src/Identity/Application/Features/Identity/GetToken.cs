@@ -34,7 +34,7 @@ public class GetTokenCommandValidator : AbstractValidator<GetTokenCommand>
 
 internal sealed class GetTokenCommandHandler(IIdentityServerApi identityServerApi) : IRequestHandler<GetTokenCommand, TokenResponse>
 {
-    private readonly IIdentityServerApi _identityServerApi1 = identityServerApi;
+    private readonly IIdentityServerApi _identityServerApi = identityServerApi;
 
     public async Task<TokenResponse> Handle(GetTokenCommand request, CancellationToken cancellationToken)
     {
@@ -54,7 +54,7 @@ internal sealed class GetTokenCommandHandler(IIdentityServerApi identityServerAp
         };
 
         var content = new FormUrlEncodedContent(contentKeyValues);
-        var response = await _identityServerApi1.PostGetTokenAsync(content);
+        var response = await _identityServerApi.PostGetTokenAsync(content);
 
         string jsonResponse = JsonConvert.SerializeObject(response);
         var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(jsonResponse);
