@@ -15,8 +15,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         {
             { typeof(ValidationException), HandleValidationException },
             { typeof(NotFoundException), HandleNotFoundException },
-            { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
-            { typeof(ForbiddenException), HandleForbiddenAccessException },
         };
     }
 
@@ -78,32 +76,6 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
         };
 
         context.Result = new NotFoundObjectResult(details);
-        context.ExceptionHandled = true;
-    }
-
-    private void HandleUnauthorizedAccessException(ExceptionContext context)
-    {
-        ProblemDetails details = new()
-        {
-            Status = StatusCodes.Status401Unauthorized,
-            Type = "https://tools.ietf.org/html/rfc7235#section-3.1",
-            Title = "Unauthorized",
-        };
-
-        context.Result = new ObjectResult(details) { StatusCode = StatusCodes.Status401Unauthorized };
-        context.ExceptionHandled = true;
-    }
-
-    private void HandleForbiddenAccessException(ExceptionContext context)
-    {
-        ProblemDetails details = new()
-        {
-            Status = StatusCodes.Status403Forbidden,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
-            Title = "Forbidden",
-        };
-
-        context.Result = new ObjectResult(details) { StatusCode = StatusCodes.Status403Forbidden };
         context.ExceptionHandled = true;
     }
 
