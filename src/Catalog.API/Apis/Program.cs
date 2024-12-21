@@ -1,6 +1,6 @@
 using CatalogAPI.Apis.Filters;
 using CatalogAPI.Application;
-using CatalogAPI.Application.Infrastructure.Persistence;
+using CatalogAPI.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
