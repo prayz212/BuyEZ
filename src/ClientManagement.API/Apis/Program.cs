@@ -1,6 +1,7 @@
 using ClientManagementAPI.Apis.Filters;
 using ClientManagementAPI.Apis.Middlewares;
 using ClientManagementAPI.Application;
+using ClientManagementAPI.Application.Extensions;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +65,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    await app.InitializeDatabaseAsync();
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();
