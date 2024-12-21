@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using Identity.Application.Common.Entities;
+using Identity.Application.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Application.Common;
@@ -21,7 +21,8 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
             new(ClaimTypes.NameIdentifier, userId),
             new(ClaimTypes.Name, user.UserName!),
             new(ClaimTypes.Email, user.Email!),
-            new(ClaimTypes.Role, userRoles.First())
+            new(ClaimTypes.Role, userRoles.First()),
+            new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantid", user.TenantId ?? string.Empty)
         };
 
         context.IssuedClaims.AddRange(claims);

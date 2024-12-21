@@ -1,0 +1,26 @@
+[
+  {
+    "Id": "a91e11ba-4134-4194-a5e4-33cd0f4afd54",
+    "FirstName": "LUCY Store",
+    "LastName": "Administrator",
+    "UserName": "lucy_store_administrator",
+    "Email": "administrator@lucy.com",
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
+  },
+  {
+    "Id": "5a0b09c0-3060-40b4-8e42-2eaa53c1ac0f",
+    "FirstName": "LUCY Store",
+    "LastName": "Manager",
+    "UserName": "lucy_store_manager",
+    "Email": "manager@lucy.com",
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
+  },
+  {
+    "Id": "28aecafa-c135-44ad-93b2-ca528ce8ec17",
+    "FirstName": "LUCY Store",
+    "LastName": "Staff",
+    "UserName": "lucy_store_staff",
+    "Email": "staff@lucy.com",
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
+  }
+]

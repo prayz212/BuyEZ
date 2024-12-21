@@ -1,6 +1,6 @@
 using Identity.Application.Common;
-using Identity.Application.Common.Entities;
 using Identity.Application.Common.Models;
+using Identity.Application.Domain.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

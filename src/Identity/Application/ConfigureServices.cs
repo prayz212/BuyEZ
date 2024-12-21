@@ -1,7 +1,7 @@
 using System.Reflection;
 using FluentValidation;
 using Identity.Application.Common.Behaviors;
-using Identity.Application.Common.Entities;
+using Identity.Application.Domain.Identity;
 using Identity.Application.Features.Identity.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
