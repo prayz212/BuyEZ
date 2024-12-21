@@ -31,7 +31,7 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             // TODO: implement later
             // var userId = _currentUserService.UserId ?? string.Empty;
 
-            _logger.LogWarning("Catalog API Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", requestName, elapsedMilliseconds, request);
+            _logger.LogWarning("Identity API Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", requestName, elapsedMilliseconds, request);
         }
 
         return response;

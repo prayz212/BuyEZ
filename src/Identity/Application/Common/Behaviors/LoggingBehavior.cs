@@ -19,7 +19,7 @@ public class LoggingBehavior<TRequest> : IRequestPreProcessor<TRequest> where TR
         // TODO: implement later
         // var userId = _currentUserService.UserId ?? string.Empty;
 
-        _logger.LogInformation("Catalog API Request: {Name} {@Request}", requestName, request);
+        _logger.LogInformation("Identity API Request: {Name} {@Request}", requestName, request);
         return Task.CompletedTask;
     }
 }
