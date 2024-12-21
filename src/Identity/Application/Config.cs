@@ -77,6 +77,12 @@ public static class Config
 
                 // Enables issuing refresh tokens
                 AllowOfflineAccess = true,
+
+                // Refresh token settings
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding, 
+                AbsoluteRefreshTokenLifetime = 172800, // 2 days
+                SlidingRefreshTokenLifetime = 21600  // 6 hours
             },
             new()
             {
@@ -108,6 +114,12 @@ public static class Config
 
                 // Enables issuing refresh tokens
                 AllowOfflineAccess = true,
+
+                // Refresh token settings
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding, 
+                AbsoluteRefreshTokenLifetime = 172800, // 2 days
+                SlidingRefreshTokenLifetime = 21600  // 6 hours
             },
             new()
             {
@@ -140,6 +152,12 @@ public static class Config
 
                 // Enables issuing refresh tokens
                 AllowOfflineAccess = true,
+
+                // Refresh token settings
+                RefreshTokenUsage = TokenUsage.OneTimeOnly,
+                RefreshTokenExpiration = TokenExpiration.Sliding, 
+                AbsoluteRefreshTokenLifetime = 172800, // 2 days
+                SlidingRefreshTokenLifetime = 21600  // 6 hours
             }
         };
 }
