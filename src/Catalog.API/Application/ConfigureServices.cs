@@ -50,6 +50,9 @@ public static class DependencyInjection {
                     ValidateIssuer = true,
                     ValidIssuer = issuer, 
 
+                    // TODO: need to investigate why we don't have audience in Identity Server's token
+                    ValidateAudience = false,
+
                     ValidateLifetime = true,
                     // IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
                     // {
@@ -61,14 +64,14 @@ public static class DependencyInjection {
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(nameof(PolicyConstants.TENANT_ADMIN_POLICY), policy =>
+            options.AddPolicy(PolicyConstants.TENANT_ADMIN_POLICY, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CATALOG_API);
                 policy.RequireRole(IdentityConstants.Role.TENANT_ADMIN);
             });
             
-            options.AddPolicy(nameof(PolicyConstants.TENANT_MANAGER_POLICY), policy =>
+            options.AddPolicy(PolicyConstants.TENANT_MANAGER_POLICY, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CATALOG_API);
