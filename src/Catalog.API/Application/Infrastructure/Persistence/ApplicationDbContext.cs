@@ -25,13 +25,9 @@ public class ApplicationDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    // TODO: implement later
-                    // entry.Entity.CreatedBy = "system"; 
                     entry.Entity.Created = DateTimeOffset.UtcNow;
                     break;
-                case EntityState.Modified:
-                    // TODO: implement later
-                    // entry.Entity.LastModifiedBy = "system";       
+                case EntityState.Modified: 
                     entry.Entity.LastModified = DateTimeOffset.UtcNow;
                     break;
                 case EntityState.Deleted:

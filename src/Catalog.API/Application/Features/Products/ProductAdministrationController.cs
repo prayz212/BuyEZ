@@ -18,9 +18,9 @@ public class ProductAdministrationController : ApiControllerBase
     [ProducesResponseType(typeof(ProductDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductCommand command)
+    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductRequest request)
     {
-        var product = await Mediator.Send(command);
+        var product = await Mediator.Send(new AddProductCommand(GetTenantId(), GetUserId(), request));
         return CreatedAtRoute("GetProductDetails", new { id = product.Id}, product);
     }
 
@@ -30,12 +30,12 @@ public class ProductAdministrationController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateProductCommand command)
+    public async Task<ActionResult> Update(string id, UpdateProductRequest request)
     {
-        if (id != command.Id) 
+        if (id != request.Id) 
             throw new ValidationException("Product Id is not correct.");
 
-        await Mediator.Send(command);
+        await Mediator.Send(new UpdateProductCommand(GetTenantId(), GetUserId(), request));
         return NoContent();
     }
 }

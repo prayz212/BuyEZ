@@ -28,9 +28,6 @@ public class PerformanceBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         {
             var requestName = typeof(TRequest).Name;
 
-            // TODO: implement later
-            // var userId = _currentUserService.UserId ?? string.Empty;
-
             _logger.LogWarning("Catalog API Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}", requestName, elapsedMilliseconds, request);
         }
 

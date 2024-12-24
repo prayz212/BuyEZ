@@ -8,7 +8,8 @@
     "AvailableStock": 5,
     "RestockThreshold": 48,
     "MaxStockThreshold": 176,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "7f734eb6-3111-4dcd-be03-10f8bd070d19",
@@ -19,7 +20,8 @@
     "AvailableStock": 1,
     "RestockThreshold": 30,
     "MaxStockThreshold": 109,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "078814bf-4182-441b-9fc7-06096d951e7f",
@@ -30,7 +32,8 @@
     "AvailableStock": 52,
     "RestockThreshold": 21,
     "MaxStockThreshold": 119,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "c1e190d0-9e03-4253-a848-10fc5f66dce0",
@@ -41,7 +44,8 @@
     "AvailableStock": 4,
     "RestockThreshold": 28,
     "MaxStockThreshold": 122,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "24a1183d-147b-4acf-aef5-50513e4454ae",
@@ -52,7 +56,8 @@
     "AvailableStock": 94,
     "RestockThreshold": 10,
     "MaxStockThreshold": 78,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "275183a6-ff4a-44ce-9c08-d0eaed760ec0",
@@ -63,7 +68,8 @@
     "AvailableStock": 55,
     "RestockThreshold": 45,
     "MaxStockThreshold": 75,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "8ac0e348-6238-4ab7-9a80-0ccc1e1d4d3e",
@@ -74,7 +80,8 @@
     "AvailableStock": 12,
     "RestockThreshold": 21,
     "MaxStockThreshold": 133,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "ab4cd568-f8b2-46b7-a34e-ae5f8457af52",
@@ -85,7 +92,8 @@
     "AvailableStock": 75,
     "RestockThreshold": 39,
     "MaxStockThreshold": 85,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "de47fdcf-eb48-4fe8-b8db-e3e240de2ef3",
@@ -96,7 +104,8 @@
     "AvailableStock": 64,
     "RestockThreshold": 43,
     "MaxStockThreshold": 127,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "1ba043af-72e4-4bac-a212-1879aadd7f79",
@@ -107,7 +116,8 @@
     "AvailableStock": 31,
     "RestockThreshold": 18,
     "MaxStockThreshold": 132,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "706dd82e-c7f6-43fc-831e-ebab7b87d09f",
@@ -118,7 +128,8 @@
     "AvailableStock": 51,
     "RestockThreshold": 7,
     "MaxStockThreshold": 116,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f1f51330-308a-4af2-adf3-b8f7fcf78bf7",
@@ -129,7 +140,8 @@
     "AvailableStock": 62,
     "RestockThreshold": 23,
     "MaxStockThreshold": 55,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "67285c7d-5781-4fbe-9952-8d99cea2b66b",
@@ -140,7 +152,8 @@
     "AvailableStock": 71,
     "RestockThreshold": 12,
     "MaxStockThreshold": 109,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "fef97f9e-344e-40e9-a473-4ea680dc7ded",
@@ -151,7 +164,8 @@
     "AvailableStock": 83,
     "RestockThreshold": 33,
     "MaxStockThreshold": 57,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "30422e77-0845-4f63-a634-c749b03ecc31",
@@ -162,7 +176,8 @@
     "AvailableStock": 54,
     "RestockThreshold": 38,
     "MaxStockThreshold": 200,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "37ae6d87-18fb-4da9-b8cf-7bc0aa8338e3",
@@ -173,7 +188,8 @@
     "AvailableStock": 4,
     "RestockThreshold": 16,
     "MaxStockThreshold": 154,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "e99ab877-13e9-4694-8757-eda3ea727a5d",
@@ -184,7 +200,8 @@
     "AvailableStock": 20,
     "RestockThreshold": 44,
     "MaxStockThreshold": 132,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "20cbb5b3-e0c2-4c0d-80a3-67228da24433",
@@ -195,7 +212,8 @@
     "AvailableStock": 77,
     "RestockThreshold": 1,
     "MaxStockThreshold": 159,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "208649d6-dab4-4b4a-a0dc-20eb5677e9bd",
@@ -206,7 +224,8 @@
     "AvailableStock": 52,
     "RestockThreshold": 0,
     "MaxStockThreshold": 183,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "a002b472-ba29-4343-935f-12eded1c13bb",
@@ -217,7 +236,8 @@
     "AvailableStock": 17,
     "RestockThreshold": 26,
     "MaxStockThreshold": 119,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "08b0368c-a038-40d5-8c52-0e49cef3368a",
@@ -228,7 +248,8 @@
     "AvailableStock": 42,
     "RestockThreshold": 5,
     "MaxStockThreshold": 163,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "fb039424-a802-4b85-a362-8905534b9b7d",
@@ -239,7 +260,8 @@
     "AvailableStock": 20,
     "RestockThreshold": 48,
     "MaxStockThreshold": 140,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "8c4f1e39-2f1a-4fc5-ae90-643914536fa7",
@@ -250,7 +272,8 @@
     "AvailableStock": 92,
     "RestockThreshold": 48,
     "MaxStockThreshold": 108,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "353475b9-ec78-4f9f-b99a-5d51d7f480ba",
@@ -261,7 +284,8 @@
     "AvailableStock": 44,
     "RestockThreshold": 38,
     "MaxStockThreshold": 185,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "35b89794-e1f7-4ffa-be5b-168a9440a2be",
@@ -272,7 +296,8 @@
     "AvailableStock": 88,
     "RestockThreshold": 49,
     "MaxStockThreshold": 120,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f8c0e8a1-7114-4e7b-bb7d-e1877ece04b1",
@@ -283,7 +308,8 @@
     "AvailableStock": 8,
     "RestockThreshold": 30,
     "MaxStockThreshold": 159,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "0701e0de-8159-4421-b3d1-0fb6102b888c",
@@ -294,7 +320,8 @@
     "AvailableStock": 88,
     "RestockThreshold": 47,
     "MaxStockThreshold": 68,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "326fe082-c18e-4969-aa50-120eccb62401",
@@ -305,7 +332,8 @@
     "AvailableStock": 88,
     "RestockThreshold": 39,
     "MaxStockThreshold": 75,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "81aae0a9-e193-4c28-803a-71be82616743",
@@ -316,7 +344,8 @@
     "AvailableStock": 9,
     "RestockThreshold": 45,
     "MaxStockThreshold": 189,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "20a6305b-b54a-4480-bf38-987226f32db6",
@@ -327,7 +356,8 @@
     "AvailableStock": 0,
     "RestockThreshold": 18,
     "MaxStockThreshold": 77,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "942dc224-dc67-4f07-bbb7-1f077871f2db",
@@ -338,7 +368,8 @@
     "AvailableStock": 77,
     "RestockThreshold": 30,
     "MaxStockThreshold": 173,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "e10fde11-d464-452e-ae89-ac610cbc18f3",
@@ -349,7 +380,8 @@
     "AvailableStock": 18,
     "RestockThreshold": 32,
     "MaxStockThreshold": 175,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "0d28c102-fd84-4fe0-8989-100ba22f4796",
@@ -360,7 +392,8 @@
     "AvailableStock": 58,
     "RestockThreshold": 21,
     "MaxStockThreshold": 113,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "d8144594-b27b-49a2-add5-c1aa4faa861c",
@@ -371,7 +404,8 @@
     "AvailableStock": 41,
     "RestockThreshold": 40,
     "MaxStockThreshold": 87,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "55e839d6-4d99-41ef-adef-8bee3b76fc3d",
@@ -382,7 +416,8 @@
     "AvailableStock": 53,
     "RestockThreshold": 9,
     "MaxStockThreshold": 143,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "d7d719d3-9c39-4fa9-b55c-ad767ae2a95c",
@@ -393,7 +428,8 @@
     "AvailableStock": 22,
     "RestockThreshold": 0,
     "MaxStockThreshold": 109,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "b2abc05c-e858-41a2-baee-856f3ae957ed",
@@ -404,7 +440,8 @@
     "AvailableStock": 80,
     "RestockThreshold": 6,
     "MaxStockThreshold": 52,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "2a3949e6-b368-437a-84b0-95471a5f7be8",
@@ -415,7 +452,8 @@
     "AvailableStock": 18,
     "RestockThreshold": 22,
     "MaxStockThreshold": 112,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "cad5129b-33b0-4496-b6a5-109a1fb75c7f",
@@ -426,7 +464,8 @@
     "AvailableStock": 82,
     "RestockThreshold": 49,
     "MaxStockThreshold": 87,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "4205ce07-5eb9-4652-840c-ee5300c2dd75",
@@ -437,7 +476,8 @@
     "AvailableStock": 7,
     "RestockThreshold": 1,
     "MaxStockThreshold": 82,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "bd3ad9d7-5aa2-4c18-83e4-034efee02177",
@@ -448,7 +488,8 @@
     "AvailableStock": 89,
     "RestockThreshold": 0,
     "MaxStockThreshold": 139,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "47530058-458e-40a0-b1e8-57c304d402db",
@@ -459,7 +500,8 @@
     "AvailableStock": 32,
     "RestockThreshold": 48,
     "MaxStockThreshold": 160,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "2651ae55-cd35-4404-b729-cfebd4c57fb9",
@@ -470,7 +512,8 @@
     "AvailableStock": 83,
     "RestockThreshold": 33,
     "MaxStockThreshold": 200,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "0023469a-acaa-4cc2-b1a5-ef5f2600b9d2",
@@ -481,7 +524,8 @@
     "AvailableStock": 82,
     "RestockThreshold": 19,
     "MaxStockThreshold": 170,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "3138d045-46eb-4e64-aff6-a6a679ecc24a",
@@ -492,7 +536,8 @@
     "AvailableStock": 49,
     "RestockThreshold": 6,
     "MaxStockThreshold": 176,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f1089b19-4d7a-485b-9448-1dd4d9e5ee92",
@@ -503,7 +548,8 @@
     "AvailableStock": 58,
     "RestockThreshold": 28,
     "MaxStockThreshold": 154,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "81580d02-55b9-4f9a-83d7-6a21a168522f",
@@ -514,7 +560,8 @@
     "AvailableStock": 62,
     "RestockThreshold": 44,
     "MaxStockThreshold": 68,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "58ccde84-eb39-408d-9bc0-b47bffbf88ab",
@@ -525,7 +572,8 @@
     "AvailableStock": 16,
     "RestockThreshold": 0,
     "MaxStockThreshold": 118,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "9813adc4-dc97-4d2a-a575-6682f92aa5f0",
@@ -536,7 +584,8 @@
     "AvailableStock": 50,
     "RestockThreshold": 47,
     "MaxStockThreshold": 121,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "c136067e-c777-4d21-b9cf-8131dbbe9307",
@@ -547,7 +596,8 @@
     "AvailableStock": 2,
     "RestockThreshold": 35,
     "MaxStockThreshold": 194,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "d198cff6-5e19-44b1-87e9-92d42486a468",
@@ -558,7 +608,8 @@
     "AvailableStock": 82,
     "RestockThreshold": 17,
     "MaxStockThreshold": 157,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "38ac5ca1-383f-4349-a4d0-29a906ee74c1",
@@ -569,7 +620,8 @@
     "AvailableStock": 29,
     "RestockThreshold": 24,
     "MaxStockThreshold": 60,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "6fe62234-56e0-4e93-95e1-52928eed7954",
@@ -580,7 +632,8 @@
     "AvailableStock": 63,
     "RestockThreshold": 10,
     "MaxStockThreshold": 180,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "9fb7e1b8-f0f2-498a-8cde-573c8e38de87",
@@ -591,7 +644,8 @@
     "AvailableStock": 79,
     "RestockThreshold": 0,
     "MaxStockThreshold": 79,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "52179770-5e66-45f0-9d2a-69c008de9171",
@@ -602,7 +656,8 @@
     "AvailableStock": 70,
     "RestockThreshold": 37,
     "MaxStockThreshold": 78,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f432f52f-b73d-4dee-8908-7f598eef8a99",
@@ -613,7 +668,8 @@
     "AvailableStock": 13,
     "RestockThreshold": 14,
     "MaxStockThreshold": 179,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "299a0f03-9990-4aa0-9ef8-bfe15e373393",
@@ -624,7 +680,8 @@
     "AvailableStock": 59,
     "RestockThreshold": 36,
     "MaxStockThreshold": 118,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "99061799-0ff7-4c72-9f3b-c9f52f9971aa",
@@ -635,7 +692,8 @@
     "AvailableStock": 72,
     "RestockThreshold": 3,
     "MaxStockThreshold": 197,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "78ca953c-a1cb-44f5-a5c3-4a6c784501f3",
@@ -646,7 +704,8 @@
     "AvailableStock": 60,
     "RestockThreshold": 2,
     "MaxStockThreshold": 70,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "460b3ad4-e266-45f9-a73b-00eb23b185a1",
@@ -657,7 +716,8 @@
     "AvailableStock": 77,
     "RestockThreshold": 23,
     "MaxStockThreshold": 164,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f727389a-9de6-455a-9209-3f788b8fb897",
@@ -668,7 +728,8 @@
     "AvailableStock": 39,
     "RestockThreshold": 20,
     "MaxStockThreshold": 92,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "871015b8-5d19-4ef2-9d04-0910fb1e3f0e",
@@ -679,7 +740,8 @@
     "AvailableStock": 69,
     "RestockThreshold": 9,
     "MaxStockThreshold": 138,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "d711a722-3b9e-4ebb-8dce-47e96877b5ed",
@@ -690,7 +752,8 @@
     "AvailableStock": 78,
     "RestockThreshold": 39,
     "MaxStockThreshold": 68,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "b3e4053b-8d63-4602-8245-699056264e04",
@@ -701,7 +764,8 @@
     "AvailableStock": 4,
     "RestockThreshold": 16,
     "MaxStockThreshold": 75,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "37bea8be-1dda-4a9d-ae45-9766727e078a",
@@ -712,7 +776,8 @@
     "AvailableStock": 0,
     "RestockThreshold": 44,
     "MaxStockThreshold": 159,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "90587e35-044c-4b3e-91b2-6bff371b11a8",
@@ -723,7 +788,8 @@
     "AvailableStock": 49,
     "RestockThreshold": 0,
     "MaxStockThreshold": 145,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "829bb04e-7285-41fa-9882-a1c06bbdb618",
@@ -734,7 +800,8 @@
     "AvailableStock": 96,
     "RestockThreshold": 37,
     "MaxStockThreshold": 198,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "3eed9be0-6819-439d-a6ba-22a9b3cda76d",
@@ -745,7 +812,8 @@
     "AvailableStock": 45,
     "RestockThreshold": 45,
     "MaxStockThreshold": 86,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "cf468f73-04ed-4493-b6a1-cfc8c075536e",
@@ -756,7 +824,8 @@
     "AvailableStock": 37,
     "RestockThreshold": 16,
     "MaxStockThreshold": 50,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "15867b1f-2944-4487-b8c8-bb22b9c967cb",
@@ -767,7 +836,8 @@
     "AvailableStock": 36,
     "RestockThreshold": 11,
     "MaxStockThreshold": 170,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "1aa8a0c2-880d-453f-ad40-d5a982a9d3b1",
@@ -778,7 +848,8 @@
     "AvailableStock": 10,
     "RestockThreshold": 11,
     "MaxStockThreshold": 195,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "99d49b02-1e9b-4499-b4cc-9789782c3ee0",
@@ -789,7 +860,8 @@
     "AvailableStock": 58,
     "RestockThreshold": 25,
     "MaxStockThreshold": 72,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "abf05f0d-4244-4ce9-95c6-e88253bcee42",
@@ -800,7 +872,8 @@
     "AvailableStock": 94,
     "RestockThreshold": 32,
     "MaxStockThreshold": 68,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "845b7881-e394-4d2b-915e-7e23286cb852",
@@ -811,7 +884,8 @@
     "AvailableStock": 26,
     "RestockThreshold": 42,
     "MaxStockThreshold": 162,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "2f7e816a-5741-431e-858a-dea0cfe0708a",
@@ -822,7 +896,8 @@
     "AvailableStock": 59,
     "RestockThreshold": 5,
     "MaxStockThreshold": 158,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "d0ff041b-0aed-4053-a98c-4bb5e14776de",
@@ -833,7 +908,8 @@
     "AvailableStock": 64,
     "RestockThreshold": 28,
     "MaxStockThreshold": 84,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "43fea2e5-ff12-475f-93bf-170645e0b9b2",
@@ -844,7 +920,8 @@
     "AvailableStock": 2,
     "RestockThreshold": 0,
     "MaxStockThreshold": 86,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "f01293dc-3104-4f4c-bd10-127762f485a2",
@@ -855,7 +932,8 @@
     "AvailableStock": 42,
     "RestockThreshold": 11,
     "MaxStockThreshold": 70,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "8f5c3778-30f1-4fe8-ac2d-9168199a0725",
@@ -866,7 +944,8 @@
     "AvailableStock": 86,
     "RestockThreshold": 13,
     "MaxStockThreshold": 177,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "cdaf0626-d6df-4274-8c61-fd380c1103e3",
@@ -877,7 +956,8 @@
     "AvailableStock": 39,
     "RestockThreshold": 16,
     "MaxStockThreshold": 193,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "bc3c7aa0-f26d-4e94-8aff-aa6ee5afd6b8",
@@ -888,7 +968,8 @@
     "AvailableStock": 64,
     "RestockThreshold": 31,
     "MaxStockThreshold": 100,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "1c7c047c-f7d4-415b-95fc-4cb2a8f17c01",
@@ -899,7 +980,8 @@
     "AvailableStock": 86,
     "RestockThreshold": 33,
     "MaxStockThreshold": 132,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "df06be58-78d3-410e-88a6-671488d0cf8a",
@@ -910,7 +992,8 @@
     "AvailableStock": 47,
     "RestockThreshold": 50,
     "MaxStockThreshold": 193,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "e4b2df23-e436-4c12-9403-601a2488a253",
@@ -921,7 +1004,8 @@
     "AvailableStock": 27,
     "RestockThreshold": 3,
     "MaxStockThreshold": 143,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "41c8a3d3-75c0-46d0-b59f-60ea88294e4c",
@@ -932,7 +1016,8 @@
     "AvailableStock": 25,
     "RestockThreshold": 13,
     "MaxStockThreshold": 65,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "eed6eede-b062-44fa-8ce4-9f7ffd02a938",
@@ -943,7 +1028,8 @@
     "AvailableStock": 63,
     "RestockThreshold": 9,
     "MaxStockThreshold": 85,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "066208de-4c4a-4e38-a5b7-043e1ca1347d",
@@ -954,7 +1040,8 @@
     "AvailableStock": 88,
     "RestockThreshold": 37,
     "MaxStockThreshold": 70,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "521f26d9-0005-414d-a326-6bd59e6d1927",
@@ -965,7 +1052,8 @@
     "AvailableStock": 83,
     "RestockThreshold": 28,
     "MaxStockThreshold": 144,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "e4df6d64-f0d6-4396-a2ef-4f79bc7ffeb8",
@@ -976,7 +1064,8 @@
     "AvailableStock": 19,
     "RestockThreshold": 29,
     "MaxStockThreshold": 182,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "3b962a48-9b88-41e4-b686-548ddc41304d",
@@ -987,7 +1076,8 @@
     "AvailableStock": 26,
     "RestockThreshold": 44,
     "MaxStockThreshold": 109,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "7a4a13f7-1723-4e91-a99d-03181ba21455",
@@ -998,7 +1088,8 @@
     "AvailableStock": 45,
     "RestockThreshold": 13,
     "MaxStockThreshold": 127,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "8aaf23b4-f0f5-4712-bfc8-366f90f118b2",
@@ -1009,7 +1100,8 @@
     "AvailableStock": 36,
     "RestockThreshold": 17,
     "MaxStockThreshold": 95,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "0744b18d-5a82-48d2-b03b-6418c945d5cd",
@@ -1020,7 +1112,8 @@
     "AvailableStock": 47,
     "RestockThreshold": 15,
     "MaxStockThreshold": 150,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "38e2cc31-2a61-452f-809c-e01dcb0b3f24",
@@ -1031,7 +1124,8 @@
     "AvailableStock": 68,
     "RestockThreshold": 45,
     "MaxStockThreshold": 132,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "0ccfd866-583d-4751-9cc6-6a5a1deecea6",
@@ -1042,7 +1136,8 @@
     "AvailableStock": 8,
     "RestockThreshold": 8,
     "MaxStockThreshold": 164,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "7fb7b10e-2bb4-4403-b397-44aefe73a8a2",
@@ -1053,7 +1148,8 @@
     "AvailableStock": 23,
     "RestockThreshold": 14,
     "MaxStockThreshold": 81,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "524de9cd-8ded-4247-b733-6d7022fbefe5",
@@ -1064,7 +1160,8 @@
     "AvailableStock": 29,
     "RestockThreshold": 33,
     "MaxStockThreshold": 141,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "53264e12-7022-4318-9f16-aa8027d87510",
@@ -1075,7 +1172,8 @@
     "AvailableStock": 47,
     "RestockThreshold": 11,
     "MaxStockThreshold": 146,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "9c4dfed5-f327-47c6-ab16-b3b7b95b3514",
@@ -1086,7 +1184,8 @@
     "AvailableStock": 38,
     "RestockThreshold": 26,
     "MaxStockThreshold": 108,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   },
   {
     "Id": "08023963-4c3f-4355-9d40-6e6726d9517e",
@@ -1097,6 +1196,7 @@
     "AvailableStock": 97,
     "RestockThreshold": 7,
     "MaxStockThreshold": 172,
-    "Status": 2
+    "Status": 2,
+    "TenantId": "e7585613-e43e-48b5-8479-ef87556de30d"
   }
 ]
