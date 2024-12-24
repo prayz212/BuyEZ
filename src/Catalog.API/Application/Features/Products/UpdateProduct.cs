@@ -88,7 +88,7 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
     {
         // TODO:  Refactor to reuse this validation block code
         if (string.IsNullOrWhiteSpace(request.TenantId) || string.IsNullOrWhiteSpace(request.CurrentUserId))
-            throw new UnauthorizedAccessException("Missing tenant id claim in token.");
+            throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
         var product = await _context.Products
@@ -107,7 +107,7 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         var newImages = Enumerable.Empty<Image>();
         if (requestPayload.NewImages != null && requestPayload.NewImages.Any())
         {
-            newImages = requestPayload.NewImages.Select(ToEntity);
+            newImages = requestPayload.NewImages.Select(ni => ToEntity(request.CurrentUserId, ni));
         }
 
         var newPrimaryImage = newImages.FirstOrDefault(ni => ni.IsPrimary);
@@ -146,13 +146,14 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static Image ToEntity(ProductImageRequest image) => new()
+    private static Image ToEntity(string modifiedBy, ProductImageRequest image) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = image.Filename,
         URL = image.URL,
         AltText = image.AltText,
         Size = image.Size,
-        IsPrimary = image.IsPrimary
+        IsPrimary = image.IsPrimary,
+        LastModifiedBy = modifiedBy
     };
 }

@@ -66,7 +66,7 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
     public async Task<ProductDetailResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.TenantId) || string.IsNullOrWhiteSpace(request.CurrentUserId))
-            throw new UnauthorizedAccessException("Missing tenant id claim in token.");
+            throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
         var newProduct = ToEntity(request.TenantId, request.CurrentUserId, requestPayload);
