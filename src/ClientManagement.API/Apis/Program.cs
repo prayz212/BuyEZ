@@ -70,6 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();
+app.UseMiddleware<ExtractTokenMiddleware>();
 
 app.UseCors();
 
