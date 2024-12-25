@@ -19,5 +19,12 @@
     "LastName": "Supporter S2",
     "UserName": "buyez_supporter_s2",
     "Email": "supporter_s2@buyez.com"
+  },
+  {
+    "Id": "e016b571-239b-491d-9e2e-b6ed8412376e",
+    "FirstName": "Nguyen",
+    "LastName": "Taylor",
+    "UserName": "taylor_nguyen",
+    "Email": "taylor_nguyen@gmail.com"
   }
 ]

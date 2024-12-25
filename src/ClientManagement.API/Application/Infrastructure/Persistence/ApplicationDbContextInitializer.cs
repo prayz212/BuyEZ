@@ -1,25 +1,9 @@
 using System.Text.Json;
 using ClientManagementAPI.Application.Domain.Clients;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence;
-
-public static class InitializerExtensions
-{
-    public static async Task InitializeDatabaseAsync(this WebApplication app)
-    {
-        using IServiceScope scope = app.Services.CreateScope();
-
-        ApplicationDbContextInitializer initializer = scope.ServiceProvider.GetRequiredService<ApplicationDbContextInitializer>();
-
-        await initializer.InitializeAsync();
-
-        await initializer.SeedAsync();
-    }
-}
 
 public class ApplicationDbContextInitializer
 {
