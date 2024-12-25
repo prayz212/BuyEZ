@@ -1,13 +1,17 @@
+using Identity.Application.Domain.Identity;
+
+using IdentityConstants = Shared.Common.Constants.IdentityConstants;
+using Shared.Infrastructure.Persistence;
+
 using System.Linq.Expressions;
 using System.Text.Json;
-using Identity.Application.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer
+public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
 {
     private readonly ILogger<ApplicationDbContextInitializer> _logger;
     private readonly ApplicationDbContext _context;
@@ -128,22 +132,22 @@ public class ApplicationDbContextInitializer
         _logger.LogInformation("Seeding identity roles...");
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("60070ab8-1454-4a20-9f85-5db4d0a3fcab"), Name = Common.Constants.IdentityConstants.Role.SYSTEM_ADMIN, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("60070ab8-1454-4a20-9f85-5db4d0a3fcab"), Name = IdentityConstants.Role.SYSTEM_ADMIN, ConcurrencyStamp = Guid.NewGuid().ToString() });
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("10593c52-9800-4828-a9b3-151cee17f4d5"), Name = Common.Constants.IdentityConstants.Role.SYSTEM_SUPPORT, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("10593c52-9800-4828-a9b3-151cee17f4d5"), Name = IdentityConstants.Role.SYSTEM_SUPPORT, ConcurrencyStamp = Guid.NewGuid().ToString() });
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("c870fd41-883d-4755-8c13-4d77ecefcd98"), Name = Common.Constants.IdentityConstants.Role.TENANT_ADMIN, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("c870fd41-883d-4755-8c13-4d77ecefcd98"), Name = IdentityConstants.Role.TENANT_ADMIN, ConcurrencyStamp = Guid.NewGuid().ToString() });
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("31ec5efa-bf55-40e2-a3bc-ba7a16dada24"), Name = Common.Constants.IdentityConstants.Role.TENANT_MANAGER, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("31ec5efa-bf55-40e2-a3bc-ba7a16dada24"), Name = IdentityConstants.Role.TENANT_MANAGER, ConcurrencyStamp = Guid.NewGuid().ToString() });
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("c4be35d4-7d5a-4bee-9abd-d207ce93cb8c"), Name = Common.Constants.IdentityConstants.Role.TENANT_STAFF, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("c4be35d4-7d5a-4bee-9abd-d207ce93cb8c"), Name = IdentityConstants.Role.TENANT_STAFF, ConcurrencyStamp = Guid.NewGuid().ToString() });
 
         await _roleManager.CreateAsync(new IdentityRole<Guid>
-        { Id = new Guid("e4c8ebc9-e6ea-4de3-88b5-bde0d43a771c"), Name = Common.Constants.IdentityConstants.Role.USER, ConcurrencyStamp = Guid.NewGuid().ToString() });
+        { Id = new Guid("e4c8ebc9-e6ea-4de3-88b5-bde0d43a771c"), Name = IdentityConstants.Role.USER, ConcurrencyStamp = Guid.NewGuid().ToString() });
         
         _logger.LogInformation("Seeded identity roles.");
     }
@@ -152,25 +156,25 @@ public class ApplicationDbContextInitializer
     {
         var systemAdminUsers = systemUsers.Where(u => u.UserName!.Contains("buyez_administrator"));
         foreach (var user in systemAdminUsers)
-            await _userManager.AddToRoleAsync(user, Common.Constants.IdentityConstants.Role.SYSTEM_ADMIN);
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.SYSTEM_ADMIN);
 
         var systemSupportUsers = systemUsers.Where(u => u.UserName!.Contains("buyez_supporter"));
         foreach (var user in systemSupportUsers)
-            await _userManager.AddToRoleAsync(user, Common.Constants.IdentityConstants.Role.SYSTEM_SUPPORT);
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.SYSTEM_SUPPORT);
     }
 
     private async Task SeedTenantUserRolesAsync(IEnumerable<User> tenantUsers)
     {
         var tenantAdminUsers = tenantUsers.Where(u => u.UserName!.Contains("lucy_store_administrator"));
         foreach (var user in tenantAdminUsers)
-            await _userManager.AddToRoleAsync(user, Common.Constants.IdentityConstants.Role.TENANT_ADMIN);
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.TENANT_ADMIN);
 
         var tenantManagerUsers = tenantUsers.Where(u => u.UserName!.Contains("lucy_store_manager"));
         foreach (var user in tenantManagerUsers)
-            await _userManager.AddToRoleAsync(user, Common.Constants.IdentityConstants.Role.TENANT_MANAGER);
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.TENANT_MANAGER);
 
         var tenantStaffUsers = tenantUsers.Where(u => u.UserName!.Contains("lucy_store_staff"));
         foreach (var user in tenantManagerUsers)
-            await _userManager.AddToRoleAsync(user, Common.Constants.IdentityConstants.Role.TENANT_STAFF);
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.TENANT_STAFF);
     }
 }

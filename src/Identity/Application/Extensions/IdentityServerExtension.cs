@@ -1,6 +1,8 @@
 using Identity.Application.Common;
-using Identity.Application.Common.Models;
 using Identity.Application.Domain.Identity;
+
+using Shared.Models;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,9 +12,9 @@ public static class IdentityServerExtension
 {
     public static IServiceCollection AddCustomIdentityServer(this IServiceCollection services, IConfiguration configuration)
     {
-        var authOptions = configuration.GetSection(nameof(AuthOptions));
-        if (string.IsNullOrWhiteSpace(authOptions["IssuerUri"]))
-            throw new Exception("AuthOptions:IssuerUri is a required configuration.");
+        var identityOptions = configuration.GetSection(nameof(IdentityOptions));
+        if (string.IsNullOrWhiteSpace(identityOptions["IssuerUri"]))
+            throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
         var identityServerBuilder = services.AddIdentityServer(options =>
             {
@@ -20,7 +22,7 @@ public static class IdentityServerExtension
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-                options.IssuerUri = authOptions["IssuerUri"];
+                options.IssuerUri = identityOptions["IssuerUri"];
             })
             .AddInMemoryIdentityResources(Config.IdentityResources)
             .AddInMemoryApiResources(Config.ApiResources)

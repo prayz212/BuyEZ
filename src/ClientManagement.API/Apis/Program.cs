@@ -1,13 +1,15 @@
-using ClientManagementAPI.Apis.Filters;
-using ClientManagementAPI.Apis.Middlewares;
 using ClientManagementAPI.Application;
-using ClientManagementAPI.Application.Extensions;
+
+using Shared.Filters;
+using Shared.Middlewares;
+using Shared.Extensions;
+using ClientManagementAPI.Application.Infrastructure.Persistence;
+
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers(options => 
 {
     options.Filters.Add<ApiExceptionFilterAttribute>();
@@ -66,7 +68,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    await app.InitializeDatabaseAsync();
+    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();

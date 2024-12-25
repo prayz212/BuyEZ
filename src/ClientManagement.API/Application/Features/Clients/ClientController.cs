@@ -1,8 +1,10 @@
-using ClientManagementAPI.Application.Common;
-using ClientManagementAPI.Application.Common.Constants;
-using ClientManagementAPI.Application.Common.Exceptions;
-using ClientManagementAPI.Application.Common.Models;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+
+using Shared.Common;
+using Shared.Common.Models;
+using Shared.Common.Constants;
+using Shared.Common.Exceptions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

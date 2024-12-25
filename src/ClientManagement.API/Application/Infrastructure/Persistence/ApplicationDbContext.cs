@@ -1,7 +1,9 @@
-using System.Reflection;
-using ClientManagementAPI.Application.Common;
-using ClientManagementAPI.Application.Common.Interfaces;
 using ClientManagementAPI.Application.Domain.Clients;
+
+using Shared.Common;
+using Shared.Common.Interfaces;
+
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence;

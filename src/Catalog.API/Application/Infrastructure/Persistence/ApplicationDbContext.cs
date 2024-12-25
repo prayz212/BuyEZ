@@ -1,7 +1,9 @@
-using System.Reflection;
-using CatalogAPI.Application.Common;
-using CatalogAPI.Application.Common.Interfaces;
 using CatalogAPI.Application.Domain.Catalogs;
+
+using Shared.Common;
+using Shared.Common.Interfaces;
+
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogAPI.Application.Infrastructure.Persistence;

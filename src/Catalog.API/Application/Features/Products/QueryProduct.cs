@@ -1,7 +1,9 @@
-using CatalogAPI.Application.Common.Mappings;
-using CatalogAPI.Application.Common.Models;
 using CatalogAPI.Application.Domain.Catalogs;
 using CatalogAPI.Application.Infrastructure.Persistence;
+
+using Shared.Common.Models;
+using Shared.Common.Mappings;
+
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

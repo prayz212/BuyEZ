@@ -1,6 +1,7 @@
-using Identity.Apis.Filters;
 using Identity.Application;
-using Identity.Application.Extensions;
+using Identity.Application.Infrastructure.Persistence;
+using Shared.Extensions;
+using Shared.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    await app.InitializeDatabaseAsync();
+    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
 app.UseCors();

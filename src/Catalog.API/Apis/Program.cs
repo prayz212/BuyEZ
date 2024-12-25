@@ -1,8 +1,11 @@
-using CatalogAPI.Apis.Filters;
-using CatalogAPI.Apis.Middlewares;
 using CatalogAPI.Application;
-using CatalogAPI.Application.Extensions;
+
+using Shared.Extensions;
+using Shared.Filters;
+using Shared.Middlewares;
+
 using Microsoft.OpenApi.Models;
+using CatalogAPI.Application.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +68,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    await app.InitializeDatabaseAsync();
+    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();

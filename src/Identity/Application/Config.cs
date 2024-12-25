@@ -1,5 +1,6 @@
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
+using Shared.Common.Constants;
 
 namespace Identity.Application.Common;
 
@@ -25,25 +26,25 @@ public static class Config
             new IdentityResources.Address(),
 
             // TODO: Investigate why we need this line
-            new (Constants.IdentityConstants.StandardScopes.ROLES, new List<string> { "role" }) 
+            new (IdentityConstants.StandardScopes.ROLES, new List<string> { "role" }) 
         };
 
     public static IEnumerable<ApiScope> ApiScopes => 
         new List<ApiScope>
         {
-            new (Constants.IdentityConstants.StandardScopes.CATALOG_API),
-            new (Constants.IdentityConstants.StandardScopes.ORDER_API),
-            new (Constants.IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API),
-            new (Constants.IdentityConstants.StandardScopes.IDENTITY_API),
+            new (IdentityConstants.StandardScopes.CATALOG_API),
+            new (IdentityConstants.StandardScopes.ORDER_API),
+            new (IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API),
+            new (IdentityConstants.StandardScopes.IDENTITY_API),
         };
 
     public static IList<ApiResource> ApiResources => 
         new List<ApiResource>
         {
-            new (Constants.IdentityConstants.StandardScopes.CATALOG_API),
-            new (Constants.IdentityConstants.StandardScopes.ORDER_API),
-            new (Constants.IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API),
-            new (Constants.IdentityConstants.StandardScopes.IDENTITY_API),
+            new (IdentityConstants.StandardScopes.CATALOG_API),
+            new (IdentityConstants.StandardScopes.ORDER_API),
+            new (IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API),
+            new (IdentityConstants.StandardScopes.IDENTITY_API),
         };
 
     public static IEnumerable<Client> Clients =>
@@ -60,7 +61,7 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
-                    Constants.IdentityConstants.StandardScopes.ORDER_API 
+                    IdentityConstants.StandardScopes.ORDER_API 
                 },
 
                 // Where to redirect after login
@@ -95,9 +96,9 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
-                    Constants.IdentityConstants.StandardScopes.CATALOG_API,
-                    Constants.IdentityConstants.StandardScopes.ORDER_API, 
-                    Constants.IdentityConstants.StandardScopes.IDENTITY_API
+                    IdentityConstants.StandardScopes.CATALOG_API,
+                    IdentityConstants.StandardScopes.ORDER_API, 
+                    IdentityConstants.StandardScopes.IDENTITY_API
                 },
 
                 // Where to redirect after login
@@ -132,10 +133,10 @@ public static class Config
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                     IdentityServerConstants.StandardScopes.OfflineAccess,
-                    Constants.IdentityConstants.StandardScopes.CATALOG_API,
-                    Constants.IdentityConstants.StandardScopes.ORDER_API, 
-                    Constants.IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API,
-                    Constants.IdentityConstants.StandardScopes.IDENTITY_API,
+                    IdentityConstants.StandardScopes.CATALOG_API,
+                    IdentityConstants.StandardScopes.ORDER_API, 
+                    IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API,
+                    IdentityConstants.StandardScopes.IDENTITY_API,
                 },
 
                 // Where to redirect after login

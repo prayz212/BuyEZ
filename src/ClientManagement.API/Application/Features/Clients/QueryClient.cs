@@ -1,7 +1,9 @@
-using ClientManagementAPI.Application.Common.Models;
 using ClientManagementAPI.Application.Domain.Clients;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
-using ClientManagementAPI.Application.Common.Mappings;
+
+using Shared.Common.Models;
+using Shared.Common.Mappings;
+
 using FluentValidation;
 using MediatR;
 
