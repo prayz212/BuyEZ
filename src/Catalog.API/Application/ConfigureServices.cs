@@ -3,6 +3,7 @@ using CatalogAPI.Application.Infrastructure.Persistence;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
+using Shared.Models;
 using Shared.Infrastructure.Services;
 
 using System.Reflection;
@@ -39,18 +40,18 @@ public static class DependencyInjection {
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
-        var issuer = configuration["IdentityServer:Issuer"];
-        if (string.IsNullOrWhiteSpace(issuer))
-            throw new Exception("IdentityServer:Issuer is a required configuration.");
+        var identityOptions = configuration.GetSection(nameof(IdentityOptions));
+        if (string.IsNullOrWhiteSpace(identityOptions["IssuerUri"]))
+            throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => 
             {
-                options.Authority = issuer;
+                options.Authority = identityOptions["IssuerUri"];
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = issuer, 
+                    ValidIssuer = identityOptions["IssuerUri"], 
 
                     // TODO: need to investigate why we don't have audience in Identity Server's token
                     ValidateAudience = false,

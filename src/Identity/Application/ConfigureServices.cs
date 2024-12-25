@@ -18,9 +18,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        var identityServerBaseUrl = configuration["IdentityServer:BaseUrl"];
-        if (string.IsNullOrWhiteSpace(identityServerBaseUrl))
-            throw new Exception("IdentityServer:BaseUrl is a required configuration.");
+        var identityOptions = configuration.GetSection(nameof(IdentityOptions));
+        if (string.IsNullOrWhiteSpace(identityOptions["IssuerUri"]))
+            throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -36,7 +36,7 @@ public static class DependencyInjection
         services.AddRefitClient<IIdentityServerApi>()
             .ConfigureHttpClient(config => 
             {
-                config.BaseAddress = new Uri(identityServerBaseUrl);
+                config.BaseAddress = new Uri(identityOptions["IssuerUri"]!);
             });
 
         return services;
