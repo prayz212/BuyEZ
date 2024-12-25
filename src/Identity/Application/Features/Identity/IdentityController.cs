@@ -1,5 +1,7 @@
-using Identity.Application.Common;
 using Identity.Application.Features.Identity.Shared.Dtos;
+
+using Shared.Common;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

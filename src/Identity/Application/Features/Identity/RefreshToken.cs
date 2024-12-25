@@ -1,8 +1,10 @@
-using FluentValidation;
 using Identity.Application.Common;
-using Identity.Application.Common.Exceptions;
 using Identity.Application.Features.Identity.Shared.Dtos;
 using Identity.Application.Features.Identity.Shared.RestAPIs;
+
+using Shared.Common.Exceptions;
+
+using FluentValidation;
 using MediatR;
 using Newtonsoft.Json;
 

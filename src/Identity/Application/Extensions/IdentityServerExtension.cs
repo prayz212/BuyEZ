@@ -1,6 +1,8 @@
 using Identity.Application.Common;
-using Identity.Application.Common.Models;
 using Identity.Application.Domain.Identity;
+
+using Shared.Models;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +12,7 @@ public static class IdentityServerExtension
 {
     public static IServiceCollection AddCustomIdentityServer(this IServiceCollection services, IConfiguration configuration)
     {
-        var authOptions = configuration.GetSection(nameof(AuthOptions));
+        var authOptions = configuration.GetSection(nameof(IdentityOptions));
         if (string.IsNullOrWhiteSpace(authOptions["IssuerUri"]))
             throw new Exception("AuthOptions:IssuerUri is a required configuration.");
 
