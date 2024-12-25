@@ -1,11 +1,13 @@
-using CatalogAPI.Application.Common;
-using CatalogAPI.Application.Common.Constants;
-using CatalogAPI.Application.Common.Exceptions;
 using CatalogAPI.Application.Features.Products;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using Shared.Common;
+using Shared.Common.Constants;
+using Shared.Common.Exceptions;
 
 namespace CatalogAPI.Application.Features;
 

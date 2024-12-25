@@ -1,13 +1,15 @@
-using CatalogAPI.Application.Common.Exceptions;
 using CatalogAPI.Application.Domain.Catalogs;
 using CatalogAPI.Application.Features.Products.Shared.Common;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
 using CatalogAPI.Application.Features.Products.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
+
+using Shared.Common.Exceptions;
+using ValidationException = Shared.Common.Exceptions.ValidationException;
+
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ValidationException = CatalogAPI.Application.Common.Exceptions.ValidationException;
 
 namespace CatalogAPI.Application.Features.Products;
 

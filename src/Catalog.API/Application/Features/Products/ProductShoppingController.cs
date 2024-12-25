@@ -1,7 +1,9 @@
-using CatalogAPI.Application.Common;
-using CatalogAPI.Application.Common.Models;
 using CatalogAPI.Application.Features.Products;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
+
+using Shared.Common;
+using Shared.Common.Models;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

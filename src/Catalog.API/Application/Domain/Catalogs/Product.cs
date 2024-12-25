@@ -1,5 +1,6 @@
-using CatalogAPI.Application.Common;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
+
+using Shared.Common;
 
 namespace CatalogAPI.Application.Domain.Catalogs;
 

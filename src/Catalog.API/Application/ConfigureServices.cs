@@ -1,9 +1,11 @@
-using System.Reflection;
-using CatalogAPI.Application.Common.Behaviors;
-using CatalogAPI.Application.Common.Constants;
-using CatalogAPI.Application.Common.Interfaces;
 using CatalogAPI.Application.Infrastructure.Persistence;
-using CatalogAPI.Application.Infrastructure.Services;
+
+using Shared.Common.Behaviors;
+using Shared.Common.Constants;
+using Shared.Common.Interfaces;
+using Shared.Infrastructure.Services;
+
+using System.Reflection;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

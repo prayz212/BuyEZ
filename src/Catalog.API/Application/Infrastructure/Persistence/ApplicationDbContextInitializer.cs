@@ -1,11 +1,14 @@
-using System.Text.Json;
 using CatalogAPI.Application.Domain.Catalogs;
+
+using Shared.Infrastructure.Persistence;
+
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer
+public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
 {
     private readonly ILogger<ApplicationDbContextInitializer> _logger;
     private readonly ApplicationDbContext _context;
@@ -46,7 +49,7 @@ public class ApplicationDbContextInitializer
         }
     }
 
-    public async Task TrySeedAsync()
+    private async Task TrySeedAsync()
     {
         if (_context.Products.Any())
         {

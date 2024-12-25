@@ -1,9 +1,9 @@
-using CatalogAPI.Application.Common.Exceptions;
 using CatalogAPI.Application.Domain.Catalogs;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
 using CatalogAPI.Application.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Shared.Common.Exceptions;
 
 namespace CatalogAPI.Application.Features.Products;
 
