@@ -110,6 +110,9 @@ public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
         {
             user.PasswordHash = _passwordHasher.HashPassword(user, password);
             user.SecurityStamp = Guid.NewGuid().ToString();
+            user.NormalizedUserName = user.UserName!.ToUpper();
+            user.NormalizedEmail = user.Email!.ToUpper();
+            user.Created = DateTimeOffset.Now;
         });
 
         await _context.AddRangeAsync(users);

@@ -12,6 +12,7 @@ namespace Identity.Application.Features.Identity;
 
 public record GetAuthenticationTokenCommand(string ClientId, string Code, string CodeVerifier) : IRequest<AuthenticationTokenResponse>;
 
+
 public class GetAuthenticationTokenCommandValidator : AbstractValidator<GetAuthenticationTokenCommand>
 {
     public GetAuthenticationTokenCommandValidator()
@@ -26,6 +27,7 @@ public class GetAuthenticationTokenCommandValidator : AbstractValidator<GetAuthe
             .NotEmpty().WithMessage("Code Verifier is required.");
     }
 }
+
 
 internal sealed class GetAuthenticationTokenCommandHandler(IIdentityServerApi identityServerApi) : IRequestHandler<GetAuthenticationTokenCommand, AuthenticationTokenResponse>
 {
