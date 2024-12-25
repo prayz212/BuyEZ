@@ -1,7 +1,9 @@
-using ClientManagementAPI.Application.Common.Exceptions;
 using ClientManagementAPI.Application.Domain.Clients;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
+
+using Shared.Common.Exceptions;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

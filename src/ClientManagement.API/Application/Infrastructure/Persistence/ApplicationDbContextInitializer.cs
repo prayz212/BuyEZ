@@ -1,11 +1,14 @@
 using System.Text.Json;
 using ClientManagementAPI.Application.Domain.Clients;
+
+using Shared.Infrastructure.Persistence;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer
+public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
 {
     private readonly ILogger<ApplicationDbContextInitializer> _logger;
     private readonly ApplicationDbContext _context;

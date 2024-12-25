@@ -1,4 +1,5 @@
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using Shared.Domain;
 
 namespace ClientManagementAPI.Application.Domain.Clients;
 

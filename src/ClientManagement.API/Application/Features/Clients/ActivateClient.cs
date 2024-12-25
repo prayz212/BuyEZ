@@ -1,5 +1,7 @@
-using ClientManagementAPI.Application.Common.Exceptions;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
+
+using Shared.Common.Exceptions;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

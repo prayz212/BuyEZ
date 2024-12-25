@@ -1,5 +1,5 @@
-using ClientManagementAPI.Application.Common;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using Shared.Common;
 
 namespace ClientManagementAPI.Application.Domain.Clients;
 

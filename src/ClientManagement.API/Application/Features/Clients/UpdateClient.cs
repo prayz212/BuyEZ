@@ -1,13 +1,15 @@
-using ClientManagementAPI.Application.Common.Exceptions;
 using ClientManagementAPI.Application.Domain.Clients;
 using ClientManagementAPI.Application.Features.Clients.Shared.Common;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
 using ClientManagementAPI.Application.Features.Clients.Shared.Validators;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
+
+using Shared.Common.Exceptions;
+using ValidationException = Shared.Common.Exceptions.ValidationException;
+
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using ValidationException = ClientManagementAPI.Application.Common.Exceptions.ValidationException;
 
 namespace ClientManagementAPI.Application.Features.Clients;
 
