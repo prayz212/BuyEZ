@@ -25,6 +25,8 @@ public class Product : AuditableEntity, IHasDomainEvent
 
     public List<DomainEvent> DomainEvents { get; } = [];
 
+    public string TenantId { get; set; } = string.Empty;
+
     // Navigation property for the related Product
     public List<Image> Images { get; set; } = [];
 

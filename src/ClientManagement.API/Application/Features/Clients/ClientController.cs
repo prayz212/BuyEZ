@@ -1,13 +1,16 @@
 using ClientManagementAPI.Application.Common;
+using ClientManagementAPI.Application.Common.Constants;
 using ClientManagementAPI.Application.Common.Exceptions;
 using ClientManagementAPI.Application.Common.Models;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClientManagementAPI.Application.Features.Clients;
 
 [ApiController]
+[Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
 [Route($"{ApiPaths.Root}/client-managements")]
 public class ClientController : ApiControllerBase
 {
@@ -34,9 +37,9 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientCommand command)
+    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientRequest request)
     {
-        var client = await Mediator.Send(command);
+        var client = await Mediator.Send(new AddClientCommand(GetUserId(), request));
         return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
     }
 
@@ -45,12 +48,12 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateClientCommand command)
+    public async Task<ActionResult> Update(string id, UpdateClientRequest request)
     {
-        if (id != command.Id) 
+        if (id != request.Id) 
             throw new ValidationException("Client Id is not correct.");
 
-        await Mediator.Send(command);
+        await Mediator.Send(new UpdateClientCommand(GetUserId(), request));
 
         return NoContent();
     }
@@ -67,7 +70,7 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Deactivate(string id)
     {
-        await Mediator.Send(new DeactivateClientCommand(id));
+        await Mediator.Send(new DeactivateClientCommand(GetUserId(), new DeactivateClientRequest(id)));
         return NoContent();
     }
 
@@ -77,7 +80,7 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Activate(string id)
     {
-        await Mediator.Send(new ActivateClientCommand(id));
+        await Mediator.Send(new ActivateClientCommand(GetUserId(), new ActivateClientRequest(id)));
         return NoContent();
     }
 }

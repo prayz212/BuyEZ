@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClientManagementAPI.Application.Features.Clients;
 
-public record ActivateClientCommand(string Id) : IRequest;
+public record ActivateClientRequest(string Id);
+
+public record ActivateClientCommand(string? CurrentUserId, ActivateClientRequest Payload) : IRequest;
 
 
 internal sealed class ActivateClientCommandHandler(ApplicationDbContext context) : IRequestHandler<ActivateClientCommand>
@@ -14,11 +16,17 @@ internal sealed class ActivateClientCommandHandler(ApplicationDbContext context)
 
     public async Task Handle(ActivateClientCommand request, CancellationToken cancellationToken)
     {
-        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == request.Id && !c.IsActivated);
+        // TODO: refactor to reuse this validation
+        if (string.IsNullOrWhiteSpace(request.CurrentUserId))
+            throw new UnauthorizedAccessException("Invalid token.");
+
+        var requestPayload = request.Payload;
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == requestPayload.Id && !c.IsActivated);
         if (client == null)
-            throw new NotFoundException($"Client with id: {request.Id} is not found or already de-activated.");
+            throw new NotFoundException($"Client with id: {requestPayload.Id} is not found or already de-activated.");
 
         client.IsActivated = true;
+        client.LastModifiedBy = request.CurrentUserId;
         _context.Update(client);
         await _context.SaveChangesAsync(cancellationToken);
     }
