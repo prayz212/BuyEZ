@@ -16,6 +16,7 @@ internal sealed class DeactivateClientCommandHandler(ApplicationDbContext contex
 
     public async Task Handle(DeactivateClientCommand request, CancellationToken cancellationToken)
     {
+        // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
 

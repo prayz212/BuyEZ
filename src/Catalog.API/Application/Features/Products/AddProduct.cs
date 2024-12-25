@@ -65,6 +65,7 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
 
     public async Task<ProductDetailResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
+        // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.TenantId) || string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
 
