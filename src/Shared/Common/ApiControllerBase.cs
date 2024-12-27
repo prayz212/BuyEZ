@@ -14,4 +14,6 @@ public abstract class ApiControllerBase : ControllerBase
     protected string? GetTenantId() => HttpContext.Items["TenantId"] as string;
     
     protected string? GetUserId() => HttpContext.Items["UserId"] as string;
+
+    protected string? GetUserRole() => HttpContext.Items["UserRole"] as string;
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Shared.Middlewares;
 
-public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMiddleware> logger)
+public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMiddleware> logger) : BaseMiddleware
 {
     private readonly RequestDelegate _next = next;
     private readonly ILogger<ExtractTokenMiddleware> _logger = logger;
@@ -14,6 +14,13 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
 
     public async Task InvokeAsync(HttpContext context)
     {
+        /* Only use this middleware for restful api */
+        if (!IsRestfulRequest(context))
+        {
+            await _next(context);
+            return;
+        }
+
         _logger.LogInformation("Extracting token information...");
 
         var authorization = context.Request.Headers.Authorization.FirstOrDefault();
@@ -36,16 +43,20 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
 
         var jwtToken = handler.ReadJwtToken(token);
         var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || string.IsNullOrWhiteSpace(userIdClaim.Value))
+        var roleClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+        if (userIdClaim == null || roleClaim == null 
+            || string.IsNullOrWhiteSpace(userIdClaim.Value) || string.IsNullOrWhiteSpace(roleClaim.Value))
         {
-            _logger.LogInformation("Cannot find user id claim in token. Token: {Token}", token);
+            _logger.LogInformation("Cannot find user claims in token. Token: {Token}", token);
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
 
         var tenantIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == TenantIdClaimType);
+
         context.Items.Add("TenantId", tenantIdClaim?.Value);
-        context.Items.Add("UserId", userIdClaim?.Value);
+        context.Items.Add("UserId", userIdClaim.Value);
+        context.Items.Add("UserRole", roleClaim.Value);
 
         await _next(context);
     }

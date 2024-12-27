@@ -1,7 +1,7 @@
 using Identity.Application.Common;
 using Identity.Application.Domain.Identity;
 
-using Shared.Models;
+using Shared.Options;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

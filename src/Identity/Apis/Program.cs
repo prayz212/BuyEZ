@@ -6,6 +6,7 @@ using Shared.Filters;
 using Shared.Middlewares;
 
 using Microsoft.OpenApi.Models;
+using ProtoBuf.Grpc.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
+    app.MapCodeFirstGrpcReflectionService();
+
     await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
@@ -76,6 +79,8 @@ app.UseCors();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.MapGrpcServices();
 
 app.MapControllers();
 

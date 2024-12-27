@@ -1,20 +1,26 @@
 using Identity.Application.Domain.Identity;
 using Identity.Application.Features.Identity.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
+using Identity.Application.Features.Account.gRPC;
 
+using Shared.Options;
+using Shared.GrpcProto;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
+using IdentityOptions = Shared.Options.IdentityOptions;
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 
 using Refit;
-using System.Reflection;
 using FluentValidation;
+using System.Reflection;
+using ProtoBuf.Grpc.Server;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Builder;
 
 namespace Identity.Application;
 
@@ -43,6 +49,11 @@ public static class DependencyInjection
                 config.BaseAddress = new Uri(identityOptions["IssuerUri"]!);
             });
 
+        services.AddOptions<GrpcOptions>()
+            .Bind(configuration.GetSection(nameof(GrpcOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         return services;
     }
 
@@ -65,11 +76,6 @@ public static class DependencyInjection
                     ValidateAudience = false,
 
                     ValidateLifetime = true,
-                    // IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                    // {
-                    //     // Optional: Custom logic to resolve signing keys if needed
-                    //     return parameters.IssuerSigningKeys;
-                    // }
                 };
             });
 
@@ -97,7 +103,17 @@ public static class DependencyInjection
             });
         });
 
+        services.AddCodeFirstGrpc(options => 
+        {
+            options.Interceptors.Add<GrpcExceptionInterceptor>();
+            options.Interceptors.Add<GrpcApiKeyInterceptor>();
+            options.EnableDetailedErrors = true;
+        });
+
+        services.AddCodeFirstGrpcReflection();
+
         services.AddServices(configuration);
+        
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
@@ -117,5 +133,12 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         return services;
+    }
+
+    public static WebApplication MapGrpcServices(this WebApplication app)
+    {
+        app.MapGrpcService<AccountService>();
+
+        return app;
     }
 }

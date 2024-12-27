@@ -19,14 +19,4 @@ public class User : IdentityUser<Guid>
     public DateTimeOffset? LastModified { get; set; }
 
     public string? LastModifiedBy { get; set; }
-
-    public static IdentityAccountDetailResponse ToDto(User user) => 
-        new (
-            user.TenantId,
-            user.Id.ToString(),
-            user.FirstName,
-            user.LastName,
-            user.UserName!,
-            user.Email!
-        );
 }
