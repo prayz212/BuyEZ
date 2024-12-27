@@ -1,9 +1,9 @@
 using ClientManagementAPI.Application;
+using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Shared.Filters;
 using Shared.Middlewares;
 using Shared.Extensions;
-using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Microsoft.OpenApi.Models;
 
@@ -52,7 +52,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHealthChecks();
