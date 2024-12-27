@@ -110,6 +110,9 @@ public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
         {
             user.PasswordHash = _passwordHasher.HashPassword(user, password);
             user.SecurityStamp = Guid.NewGuid().ToString();
+            user.NormalizedUserName = user.UserName!.ToUpper();
+            user.NormalizedEmail = user.Email!.ToUpper();
+            user.Created = DateTimeOffset.Now;
         });
 
         await _context.AddRangeAsync(users);
@@ -161,6 +164,10 @@ public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
         var systemSupportUsers = systemUsers.Where(u => u.UserName!.Contains("buyez_supporter"));
         foreach (var user in systemSupportUsers)
             await _userManager.AddToRoleAsync(user, IdentityConstants.Role.SYSTEM_SUPPORT);
+
+        var systemEndUsers = systemUsers.Where(u => !u.UserName!.Contains("buyez_supporter") && !u.UserName!.Contains("buyez_administrator"));
+        foreach (var user in systemEndUsers)
+            await _userManager.AddToRoleAsync(user, IdentityConstants.Role.USER);
     }
 
     private async Task SeedTenantUserRolesAsync(IEnumerable<User> tenantUsers)

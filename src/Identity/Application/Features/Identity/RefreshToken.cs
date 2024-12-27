@@ -12,6 +12,7 @@ namespace Identity.Application.Features.Identity;
 
 public record RefreshTokenCommand(string ClientId, string RefreshToken) : IRequest<AuthenticationTokenResponse>;
 
+
 public class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenCommand>
 {
     public RefreshTokenCommandValidator()
@@ -23,6 +24,7 @@ public class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenComman
             .NotEmpty().WithMessage("Refresh Token is required.");
     }
 }
+
 
 internal sealed class RefreshTokenCommandHandler(IIdentityServerApi identityServerApi) : IRequestHandler<RefreshTokenCommand, AuthenticationTokenResponse>
 {

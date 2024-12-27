@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Shared.Middlewares;
 
-public class AuthorizationFailureMiddleware
+public class AuthorizationFailureMiddleware : BaseMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<AuthorizationFailureMiddleware> _logger;
@@ -19,6 +19,9 @@ public class AuthorizationFailureMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         await _next(context);
+
+        /* Only use this middleware for restful api */
+        if (!IsRestfulRequest(context)) return;
 
         if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
         {

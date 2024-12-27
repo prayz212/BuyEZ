@@ -1,15 +1,21 @@
+using ClientManagementAPI.Application.Utils;
+using ClientManagementAPI.Application.Options;
 using ClientManagementAPI.Application.Domain.Clients;
 using ClientManagementAPI.Application.Features.Clients.Shared.Common;
 using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
 using ClientManagementAPI.Application.Features.Clients.Shared.Validators;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
+using Shared.Options;
+using Shared.GrpcProto.Account;
+using Shared.Common.Constants;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 
-using System.Text.RegularExpressions;
-using FluentValidation;
 using MediatR;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Text.RegularExpressions;
 
 namespace ClientManagementAPI.Application.Features.Clients;
 
@@ -96,9 +102,18 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
 }
 
 
-internal sealed class AddClientCommandHandler(ApplicationDbContext context) : IRequestHandler<AddClientCommand, ClientDetailResponse>
+internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand, ClientDetailResponse>
 {
-    private readonly ApplicationDbContext _context = context;
+    private readonly ApplicationDbContext _context;
+    private readonly IAccountService _accountGrpcClient;
+    private readonly GrpcOptions _grpcOptions;
+
+    public AddClientCommandHandler(ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
+    {
+        _context = context;
+        _accountGrpcClient = accountService;
+        _grpcOptions = clientOptions.Value.ClientManagement;
+    }
 
     public async Task<ClientDetailResponse> Handle(AddClientCommand request, CancellationToken cancellationToken)
     {
@@ -118,8 +133,9 @@ internal sealed class AddClientCommandHandler(ApplicationDbContext context) : IR
             newClient.Logo = clientLogo;
         }
 
-        await _context.Clients.AddAsync(newClient, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
+        var callContext = GrpcUtils.GetCallOptions<IAccountService>(_grpcOptions);
+        await _accountGrpcClient.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return Client.ToDto(newClient);
     }
@@ -146,4 +162,19 @@ internal sealed class AddClientCommandHandler(ApplicationDbContext context) : IR
         Size = clientImage.Size,
         CreatedBy = createdBy
     };
+
+    private static AddIdentityAccountRequest GenerateGrpcRequestPayload(string currentUserId, Client newClient)
+    {
+        var clientNameUnderscore = newClient.Name.Trim().ToLower().Replace(" ", "_");
+        return new()
+        {
+            TenantId = newClient.Id,
+            RequestingUserId = currentUserId,
+            FirstName = newClient.Name,
+            LastName = "Administrator",
+            UserName = $"{clientNameUnderscore}_administrator",
+            Email = $"{clientNameUnderscore}_administrator@gmail.com",
+            Role = IdentityConstants.Role.TENANT_ADMIN
+        };
+    }
 }

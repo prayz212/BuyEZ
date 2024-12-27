@@ -1,13 +1,17 @@
+using ClientManagementAPI.Application.Options;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
-using Shared.Models;
+using Shared.Options;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
+using Shared.GrpcProto.Account;
 using Shared.Infrastructure.Services;
 
+using Grpc.Net.Client;
 using System.Reflection;
 using FluentValidation;
+using ProtoBuf.Grpc.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,7 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace ClientManagementAPI.Application;
 
 public static class DependencyInjection {
-    public static IServiceCollection AddApplication(this IServiceCollection services) 
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) 
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -29,6 +33,11 @@ public static class DependencyInjection {
             options.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             options.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
         });
+
+        services.AddOptions<GrpcClientOptions>()
+            .Bind(configuration.GetSection(nameof(GrpcClientOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
@@ -44,6 +53,11 @@ public static class DependencyInjection {
         if (string.IsNullOrWhiteSpace(identityOptions["IssuerUri"]))
             throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
+        var grpcClientOptions = configuration.GetSection(nameof(GrpcClientOptions));
+        var clientMgtAddress = grpcClientOptions["ClientManagement:Address"];
+        if (string.IsNullOrWhiteSpace(clientMgtAddress))
+            throw new Exception("ClientManagement:Address is a required configuration.");
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => 
             {
@@ -57,11 +71,6 @@ public static class DependencyInjection {
                     ValidateAudience = false,
 
                     ValidateLifetime = true,
-                    // IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                    // {
-                    //     // Optional: Custom logic to resolve signing keys if needed
-                    //     return parameters.IssuerSigningKeys;
-                    // }
                 };
             });
 
@@ -91,6 +100,12 @@ public static class DependencyInjection {
 
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<ApplicationDbContextInitializer>();
+
+        services.AddSingleton(provider =>
+        {
+            var channel = GrpcChannel.ForAddress(clientMgtAddress);
+            return channel.CreateGrpcService<IAccountService>();
+        });
 
         return services;
     }
