@@ -1,6 +1,8 @@
 using Identity.Application.Domain.Identity;
 using Identity.Application.Infrastructure.Persistence;
 
+using Shared.GrpcProto.Account;
+using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 
@@ -8,8 +10,6 @@ using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shared.GrpcProto.Account;
-using Shared.Common.Exceptions;
 
 namespace Identity.Application.Features.Account.gRPC;
 
