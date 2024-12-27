@@ -3,7 +3,7 @@ using CatalogAPI.Application.Infrastructure.Persistence;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
-using Shared.Models;
+using Shared.Options;
 using Shared.Infrastructure.Services;
 
 using System.Reflection;
