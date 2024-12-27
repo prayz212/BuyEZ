@@ -133,6 +133,9 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
             newClient.Logo = clientLogo;
         }
 
+        await _context.Clients.AddAsync(newClient, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
         var callContext = GrpcUtils.GetCallOptions<IAccountService>(_grpcOptions);
         await _accountGrpcClient.AddIdentityAccountAsync(grpcRequestPayload, callContext);
