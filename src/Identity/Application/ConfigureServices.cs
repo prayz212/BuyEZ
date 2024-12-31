@@ -49,8 +49,8 @@ public static class DependencyInjection
                 config.BaseAddress = new Uri(identityOptions["IssuerUri"]!);
             });
 
-        services.AddOptions<GrpcOptions>()
-            .Bind(configuration.GetSection(nameof(GrpcOptions)))
+        services.AddOptions<GrpcServerOptions>()
+            .Bind(configuration.GetSection(nameof(GrpcServerOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 

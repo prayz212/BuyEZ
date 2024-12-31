@@ -5,7 +5,7 @@ namespace ClientManagementAPI.Application.Utils;
 
 public static class GrpcUtils
 {
-    public static CallOptions GetCallOptions<TService>(GrpcOptions options)
+    public static CallOptions GetCallOptions<TService>(GrpcBaseOptions options)
     {
         var metaData = new Metadata()
         {
