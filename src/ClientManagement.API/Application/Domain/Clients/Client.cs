@@ -17,7 +17,7 @@ public class Client : AuditableEntity, IHasDomainEvent
 
     public ProductType[] RegisteredProductType { get; set;} = [];
 
-    public DateTimeOffset ValidUntil { get; set; } = DateTimeOffset.Now.AddYears(1);
+    public DateTimeOffset ValidUntil { get; set; } = DateTimeOffset.UtcNow.AddYears(1);
 
     public bool IsActivated { get; set; } = false;
 

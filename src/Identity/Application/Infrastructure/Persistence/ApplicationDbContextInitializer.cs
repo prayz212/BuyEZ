@@ -112,7 +112,7 @@ public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
             user.SecurityStamp = Guid.NewGuid().ToString();
             user.NormalizedUserName = user.UserName!.ToUpper();
             user.NormalizedEmail = user.Email!.ToUpper();
-            user.Created = DateTimeOffset.Now;
+            user.Created = DateTimeOffset.UtcNow;
         });
 
         await _context.AddRangeAsync(users);
