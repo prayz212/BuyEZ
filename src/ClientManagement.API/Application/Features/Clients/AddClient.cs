@@ -106,13 +106,13 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
 {
     private readonly ApplicationDbContext _context;
     private readonly IAccountService _accountGrpcClient;
-    private readonly GrpcOptions _grpcOptions;
+    private readonly GrpcBaseOptions _grpcClientOptions;
 
     public AddClientCommandHandler(ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
     {
         _context = context;
         _accountGrpcClient = accountService;
-        _grpcOptions = clientOptions.Value.ClientManagement;
+        _grpcClientOptions = clientOptions.Value.ClientManagement;
     }
 
     public async Task<ClientDetailResponse> Handle(AddClientCommand request, CancellationToken cancellationToken)
@@ -137,7 +137,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
         await _context.SaveChangesAsync(cancellationToken);
 
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
-        var callContext = GrpcUtils.GetCallOptions<IAccountService>(_grpcOptions);
+        var callContext = GrpcUtils.GetCallOptions<IAccountService>(_grpcClientOptions);
         await _accountGrpcClient.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return Client.ToDto(newClient);
