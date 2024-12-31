@@ -54,7 +54,7 @@ public static class Config
             {
                 ClientId = ClientKeyValues[0].Key,
                 ClientName = "BuyEZ Shopping",
-                AllowedGrantTypes = GrantTypes.Code,
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                 ClientSecrets = { new Secret(ClientKeyValues[0].Value.Sha256()) },
                 AllowedScopes = 
                 { 

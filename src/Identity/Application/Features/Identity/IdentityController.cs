@@ -11,6 +11,15 @@ namespace Identity.Application.Features.Identity;
 [Route($"{ApiPaths.Root}/identity")]
 public class IdentityController : ApiControllerBase
 {
+    [HttpPost("login")]
+    [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<AuthenticateUserResponse> Authenticate(AuthenticateUserCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
     [HttpPost("token")]
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

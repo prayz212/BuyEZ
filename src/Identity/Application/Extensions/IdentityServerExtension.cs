@@ -29,7 +29,8 @@ public static class IdentityServerExtension
             .AddInMemoryApiScopes(Config.ApiScopes)
             .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<User>()
-            .AddProfileService<ProfileService>();
+            .AddProfileService<ProfileService>()
+            .AddResourceOwnerValidator<CustomResourceOwnerPassword>();
 
         //ref: https://documentation.openiddict.com/configuration/encryption-and-signing-credentials.html
         identityServerBuilder.AddDeveloperSigningCredential();

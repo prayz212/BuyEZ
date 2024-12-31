@@ -1,4 +1,3 @@
-using Identity.Application.Features.Account;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Application.Domain.Identity;

@@ -7,6 +7,7 @@ using Shared.Common.Exceptions;
 using FluentValidation;
 using MediatR;
 using Newtonsoft.Json;
+using Duende.IdentityServer.Models;
 
 namespace Identity.Application.Features.Identity;
 
@@ -44,7 +45,7 @@ internal sealed class GetAuthenticationTokenCommandHandler(IIdentityServerApi id
         {
             { "client_id", request.ClientId },
             { "client_secret", Config.ClientSecretOf(client.ClientId) },
-            { "grant_type", "authorization_code" },
+            { "grant_type", GrantType.AuthorizationCode },
             { "code", request.Code },
             { "redirect_uri", client.RedirectUris.First() },
             { "code_verifier", request.CodeVerifier },
