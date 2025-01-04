@@ -54,9 +54,9 @@ public static class DependencyInjection {
             throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
         var grpcClientOptions = configuration.GetSection(nameof(GrpcClientOptions));
-        var clientMgtAddress = grpcClientOptions["ClientManagement:Address"];
-        if (string.IsNullOrWhiteSpace(clientMgtAddress))
-            throw new Exception("ClientManagement:Address is a required configuration.");
+        var identityAddress = grpcClientOptions["Identity:Address"];
+        if (string.IsNullOrWhiteSpace(identityAddress))
+            throw new Exception("Identity:Address is a required configuration.");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => 
@@ -103,7 +103,7 @@ public static class DependencyInjection {
 
         services.AddSingleton(provider =>
         {
-            var channel = GrpcChannel.ForAddress(clientMgtAddress);
+            var channel = GrpcChannel.ForAddress(identityAddress);
             return channel.CreateGrpcService<IAccountService>();
         });
 

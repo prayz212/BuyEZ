@@ -112,7 +112,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
     {
         _context = context;
         _accountGrpcClient = accountService;
-        _grpcClientOptions = clientOptions.Value.ClientManagement;
+        _grpcClientOptions = clientOptions.Value.Identity;
     }
 
     public async Task<ClientDetailResponse> Handle(AddClientCommand request, CancellationToken cancellationToken)
