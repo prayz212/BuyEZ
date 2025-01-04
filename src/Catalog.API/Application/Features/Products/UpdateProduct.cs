@@ -7,13 +7,13 @@ using CatalogAPI.Application.Infrastructure.Persistence;
 using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 
-using FluentValidation;
 using MediatR;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CatalogAPI.Application.Features.Products;
 
-public record UpdateProductRequest(string Id, string Name, string Description, decimal Price, ProductType Type, ProductStatus Status, int AvailableStock, int RestockThreshold, int MaxStockThreshold, List<ProductImageRequest>? DeleteImages, List<ProductImageRequest>? NewImages);
+public record UpdateProductRequest(string Id, string Name, string Description, double Price, ProductType Type, ProductStatus Status, int AvailableStock, int RestockThreshold, int MaxStockThreshold, List<ProductImageRequest>? DeleteImages, List<ProductImageRequest>? NewImages);
 
 public record UpdateProductCommand(string? TenantId, string? CurrentUserId, UpdateProductRequest Payload)
     : IRequest;

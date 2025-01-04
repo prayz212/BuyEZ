@@ -1,9 +1,11 @@
+using CatalogAPI.Application.Features.Products.gRPC;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
+using Shared.Options;
+using Shared.GrpcProto;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
-using Shared.Options;
 using Shared.Infrastructure.Services;
 
 using System.Reflection;
@@ -13,11 +15,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Builder;
+using ProtoBuf.Grpc.Server;
 
 namespace CatalogAPI.Application;
 
 public static class DependencyInjection {
-    public static IServiceCollection AddApplication(this IServiceCollection services) 
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) 
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -29,6 +33,11 @@ public static class DependencyInjection {
             options.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             options.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
         });
+
+        services.AddOptions<GrpcServerOptions>()
+            .Bind(configuration.GetSection(nameof(GrpcServerOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
@@ -103,9 +112,25 @@ public static class DependencyInjection {
             });
         });
 
+        services.AddCodeFirstGrpc(options =>
+        {
+            options.Interceptors.Add<GrpcExceptionInterceptor>();
+            options.Interceptors.Add<GrpcApiKeyInterceptor>();
+            options.EnableDetailedErrors = true;
+        });
+
+        services.AddCodeFirstGrpcReflection();
+
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
+    }
+
+    public static WebApplication MapGrpcServices(this WebApplication app)
+    {
+        app.MapGrpcService<CatalogService>();
+
+        return app;
     }
 }

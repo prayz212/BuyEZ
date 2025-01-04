@@ -19,7 +19,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder.Property(e => e.Price)
-            .HasColumnType("decimal(9,2)");
+            .HasColumnType("decimal(9,2)")
+            .HasConversion(
+                v => Convert.ToDecimal(v),
+                v => Convert.ToDouble(v)
+            );
 
         builder.Property(e => e.Created)
             .HasColumnType("datetime");
