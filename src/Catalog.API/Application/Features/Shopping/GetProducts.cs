@@ -1,6 +1,7 @@
 using CatalogAPI.Application.Domain;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
+using Shared.Common.Enums;
 using Shared.Common.Models;
 using Shared.Common.Mappings;
 

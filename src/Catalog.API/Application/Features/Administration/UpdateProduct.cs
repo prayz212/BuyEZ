@@ -4,6 +4,7 @@ using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
+using Shared.Common.Enums;
 using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 

@@ -1,5 +1,7 @@
 using CatalogAPI.Application.Shared.Dtos;
+
 using Shared.Common;
+using Shared.Common.Enums;
 
 namespace CatalogAPI.Application.Domain;
 
@@ -40,20 +42,6 @@ public class Product : AuditableEntity, IHasDomainEvent
             product.Status, 
             product.Images.Select(Image.ToDto).ToList()
         );
-}
-
-public enum ProductType
-{
-    /* CLOTHES */
-    // Men
-    Men_TShirt = 1,
-    Men_Pants,
-    Men_Jacket,
-
-    // Women
-    Women_Pants,
-    Women_TShirt,
-    Women_Jacket,
 }
 
 public enum ProductStatus

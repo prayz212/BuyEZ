@@ -1,4 +1,7 @@
 using CatalogAPI.Application.Domain;
+
+using Shared.Common.Enums;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;

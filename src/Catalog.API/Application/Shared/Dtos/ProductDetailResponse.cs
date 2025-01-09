@@ -1,4 +1,5 @@
 using CatalogAPI.Application.Domain;
+using Shared.Common.Enums;
 
 namespace CatalogAPI.Application.Shared.Dtos;
 

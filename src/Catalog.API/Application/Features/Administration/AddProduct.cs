@@ -4,6 +4,8 @@ using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
+using Shared.Common.Enums;
+
 using MediatR;
 using FluentValidation;
 
