@@ -2,6 +2,9 @@ namespace Shared.Common.Constants;
 
 public static class PolicyConstants
 {
+    /*  Customer policies   */
+    public const string CUSTOMER_POLICY = "system-user";
+
     /*  Tenant policies   */
     public const string TENANT_ADMIN_POLICY = "tenant-administrator";
     public const string TENANT_MANAGER_POLICY = "tenant-manager";
