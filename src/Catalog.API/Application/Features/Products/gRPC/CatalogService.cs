@@ -9,8 +9,8 @@ public class CatalogService(ISender sender) : ICatalogService
 {
     private readonly ISender _sender = sender;
 
-    public async Task<ValidateOrderItemsResponse> ValidateOrderItemsAsync(ValidateOrderItemsRequest request, CallContext context = default)
+    public async Task<GetOrderItemsResponse> GetOrderItemsAsync(GetOrderItemsPayload payload, CallContext context = default)
     {
-        return await _sender.Send(new ValidateOrderItemsCommand(request));
+        return await _sender.Send(new GetOrderItemsQuery(payload));
     }
 }

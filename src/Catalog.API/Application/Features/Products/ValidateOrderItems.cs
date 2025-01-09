@@ -8,21 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogAPI.Application.Features.Products;
 
-public record ValidateOrderItemsCommand(ValidateOrderItemsRequest Payload) : IRequest<ValidateOrderItemsResponse>;
+
+public record GetOrderItemsQuery(GetOrderItemsPayload Payload) : IRequest<GetOrderItemsResponse>;
 
 
-public class ValidateOrderItemsCommandValidator : AbstractValidator<ValidateOrderItemsCommand>
+public class GetOrderItemsQueryValidator : AbstractValidator<GetOrderItemsQuery>
 {
-    public ValidateOrderItemsCommandValidator()
+    public GetOrderItemsQueryValidator()
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request Payload is required.")
-            .SetValidator(new ValidateOrderItemsRequestValidator());
+            .SetValidator(new GetOrderItemsPayloadValidator());
     }
 
-    class ValidateOrderItemsRequestValidator : AbstractValidator<ValidateOrderItemsRequest>
+    class GetOrderItemsPayloadValidator : AbstractValidator<GetOrderItemsPayload>
     {
-        public ValidateOrderItemsRequestValidator()
+        public GetOrderItemsPayloadValidator()
         {
             RuleFor(x => x.Ids)
                 .NotEmpty().WithMessage("Product IDs is required.");
@@ -40,14 +41,14 @@ public class ValidateOrderItemsCommandValidator : AbstractValidator<ValidateOrde
 }
 
 
-internal sealed class ValidateOrderItemsCommandHandler(ApplicationDbContext applicationDbContext) : IRequestHandler<ValidateOrderItemsCommand, ValidateOrderItemsResponse>
+internal sealed class GetOrderItemsQueryHandler(ApplicationDbContext context) : IRequestHandler<GetOrderItemsQuery, GetOrderItemsResponse>
 {
-    private readonly ApplicationDbContext _applicationDbContext = applicationDbContext;
+    private readonly ApplicationDbContext _context = context;
 
-    public async Task<ValidateOrderItemsResponse> Handle(ValidateOrderItemsCommand request, CancellationToken cancellationToken)
+    public async Task<GetOrderItemsResponse> Handle(GetOrderItemsQuery request, CancellationToken cancellationToken)
     {
         var ids = request.Payload.Ids;
-        var products = await _applicationDbContext.Products
+        var products = await _context.Products
             .Where(p => ids.Contains(p.Id))
             .Select(p => new ProductReference
             {
@@ -58,7 +59,7 @@ internal sealed class ValidateOrderItemsCommandHandler(ApplicationDbContext appl
             })
             .ToListAsync();
 
-        return new ValidateOrderItemsResponse
+        return new GetOrderItemsResponse
         {
             Products = products,
             IsEnough = ids.Count == products.Count

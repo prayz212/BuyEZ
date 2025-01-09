@@ -86,18 +86,19 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
         );
 
         // TODO: Apply Redis to cache reference products
+        // TODO: Apply gRPC retry logic
         var grpcRequestPayload = GenerateGrpcRequestPayload(payload.Items); 
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
-        var validationResult = await _catalogService.ValidateOrderItemsAsync(grpcRequestPayload, callContext);
+        var orderItems = await _catalogService.GetOrderItemsAsync(grpcRequestPayload, callContext);
 
-        EnsureHasEnoughProductQuantity(validationResult, itemsDictionary);
+        EnsureHasEnoughProductQuantity(orderItems, itemsDictionary);
 
         var newOrder = ToEntity(payload, request.CurrentUserId);
-        var orderItems = validationResult.Products
+        var newOrderItems = orderItems.Products
             .Select(p => ToEntity(p, itemsDictionary[p.Id], request.CurrentUserId))
             .ToList();
 
-        newOrder.AddOrderItems(orderItems);
+        newOrder.AddOrderItems(newOrderItems);
 
         await _context.Orders.AddAsync(newOrder, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
@@ -106,12 +107,12 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
         return Order.ToDto(newOrder);
     }
 
-    public static void EnsureHasEnoughProductQuantity(ValidateOrderItemsResponse validationResult, Dictionary<string, int> itemsDictionary)
+    public static void EnsureHasEnoughProductQuantity(GetOrderItemsResponse orderItems, Dictionary<string, int> itemsDictionary)
     {
-        if (!validationResult.IsEnough)
-            throw new ValidationException("Some of ordered product is not valid.");
+        if (!orderItems.IsEnough)
+            throw new ValidationException("Some of ordered product is not available.");
 
-        var insufficientProducts = validationResult.Products
+        var insufficientProducts = orderItems.Products
             .Where(p => p.AvailableStock < itemsDictionary[p.Id])
             .ToList();
 
@@ -122,7 +123,7 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
         }
     }
 
-    private ValidateOrderItemsRequest GenerateGrpcRequestPayload(List<OrderProductInfo> productInfos) => 
+    private GetOrderItemsPayload GenerateGrpcRequestPayload(List<OrderProductInfo> productInfos) => 
         new() { Ids = productInfos.Select(p => p.Id).ToList() };
 
     private Order ToEntity(AddOrderPayload request, string currentUserId)

@@ -7,5 +7,5 @@ namespace Shared.GrpcProto.Catalog;
 public interface ICatalogService
 {
     [Operation]
-    Task<ValidateOrderItemsResponse> ValidateOrderItemsAsync(ValidateOrderItemsRequest request, CallContext context = default);
+    Task<GetOrderItemsResponse> GetOrderItemsAsync(GetOrderItemsPayload payload, CallContext context = default);
 }
