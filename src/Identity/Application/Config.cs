@@ -64,12 +64,6 @@ public static class Config
                     IdentityConstants.StandardScopes.ORDER_API 
                 },
 
-                // Where to redirect after login
-                RedirectUris = { "http://localhost:9000/auth/signin-oidc" },
-
-                // Where to redirect after logout
-                PostLogoutRedirectUris = { "http://localhost:9000/auth/signout-callback-oidc" },
-
                 // Authorization
                 AccessTokenLifetime = 3600, 
 
@@ -81,9 +75,8 @@ public static class Config
 
                 // Refresh token settings
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                RefreshTokenExpiration = TokenExpiration.Sliding, 
-                AbsoluteRefreshTokenLifetime = 172800, // 2 days
-                SlidingRefreshTokenLifetime = 21600  // 6 hours
+                RefreshTokenExpiration = TokenExpiration.Absolute, 
+                AbsoluteRefreshTokenLifetime = 259200, // 3 days
             },
             new()
             {
@@ -118,9 +111,8 @@ public static class Config
 
                 // Refresh token settings
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                RefreshTokenExpiration = TokenExpiration.Sliding, 
-                AbsoluteRefreshTokenLifetime = 172800, // 2 days
-                SlidingRefreshTokenLifetime = 21600  // 6 hours
+                RefreshTokenExpiration = TokenExpiration.Absolute, 
+                AbsoluteRefreshTokenLifetime = 86400, // 1 days
             },
             new()
             {
@@ -156,9 +148,8 @@ public static class Config
 
                 // Refresh token settings
                 RefreshTokenUsage = TokenUsage.OneTimeOnly,
-                RefreshTokenExpiration = TokenExpiration.Sliding, 
-                AbsoluteRefreshTokenLifetime = 172800, // 2 days
-                SlidingRefreshTokenLifetime = 21600  // 6 hours
+                RefreshTokenExpiration = TokenExpiration.Absolute, 
+                AbsoluteRefreshTokenLifetime = 86400, // 1 days
             }
         };
 }
