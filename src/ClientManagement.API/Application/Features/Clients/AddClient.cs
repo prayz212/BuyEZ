@@ -1,4 +1,3 @@
-using ClientManagementAPI.Application.Utils;
 using ClientManagementAPI.Application.Options;
 using ClientManagementAPI.Application.Domain.Clients;
 using ClientManagementAPI.Application.Features.Clients.Shared.Common;
@@ -7,6 +6,7 @@ using ClientManagementAPI.Application.Features.Clients.Shared.Validators;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Shared.Options;
+using Shared.GrpcProto.Utils;
 using Shared.GrpcProto.Account;
 using Shared.Common.Constants;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
@@ -112,7 +112,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
     {
         _context = context;
         _accountGrpcClient = accountService;
-        _grpcClientOptions = clientOptions.Value.ClientManagement;
+        _grpcClientOptions = clientOptions.Value.Identity;
     }
 
     public async Task<ClientDetailResponse> Handle(AddClientCommand request, CancellationToken cancellationToken)
@@ -137,7 +137,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
         await _context.SaveChangesAsync(cancellationToken);
 
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
-        var callContext = GrpcUtils.GetCallOptions<IAccountService>(_grpcClientOptions);
+        var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
         await _accountGrpcClient.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return Client.ToDto(newClient);

@@ -1,27 +1,28 @@
-using ClientManagementAPI.Application.Options;
-using ClientManagementAPI.Application.Infrastructure.Persistence;
+using OrderAPI.Application.Options;
+using OrderAPI.Application.Infrastructure.Persistence;
 
 using Shared.Options;
+using Shared.GrpcProto.Catalog;
 using Shared.Common.Behaviors;
-using Shared.Common.Constants;
 using Shared.Common.Interfaces;
-using Shared.GrpcProto.Account;
 using Shared.Infrastructure.Services;
 
-using Grpc.Net.Client;
 using System.Reflection;
 using FluentValidation;
-using ProtoBuf.Grpc.Client;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Grpc.Net.Client;
+using ProtoBuf.Grpc.Client;
+using Shared.Common.Constants;
 
-namespace ClientManagementAPI.Application;
+namespace OrderAPI.Application;
 
-public static class DependencyInjection {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) 
+public static class DependencyInjection 
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -42,7 +43,7 @@ public static class DependencyInjection {
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) 
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options => 
             options.UseNpgsql(
@@ -54,9 +55,9 @@ public static class DependencyInjection {
             throw new Exception("IdentityOptions:IssuerUri is a required configuration.");
 
         var grpcClientOptions = configuration.GetSection(nameof(GrpcClientOptions));
-        var identityAddress = grpcClientOptions["Identity:Address"];
-        if (string.IsNullOrWhiteSpace(identityAddress))
-            throw new Exception("Identity:Address is a required configuration.");
+        var catalogAddress = grpcClientOptions["Catalog:Address"];
+        if (string.IsNullOrWhiteSpace(catalogAddress))
+            throw new Exception("Catalog:Address is a required configuration.");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => 
@@ -76,36 +77,21 @@ public static class DependencyInjection {
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(PolicyConstants.SYSTEM_ADMIN_POLICY, policy =>
+            options.AddPolicy(PolicyConstants.CUSTOMER_POLICY, policy =>
             {
                 policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
-                policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN);
+                policy.RequireClaim("scope", IdentityConstants.StandardScopes.ORDER_API);
+                policy.RequireRole(IdentityConstants.Role.USER);
             });
-            
-            options.AddPolicy(PolicyConstants.SYSTEM_SUPPORTER_POLICY, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
-                policy.RequireRole(IdentityConstants.Role.SYSTEM_SUPPORT);
-            });
+        });
 
-            options.AddPolicy(PolicyConstants.SYSTEM_ADMIN_OR_SUPPORTER_POLICY, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
-                policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN, IdentityConstants.Role.SYSTEM_SUPPORT);
-            });
+        services.AddSingleton(provider => 
+        {
+            var channel = GrpcChannel.ForAddress(catalogAddress);
+            return channel.CreateGrpcService<ICatalogService>();
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
-        services.AddScoped<ApplicationDbContextInitializer>();
-
-        services.AddSingleton(provider =>
-        {
-            var channel = GrpcChannel.ForAddress(identityAddress);
-            return channel.CreateGrpcService<IAccountService>();
-        });
 
         return services;
     }

@@ -12,7 +12,7 @@ namespace CatalogAPI.Application.Features.Products;
 
 
 public record ImageBriefResponse(string Filename, string Url, string AltText);
-public record ProductBriefResponse(string Id, string Name, decimal Price, ProductType Type, ImageBriefResponse? Image);
+public record ProductBriefResponse(string Id, string Name, double Price, ProductType Type, ImageBriefResponse? Image);
 
 public record QueryProductRequest(int PageNumber = 1, int PageSize = 10) 
     : IRequest<PaginatedList<ProductBriefResponse>>;

@@ -3,12 +3,13 @@ using CatalogAPI.Application.Features.Products.Shared.Common;
 using CatalogAPI.Application.Features.Products.Shared.Dtos;
 using CatalogAPI.Application.Features.Products.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
-using FluentValidation;
+
 using MediatR;
+using FluentValidation;
 
 namespace CatalogAPI.Application.Features.Products;
 
-public record AddProductRequest(string Name, string Description, decimal Price, ProductType Type, List<ProductImageRequest> Images);
+public record AddProductRequest(string Name, string Description, double Price, ProductType Type, List<ProductImageRequest> Images);
 
 public record AddProductCommand(string? TenantId, string? CurrentUserId, AddProductRequest Payload) : IRequest<ProductDetailResponse>;
 

@@ -1,17 +1,14 @@
-using CatalogAPI.Application;
-using CatalogAPI.Application.Infrastructure.Persistence;
+using OrderAPI.Application;
 
-using Shared.Extensions;
 using Shared.Filters;
 using Shared.Middlewares;
 
 using Microsoft.OpenApi.Models;
-using ProtoBuf.Grpc.Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(options =>
+builder.Services.AddControllers(options => 
 {
     options.Filters.Add<ApiExceptionFilterAttribute>();
 });
@@ -51,8 +48,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddProblemDetails();
 
 builder.Services.AddApplication(builder.Configuration);
@@ -68,22 +63,14 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    app.MapCodeFirstGrpcReflectionService();
-
-    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();
 app.UseMiddleware<ExtractTokenMiddleware>();
 
-app.UseCors();
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.MapGrpcServices();
 
 app.MapControllers();
 
