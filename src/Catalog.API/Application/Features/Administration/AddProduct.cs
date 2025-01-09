@@ -1,17 +1,18 @@
-using CatalogAPI.Application.Domain.Catalogs;
-using CatalogAPI.Application.Features.Products.Shared.Common;
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
-using CatalogAPI.Application.Features.Products.Shared.Validators;
+using CatalogAPI.Application.Domain;
+using CatalogAPI.Application.Shared.Common;
+using CatalogAPI.Application.Shared.Dtos;
+using CatalogAPI.Application.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
 using MediatR;
 using FluentValidation;
 
-namespace CatalogAPI.Application.Features.Products;
+namespace CatalogAPI.Application.Features.Administration;
 
-public record AddProductRequest(string Name, string Description, double Price, ProductType Type, List<ProductImageRequest> Images);
 
-public record AddProductCommand(string? TenantId, string? CurrentUserId, AddProductRequest Payload) : IRequest<ProductDetailResponse>;
+public record AddProductPayload(string Name, string Description, double Price, ProductType Type, List<ProductImagePayload> Images);
+
+public record AddProductCommand(string? TenantId, string? CurrentUserId, AddProductPayload Payload) : IRequest<ProductDetailResponse>;
 
 
 public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
@@ -20,12 +21,12 @@ public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
-            .SetValidator(new AddProductRequestValidator());
+            .SetValidator(new AddProductPayloadValidator());
     }
 
-    class AddProductRequestValidator : AbstractValidator<AddProductRequest>
+    class AddProductPayloadValidator : AbstractValidator<AddProductPayload>
     {
-        public AddProductRequestValidator() 
+        public AddProductPayloadValidator() 
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
@@ -47,13 +48,13 @@ public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
                 .Must(HaveOnlyOnePrimaryImage).WithMessage("Missing or exceeding required primary image quantity.");
 
             RuleForEach(x => x.Images)
-                .SetValidator(new ProductImageRequestValidator());
+                .SetValidator(new ProductImagePayloadValidator());
         }
 
-        private bool HaveOnlyOnePrimaryImage(List<ProductImageRequest> images) 
+        private bool HaveOnlyOnePrimaryImage(List<ProductImagePayload> images) 
             => images.Where(x => x.IsPrimary).Count() == 1;
 
-        private bool NotExceedImageQuantity(List<ProductImageRequest> images)
+        private bool NotExceedImageQuantity(List<ProductImagePayload> images)
             => images.Count <= ProductConstants.MAXIMUM_IMAGE_QUANTITY;
     }
 }
@@ -81,7 +82,7 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
         return Product.ToDto(newProduct);
     }
 
-    private static Product ToEntity(string tenantId, string createdBy, AddProductRequest product) => new()
+    private static Product ToEntity(string tenantId, string createdBy, AddProductPayload product) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Name = product.Name,
@@ -92,7 +93,7 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
         CreatedBy = createdBy
     };
 
-    private static Image ToEntity(string createdBy, ProductImageRequest image) => new()
+    private static Image ToEntity(string createdBy, ProductImagePayload image) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = image.Filename,

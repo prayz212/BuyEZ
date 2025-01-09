@@ -1,4 +1,4 @@
-using CatalogAPI.Application.Features.Products.gRPC;
+using CatalogAPI.Application.Features.gRPC;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
 using Shared.Options;

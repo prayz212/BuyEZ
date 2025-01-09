@@ -6,7 +6,7 @@ using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace CatalogAPI.Application.Features.Products;
+namespace CatalogAPI.Application.Features.gRPC;
 
 
 public record GetOrderItemsQuery(GetOrderItemsPayload Payload) : IRequest<GetOrderItemsResponse>;

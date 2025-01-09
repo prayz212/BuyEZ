@@ -1,5 +1,4 @@
-using CatalogAPI.Application.Features.Products;
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
+using CatalogAPI.Application.Shared.Dtos;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,18 +8,20 @@ using Shared.Common;
 using Shared.Common.Constants;
 using Shared.Common.Exceptions;
 
-namespace CatalogAPI.Application.Features;
+namespace CatalogAPI.Application.Features.Administration;
 
 [ApiController]
 [Route($"{ApiPaths.Root}/product-administrations")]
-public class ProductAdministrationController : ApiControllerBase
+public class ProductController : ApiControllerBase
 {
     [HttpPost]
     [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_POLICY)]
     [ProducesResponseType(typeof(ProductDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductRequest request)
+    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductPayload request)
     {
         var product = await Mediator.Send(new AddProductCommand(GetTenantId(), GetUserId(), request));
         return CreatedAtRoute("GetProductDetails", new { id = product.Id}, product);
@@ -30,9 +31,11 @@ public class ProductAdministrationController : ApiControllerBase
     [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_POLICY)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateProductRequest request)
+    public async Task<ActionResult> Update(string id, UpdateProductPayload request)
     {
         if (id != request.Id) 
             throw new ValidationException("Product Id is not correct.");

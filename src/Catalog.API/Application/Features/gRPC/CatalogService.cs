@@ -3,7 +3,7 @@ using Shared.GrpcProto.Catalog;
 using MediatR;
 using ProtoBuf.Grpc;
 
-namespace CatalogAPI.Application.Features.Products.gRPC;
+namespace CatalogAPI.Application.Features.gRPC;
 
 public class CatalogService(ISender sender) : ICatalogService
 {

@@ -1,8 +1,7 @@
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
-
+using CatalogAPI.Application.Shared.Dtos;
 using Shared.Common;
 
-namespace CatalogAPI.Application.Domain.Catalogs;
+namespace CatalogAPI.Application.Domain;
 
 public class Product : AuditableEntity, IHasDomainEvent
 {

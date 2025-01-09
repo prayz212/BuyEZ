@@ -1,8 +1,8 @@
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
+using CatalogAPI.Application.Shared.Dtos;
 
 using Shared.Domain;
 
-namespace CatalogAPI.Application.Domain.Catalogs;
+namespace CatalogAPI.Application.Domain;
 
 public class Image : ImageBase
 {

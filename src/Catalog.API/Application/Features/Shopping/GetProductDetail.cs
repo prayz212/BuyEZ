@@ -1,22 +1,22 @@
-using CatalogAPI.Application.Domain.Catalogs;
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
+using CatalogAPI.Application.Domain;
+using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common.Exceptions;
 
-namespace CatalogAPI.Application.Features.Products;
+namespace CatalogAPI.Application.Features.Shopping;
 
 
-public record GetProductRequest(string Id) : IRequest<ProductDetailResponse>;
+public record GetProductDetailQuery(string Id) : IRequest<ProductDetailResponse>;
 
 
-internal sealed class GetProductRequestHandler(ApplicationDbContext context)
-    : IRequestHandler<GetProductRequest, ProductDetailResponse>
+internal sealed class GetProductDetailQueryHandler(ApplicationDbContext context)
+    : IRequestHandler<GetProductDetailQuery, ProductDetailResponse>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<ProductDetailResponse> Handle(GetProductRequest request, CancellationToken cancellationToken)
+    public async Task<ProductDetailResponse> Handle(GetProductDetailQuery request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Id)) 
             throw new ValidationException("Invalid product id.");

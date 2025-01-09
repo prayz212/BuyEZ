@@ -1,4 +1,4 @@
-using CatalogAPI.Application.Domain.Catalogs;
+using CatalogAPI.Application.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,12 +24,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 v => Convert.ToDecimal(v),
                 v => Convert.ToDouble(v)
             );
-
-        builder.Property(e => e.Created)
-            .HasColumnType("datetime");
-
-        builder.Property(e => e.LastModified)
-            .HasColumnType("datetime");
 
         builder.Property(x => x.Created)
             .HasColumnType("timestamp with time zone");

@@ -1,5 +1,4 @@
-using CatalogAPI.Application.Features.Products;
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
+using CatalogAPI.Application.Shared.Dtos;
 
 using Shared.Common;
 using Shared.Common.Models;
@@ -7,17 +6,17 @@ using Shared.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CatalogAPI.Application.Features;
+namespace CatalogAPI.Application.Features.Shopping;
 
 [ApiController]
 [Route($"{ApiPaths.Root}/product-shoppings")]
-public class ProductShoppingController : ApiControllerBase
+public class ProductController : ApiControllerBase
 {
     [HttpPost("query")]
     [ProducesResponseType(typeof(PaginatedList<ProductBriefResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<PaginatedList<ProductBriefResponse>> Query(QueryProductRequest query)
+    public async Task<PaginatedList<ProductBriefResponse>> Query(GetProductsQuery query)
     {
         return await Mediator.Send(query);
     }
@@ -29,6 +28,6 @@ public class ProductShoppingController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ProductDetailResponse> Get(string id)
     {
-        return await Mediator.Send(new GetProductRequest(id));
+        return await Mediator.Send(new GetProductDetailQuery(id));
     }
 }

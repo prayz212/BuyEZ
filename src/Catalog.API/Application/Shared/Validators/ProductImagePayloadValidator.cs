@@ -1,11 +1,11 @@
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
+using CatalogAPI.Application.Shared.Dtos;
 using FluentValidation;
 
-namespace CatalogAPI.Application.Features.Products.Shared.Validators;
+namespace CatalogAPI.Application.Shared.Validators;
 
-public class ProductImageRequestValidator : AbstractValidator<ProductImageRequest>
+public class ProductImagePayloadValidator : AbstractValidator<ProductImagePayload>
 {
-    public ProductImageRequestValidator() 
+    public ProductImagePayloadValidator() 
     {
         RuleFor(x => x.Filename)
             .NotEmpty().WithMessage("Filename is required.")

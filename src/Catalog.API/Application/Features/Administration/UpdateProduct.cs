@@ -1,7 +1,7 @@
-using CatalogAPI.Application.Domain.Catalogs;
-using CatalogAPI.Application.Features.Products.Shared.Common;
-using CatalogAPI.Application.Features.Products.Shared.Dtos;
-using CatalogAPI.Application.Features.Products.Shared.Validators;
+using CatalogAPI.Application.Domain;
+using CatalogAPI.Application.Shared.Common;
+using CatalogAPI.Application.Shared.Dtos;
+using CatalogAPI.Application.Shared.Validators;
 using CatalogAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Exceptions;
@@ -11,11 +11,12 @@ using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace CatalogAPI.Application.Features.Products;
+namespace CatalogAPI.Application.Features.Administration;
 
-public record UpdateProductRequest(string Id, string Name, string Description, double Price, ProductType Type, ProductStatus Status, int AvailableStock, int RestockThreshold, int MaxStockThreshold, List<ProductImageRequest>? DeleteImages, List<ProductImageRequest>? NewImages);
 
-public record UpdateProductCommand(string? TenantId, string? CurrentUserId, UpdateProductRequest Payload)
+public record UpdateProductPayload(string Id, string Name, string Description, double Price, ProductType Type, ProductStatus Status, int AvailableStock, int RestockThreshold, int MaxStockThreshold, List<ProductImagePayload>? DeleteImages, List<ProductImagePayload>? NewImages);
+
+public record UpdateProductCommand(string? TenantId, string? CurrentUserId, UpdateProductPayload Payload)
     : IRequest;
 
 
@@ -25,12 +26,12 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
-            .SetValidator(new UpdateProductRequestValidator());
+            .SetValidator(new UpdateProductPayloadValidator());
     }
 
-    class UpdateProductRequestValidator : AbstractValidator<UpdateProductRequest>
+    class UpdateProductPayloadValidator : AbstractValidator<UpdateProductPayload>
     {
-        public UpdateProductRequestValidator()
+        public UpdateProductPayloadValidator()
         {
             RuleFor(x => x.Id)
                 .NotEmpty().WithMessage("Product Id is required.");
@@ -68,15 +69,15 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
                 .When(x => x.NewImages != null);
 
             RuleForEach(x => x.NewImages)
-                .SetValidator(new ProductImageRequestValidator())
+                .SetValidator(new ProductImagePayloadValidator())
                 .When(x => x.NewImages != null);
 
             RuleForEach(x => x.DeleteImages)
-                .SetValidator(new ProductImageRequestValidator())
+                .SetValidator(new ProductImagePayloadValidator())
                 .When(x => x.DeleteImages != null);
         }
 
-        private bool NotExceedPrimaryImageQuantity(List<ProductImageRequest>? images) 
+        private bool NotExceedPrimaryImageQuantity(List<ProductImagePayload>? images) 
             => images?.Where(x => x.IsPrimary).Count() <= 1;
     }
 }
@@ -148,7 +149,7 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static Image ToEntity(string modifiedBy, ProductImageRequest image) => new()
+    private static Image ToEntity(string modifiedBy, ProductImagePayload image) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = image.Filename,

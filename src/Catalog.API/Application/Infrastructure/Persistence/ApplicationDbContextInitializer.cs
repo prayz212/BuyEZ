@@ -1,4 +1,4 @@
-using CatalogAPI.Application.Domain.Catalogs;
+using CatalogAPI.Application.Domain;
 
 using Shared.Infrastructure.Persistence;
 
