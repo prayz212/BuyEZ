@@ -1,11 +1,11 @@
 using Shared.Options;
 using Grpc.Core;
 
-namespace ClientManagementAPI.Application.Utils;
+namespace Shared.GrpcProto.Utils;
 
 public static class GrpcUtils
 {
-    public static CallOptions GetCallOptions<TService>(GrpcBaseOptions options)
+    public static CallOptions GetCallOptions(GrpcBaseOptions options)
     {
         var metaData = new Metadata()
         {
