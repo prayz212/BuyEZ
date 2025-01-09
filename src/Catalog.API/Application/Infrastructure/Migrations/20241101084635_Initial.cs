@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Catalog.Application.Infrastructure.Migrations
+namespace CatalogAPI.Application.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
