@@ -1,8 +1,7 @@
-using Identity.Application.Domain.Identity;
+using Identity.Application.Domain;
 
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;

@@ -1,4 +1,4 @@
-using Identity.Application.Domain.Identity;
+using Identity.Application.Domain;
 using Identity.Application.Features.Identity.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
 using Identity.Application.Features.Account.gRPC;

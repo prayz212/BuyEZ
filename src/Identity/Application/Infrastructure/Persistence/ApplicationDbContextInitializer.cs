@@ -1,4 +1,4 @@
-using Identity.Application.Domain.Identity;
+using Identity.Application.Domain;
 
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using Shared.Infrastructure.Persistence;
@@ -181,7 +181,7 @@ public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
             await _userManager.AddToRoleAsync(user, IdentityConstants.Role.TENANT_MANAGER);
 
         var tenantStaffUsers = tenantUsers.Where(u => u.UserName!.Contains("lucy_store_staff"));
-        foreach (var user in tenantManagerUsers)
+        foreach (var user in tenantStaffUsers)
             await _userManager.AddToRoleAsync(user, IdentityConstants.Role.TENANT_STAFF);
     }
 }

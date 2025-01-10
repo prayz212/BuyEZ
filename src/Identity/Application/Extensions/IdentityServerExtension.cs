@@ -1,5 +1,5 @@
 using Identity.Application.Common;
-using Identity.Application.Domain.Identity;
+using Identity.Application.Domain;
 
 using Shared.Options;
 
