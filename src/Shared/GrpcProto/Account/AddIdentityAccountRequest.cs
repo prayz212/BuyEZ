@@ -3,7 +3,7 @@ using ProtoBuf;
 namespace Shared.GrpcProto.Account;
 
 [ProtoContract]
-public record AddIdentityAccountRequest
+public record AddIdentityAccountPayload
 {
     [ProtoMember(1)]
     public required string TenantId { get; init; }

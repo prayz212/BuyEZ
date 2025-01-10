@@ -1,4 +1,4 @@
-using OrderAPI.Application.Domain.Shopping;
+using OrderAPI.Application.Domain;
 using OrderAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Exceptions;
@@ -43,7 +43,7 @@ internal sealed class CancelOrderCommandHandler(ApplicationDbContext context) : 
             throw new ValidationException("Order can't be cancelled.");
 
         order.LastModifiedBy = request.CurrentUserId;
-        order.UpdateOrderStatus(OrderStatus.CANCELLED);
+        order.UpdateOrderStatus(OrderStatus.Cancelled);
 
         _context.Orders.Update(order);
         await _context.SaveChangesAsync(cancellationToken);
@@ -52,5 +52,5 @@ internal sealed class CancelOrderCommandHandler(ApplicationDbContext context) : 
     }
 
     private bool IsAllowedToCancelOrder(OrderStatus status) => 
-        status == OrderStatus.PENDING;
+        status == OrderStatus.Pending;
 }

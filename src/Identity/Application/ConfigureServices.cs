@@ -1,7 +1,7 @@
-using Identity.Application.Domain.Identity;
-using Identity.Application.Features.Identity.Shared.RestAPIs;
+using Identity.Application.Domain;
+using Identity.Application.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
-using Identity.Application.Features.Account.gRPC;
+using Identity.Application.Features.Administration.gRPC;
 
 using Shared.Options;
 using Shared.GrpcProto;

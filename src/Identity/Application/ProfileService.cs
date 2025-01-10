@@ -1,4 +1,4 @@
-using Identity.Application.Domain.Identity;
+using Identity.Application.Domain;
 using System.Security.Claims;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;

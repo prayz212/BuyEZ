@@ -1,4 +1,4 @@
-using OrderAPI.Application.Domain.Shopping;
+using OrderAPI.Application.Domain;
 using OrderAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Mappings;

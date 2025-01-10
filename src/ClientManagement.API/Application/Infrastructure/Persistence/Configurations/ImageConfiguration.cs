@@ -1,4 +1,5 @@
-using ClientManagementAPI.Application.Domain.Clients;
+using ClientManagementAPI.Application.Domain;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

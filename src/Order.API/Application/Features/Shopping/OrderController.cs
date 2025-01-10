@@ -1,4 +1,4 @@
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Shared.Dtos;
 
 using Shared.Common;
 using Shared.Common.Constants;

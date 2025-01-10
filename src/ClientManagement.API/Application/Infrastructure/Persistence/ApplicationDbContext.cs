@@ -1,4 +1,4 @@
-using ClientManagementAPI.Application.Domain.Clients;
+using ClientManagementAPI.Application.Domain;
 
 using Shared.Common;
 using Shared.Common.Interfaces;

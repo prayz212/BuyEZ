@@ -1,6 +1,10 @@
-using CatalogAPI.Application.Domain.Catalogs;
+using CatalogAPI.Application.Domain;
+
+using Shared.Common.Enums;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CatalogAPI.Application.Infrastructure.Persistence.Configurations;
 
@@ -25,11 +29,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                 v => Convert.ToDouble(v)
             );
 
-        builder.Property(e => e.Created)
-            .HasColumnType("datetime");
+        builder.Property(e => e.Type)
+            .HasConversion(new EnumToStringConverter<ProductType>());
 
-        builder.Property(e => e.LastModified)
-            .HasColumnType("datetime");
+        builder.Property(e => e.Status)
+            .HasConversion(new EnumToStringConverter<ProductStatus>());
 
         builder.Property(x => x.Created)
             .HasColumnType("timestamp with time zone");

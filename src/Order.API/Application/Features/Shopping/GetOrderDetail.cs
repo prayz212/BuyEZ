@@ -1,5 +1,5 @@
-using OrderAPI.Application.Domain.Shopping;
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Domain;
+using OrderAPI.Application.Shared.Dtos;
 using OrderAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Exceptions;
