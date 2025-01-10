@@ -1,4 +1,4 @@
-using OrderAPI.Application.Domain.Shopping;
+using OrderAPI.Application.Domain;
 
 using Shared.Common;
 using Shared.Common.Interfaces;

@@ -1,6 +1,6 @@
-using OrderAPI.Application.Domain.Shopping;
+using OrderAPI.Application.Domain;
 
-namespace OrderAPI.Application.Features.Shopping.Shared.Dtos;
+namespace OrderAPI.Application.Shared.Dtos;
 
 public record OrderItemResponse(string Id, string Name, double Price, int Quantity, double Amount);
 

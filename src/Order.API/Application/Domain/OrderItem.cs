@@ -1,7 +1,7 @@
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Shared.Dtos;
 using Shared.Common;
 
-namespace OrderAPI.Application.Domain.Shopping;
+namespace OrderAPI.Application.Domain;
 
 public class OrderItem : AuditableEntity
 {

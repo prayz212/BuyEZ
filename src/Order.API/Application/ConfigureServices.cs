@@ -3,10 +3,13 @@ using OrderAPI.Application.Infrastructure.Persistence;
 
 using Shared.Options;
 using Shared.GrpcProto.Catalog;
+using Shared.Common.Constants;
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
 using Shared.Infrastructure.Services;
 
+using Grpc.Net.Client;
+using ProtoBuf.Grpc.Client;
 using System.Reflection;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +17,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Grpc.Net.Client;
-using ProtoBuf.Grpc.Client;
-using Shared.Common.Constants;
 
 namespace OrderAPI.Application;
 

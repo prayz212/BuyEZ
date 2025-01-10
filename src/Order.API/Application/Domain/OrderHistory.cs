@@ -1,7 +1,7 @@
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Shared.Dtos;
 using Shared.Common;
 
-namespace OrderAPI.Application.Domain.Shopping;
+namespace OrderAPI.Application.Domain;
 
 public class OrderHistory : AuditableEntity
 {
@@ -35,12 +35,12 @@ public class OrderHistory : AuditableEntity
 
     private string GetReasonByStatus(OrderStatus status) => status switch
     {
-        OrderStatus.PENDING => "Order created",
-        OrderStatus.PAID => "Payment received",
-        OrderStatus.PACKAGING => "Order packed ",
-        OrderStatus.DELIVERING => "Order is being delivered",
-        OrderStatus.DELIVERED => "Order delivered",
-        OrderStatus.CANCELLED => "Order cancelled",
+        OrderStatus.Pending => "Order created",
+        OrderStatus.Paid => "Payment received",
+        OrderStatus.Packaging => "Order packing",
+        OrderStatus.Delivering => "Order is being delivered",
+        OrderStatus.Delivered => "Order delivered",
+        OrderStatus.Cancelled => "Order cancelled",
         _ => throw new InvalidOperationException("Invalid OrderStatus")
     };
 

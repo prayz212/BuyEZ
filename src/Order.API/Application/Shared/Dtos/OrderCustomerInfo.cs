@@ -1,3 +1,3 @@
-namespace OrderAPI.Application.Features.Shopping.Shared.Dtos;
+namespace OrderAPI.Application.Shared.Dtos;
 
 public record OrderCustomerInfo(string Name, string Address, string PhoneNumber);

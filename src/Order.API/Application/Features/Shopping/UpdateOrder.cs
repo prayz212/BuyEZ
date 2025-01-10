@@ -1,6 +1,6 @@
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Shared.Dtos;
 using OrderAPI.Application.Infrastructure.Persistence;
-using OrderAPI.Application.Domain.Shopping;
+using OrderAPI.Application.Domain;
 
 using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
@@ -78,5 +78,5 @@ internal sealed class UpdateOrderCommandHandler(ApplicationDbContext context) : 
     }
 
     private bool IsAllowedToUpdateCustomerInfo(OrderStatus status) =>
-        status == OrderStatus.PENDING || status == OrderStatus.PACKAGING;
+        status == OrderStatus.Pending || status == OrderStatus.Packaging;
 }

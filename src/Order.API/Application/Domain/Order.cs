@@ -1,7 +1,7 @@
-using OrderAPI.Application.Features.Shopping.Shared.Dtos;
+using OrderAPI.Application.Shared.Dtos;
 using Shared.Common;
 
-namespace OrderAPI.Application.Domain.Shopping;
+namespace OrderAPI.Application.Domain;
 
 public class Order : AuditableEntity, IHasDomainEvent
 {
@@ -9,7 +9,7 @@ public class Order : AuditableEntity, IHasDomainEvent
 
     public double TotalAmount { get; private set; } = 0.0;
 
-    public OrderStatus Status { get; private set; } = OrderStatus.PENDING;
+    public OrderStatus Status { get; private set; } = OrderStatus.Pending;
 
     public string CustomerId { get; private set; } = string.Empty;
 
@@ -46,7 +46,7 @@ public class Order : AuditableEntity, IHasDomainEvent
         CustomerPhoneNumber = customerPhoneNumber;
         CreatedBy = createdBy;
 
-        UpdateOrderStatus(OrderStatus.PENDING);
+        UpdateOrderStatus(OrderStatus.Pending);
     }
 
     public void AddOrderItems(List<OrderItem> orderItems)
@@ -92,10 +92,10 @@ public class Order : AuditableEntity, IHasDomainEvent
 
 public enum OrderStatus
 {
-    PENDING = 1,
-    PAID,
-    PACKAGING,
-    DELIVERING,
-    DELIVERED,
-    CANCELLED
+    Pending = 1,
+    Paid,
+    Packaging,
+    Delivering,
+    Delivered,
+    Cancelled
 }
