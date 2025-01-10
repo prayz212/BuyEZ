@@ -1,5 +1,5 @@
-using ClientManagementAPI.Application.Domain.Clients;
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using ClientManagementAPI.Application.Domain;
+using ClientManagementAPI.Application.Shared.Dtos;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Exceptions;
@@ -7,16 +7,17 @@ using Shared.Common.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClientManagementAPI.Application.Features.Clients;
-
-public record GetClientRequest(string Id) : IRequest<ClientDetailResponse>;
+namespace ClientManagementAPI.Application.Features.Administration;
 
 
-internal sealed class GetClientRequestHandler(ApplicationDbContext context) : IRequestHandler<GetClientRequest, ClientDetailResponse>
+public record GetClientDetailQuery(string Id) : IRequest<ClientDetailResponse>;
+
+
+internal sealed class GetClientDetailQueryHandler(ApplicationDbContext context) : IRequestHandler<GetClientDetailQuery, ClientDetailResponse>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<ClientDetailResponse> Handle(GetClientRequest request, CancellationToken cancellationToken)
+    public async Task<ClientDetailResponse> Handle(GetClientDetailQuery request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Id))
             throw new ValidationException("Invalid client id.");

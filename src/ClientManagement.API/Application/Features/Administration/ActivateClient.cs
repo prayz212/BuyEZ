@@ -5,31 +5,34 @@ using Shared.Common.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClientManagementAPI.Application.Features.Clients;
-
-public record DeactivateClientRequest(string Id);
-
-public record DeactivateClientCommand(string? CurrentUserId, DeactivateClientRequest Payload) : IRequest;
+namespace ClientManagementAPI.Application.Features.Administration;
 
 
-internal sealed class DeactivateClientCommandHandler(ApplicationDbContext context) : IRequestHandler<DeactivateClientCommand>
+public record ActivateClientPayload(string Id);
+
+public record ActivateClientCommand(string? CurrentUserId, ActivateClientPayload Payload) : IRequest;
+
+
+internal sealed class ActivateClientCommandHandler(ApplicationDbContext context) : IRequestHandler<ActivateClientCommand>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task Handle(DeactivateClientCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ActivateClientCommand request, CancellationToken cancellationToken)
     {
         // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == requestPayload.Id && c.IsActivated);
+        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == requestPayload.Id && !c.IsActivated);
         if (client == null)
             throw new NotFoundException($"Client with id: {requestPayload.Id} is not found or already de-activated.");
 
-        client.IsActivated = false;
+        client.IsActivated = true;
         client.LastModifiedBy = request.CurrentUserId;
+
         _context.Update(client);
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 }

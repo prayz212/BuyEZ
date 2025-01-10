@@ -1,4 +1,4 @@
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using ClientManagementAPI.Application.Shared.Dtos;
 
 using Shared.Common;
 using Shared.Common.Models;
@@ -9,37 +9,43 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClientManagementAPI.Application.Features.Clients;
+namespace ClientManagementAPI.Application.Features.Administration;
 
 [ApiController]
 [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
-[Route($"{ApiPaths.Root}/client-managements")]
+[Route($"{ApiPaths.Root}/client-administrations")]
 public class ClientController : ApiControllerBase
 {
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ClientDetailResponse> Get(string id)
     {
-        return await Mediator.Send(new GetClientRequest(id));
+        return await Mediator.Send(new GetClientDetailQuery(id));
     }
 
     [HttpPost("query")]
     [ProducesResponseType(typeof(PaginatedList<ClientBriefResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<PaginatedList<ClientBriefResponse>> Query(QueryClientRequest query)
+    public async Task<PaginatedList<ClientBriefResponse>> Query(GetClientsQuery query)
     {
         return await Mediator.Send(query);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientRequest request)
+    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientPayload request)
     {
         var client = await Mediator.Send(new AddClientCommand(GetUserId(), request));
         return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
@@ -48,9 +54,11 @@ public class ClientController : ApiControllerBase
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateClientRequest request)
+    public async Task<ActionResult> Update(string id, UpdateClientPayload request)
     {
         if (id != request.Id) 
             throw new ValidationException("Client Id is not correct.");
@@ -68,21 +76,25 @@ public class ClientController : ApiControllerBase
     */
     [HttpPut("{id}/deactivate")]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Deactivate(string id)
     {
-        await Mediator.Send(new DeactivateClientCommand(GetUserId(), new DeactivateClientRequest(id)));
+        await Mediator.Send(new DeactivateClientCommand(GetUserId(), new DeactivateClientPayload(id)));
         return NoContent();
     }
 
     [HttpPut("{id}/activate")]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Activate(string id)
     {
-        await Mediator.Send(new ActivateClientCommand(GetUserId(), new ActivateClientRequest(id)));
+        await Mediator.Send(new ActivateClientCommand(GetUserId(), new ActivateClientPayload(id)));
         return NoContent();
     }
 }

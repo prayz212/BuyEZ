@@ -1,4 +1,4 @@
-using ClientManagementAPI.Application.Domain.Clients;
+using ClientManagementAPI.Application.Domain;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Shared.Common.Models;
@@ -7,16 +7,17 @@ using Shared.Common.Mappings;
 using FluentValidation;
 using MediatR;
 
-namespace ClientManagementAPI.Application.Features.Clients;
+namespace ClientManagementAPI.Application.Features.Administration;
+
 
 public record ClientBriefResponse(string Id, string Name, SubscriptionType SubscriptionType, DateTimeOffset ValidTo, bool IsActivated);
 
-public record QueryClientRequest(int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<ClientBriefResponse>>;
+public record GetClientsQuery(int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<ClientBriefResponse>>;
 
 
-public class QueryClientRequestValidator : AbstractValidator<QueryClientRequest>
+public class GetClientsQueryValidator : AbstractValidator<GetClientsQuery>
 {
-    public QueryClientRequestValidator()
+    public GetClientsQueryValidator()
     {
         RuleFor(x => x.PageNumber)
             .NotEmpty().WithMessage("PageNumber is required.")
@@ -29,11 +30,11 @@ public class QueryClientRequestValidator : AbstractValidator<QueryClientRequest>
 }
 
 
-internal sealed class QueryClientRequestHandler(ApplicationDbContext context) : IRequestHandler<QueryClientRequest, PaginatedList<ClientBriefResponse>>
+internal sealed class GetClientsQueryHandler(ApplicationDbContext context) : IRequestHandler<GetClientsQuery, PaginatedList<ClientBriefResponse>>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<PaginatedList<ClientBriefResponse>> Handle(QueryClientRequest request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<ClientBriefResponse>> Handle(GetClientsQuery request, CancellationToken cancellationToken)
     {
         return await _context.Clients
             .OrderBy(c => c.Created)

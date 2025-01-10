@@ -1,9 +1,10 @@
-using ClientManagementAPI.Application.Domain.Clients;
-using ClientManagementAPI.Application.Features.Clients.Shared.Common;
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
-using ClientManagementAPI.Application.Features.Clients.Shared.Validators;
+using ClientManagementAPI.Application.Domain;
+using ClientManagementAPI.Application.Shared.Common;
+using ClientManagementAPI.Application.Shared.Dtos;
+using ClientManagementAPI.Application.Shared.Validators;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
+using Shared.Common.Enums;
 using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 
@@ -11,11 +12,12 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace ClientManagementAPI.Application.Features.Clients;
+namespace ClientManagementAPI.Application.Features.Administration;
 
-public record UpdateClientRequest(string Id, string Name, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImageRequest? Logo);
 
-public record UpdateClientCommand(string? CurrentUserId, UpdateClientRequest Payload) : IRequest;
+public record UpdateClientPayload(string Id, string Name, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImagePayload? Logo);
+
+public record UpdateClientCommand(string? CurrentUserId, UpdateClientPayload Payload) : IRequest;
 
 
 public class UpdateClientCommandValidator : AbstractValidator<UpdateClientCommand>
@@ -24,12 +26,12 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
-            .SetValidator(new UpdateClientRequestValidator());
+            .SetValidator(new UpdateClientPayloadValidator());
     }
 
-    class UpdateClientRequestValidator : AbstractValidator<UpdateClientRequest>
+    class UpdateClientPayloadValidator : AbstractValidator<UpdateClientPayload>
     {
-        public UpdateClientRequestValidator()
+        public UpdateClientPayloadValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
@@ -54,7 +56,7 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
                 .GreaterThan(DateTime.Now).WithMessage("Valid date must be greater than current datetime.");
 
             RuleFor(x => x.Logo!)
-                .SetValidator(new ClientImageRequestValidator())
+                .SetValidator(new ClientImagePayloadValidator())
                 .When(x => x.Logo != null);
 
             RuleFor(x => x)
@@ -68,7 +70,7 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
             return productTypes.Distinct().Count() == productTypes.Length;
         }
 
-        private bool NotExceedAllowedProductTypes(UpdateClientRequest request)
+        private bool NotExceedAllowedProductTypes(UpdateClientPayload request)
         {
             switch (request.SubscriptionType)
             {
@@ -127,7 +129,7 @@ internal sealed class UpdateClientCommandHandler(ApplicationDbContext context) :
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static Image ToEntity(string modifiedBy, ClientImageRequest request) => new()
+    private static Image ToEntity(string modifiedBy, ClientImagePayload request) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = request.Filename,

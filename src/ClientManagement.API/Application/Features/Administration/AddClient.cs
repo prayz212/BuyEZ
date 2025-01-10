@@ -1,11 +1,12 @@
 using ClientManagementAPI.Application.Options;
-using ClientManagementAPI.Application.Domain.Clients;
-using ClientManagementAPI.Application.Features.Clients.Shared.Common;
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
-using ClientManagementAPI.Application.Features.Clients.Shared.Validators;
+using ClientManagementAPI.Application.Domain;
+using ClientManagementAPI.Application.Shared.Common;
+using ClientManagementAPI.Application.Shared.Dtos;
+using ClientManagementAPI.Application.Shared.Validators;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
 using Shared.Options;
+using Shared.Common.Enums;
 using Shared.GrpcProto.Utils;
 using Shared.GrpcProto.Account;
 using Shared.Common.Constants;
@@ -17,11 +18,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
 
-namespace ClientManagementAPI.Application.Features.Clients;
+namespace ClientManagementAPI.Application.Features.Administration;
 
-public record AddClientRequest(string Name, string AliasName, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImageRequest? Logo);
 
-public record AddClientCommand(string? CurrentUserId, AddClientRequest Payload) : IRequest<ClientDetailResponse>;
+public record AddClientPayload(string Name, string AliasName, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImagePayload? Logo);
+
+public record AddClientCommand(string? CurrentUserId, AddClientPayload Payload) : IRequest<ClientDetailResponse>;
 
 
 public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
@@ -30,12 +32,12 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
-            .SetValidator(new AddClientRequestValidator());
+            .SetValidator(new AddClientPayloadValidator());
     }
 
-    class AddClientRequestValidator : AbstractValidator<AddClientRequest>
+    class AddClientPayloadValidator : AbstractValidator<AddClientPayload>
     {
-        public AddClientRequestValidator()
+        public AddClientPayloadValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
@@ -65,7 +67,7 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
                 .GreaterThan(DateTime.Now).WithMessage("Valid date must be greater than current datetime.");
 
             RuleFor(x => x.Logo!)
-                .SetValidator(new ClientImageRequestValidator())
+                .SetValidator(new ClientImagePayloadValidator())
                 .When(x => x.Logo != null);
 
             RuleFor(x => x)
@@ -84,7 +86,7 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
             return productTypes.Distinct().Count() == productTypes.Length;
         }
 
-        private bool NotExceedAllowedProductTypes(AddClientRequest request)
+        private bool NotExceedAllowedProductTypes(AddClientPayload request)
         {
             switch (request.SubscriptionType)
             {
@@ -105,13 +107,13 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
 internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand, ClientDetailResponse>
 {
     private readonly ApplicationDbContext _context;
-    private readonly IAccountService _accountGrpcClient;
+    private readonly IAccountService _accountService;
     private readonly GrpcBaseOptions _grpcClientOptions;
 
     public AddClientCommandHandler(ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
     {
         _context = context;
-        _accountGrpcClient = accountService;
+        _accountService = accountService;
         _grpcClientOptions = clientOptions.Value.Identity;
     }
 
@@ -138,12 +140,12 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
 
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
-        await _accountGrpcClient.AddIdentityAccountAsync(grpcRequestPayload, callContext);
+        await _accountService.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return Client.ToDto(newClient);
     }
 
-    private static Client ToEntity(string createdBy, AddClientRequest client) => new()
+    private static Client ToEntity(string createdBy, AddClientPayload client) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Name = client.Name,
@@ -156,7 +158,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
         CreatedBy = createdBy
     };
 
-    private static Image ToEntity(string createdBy, ClientImageRequest clientImage) => new()
+    private static Image ToEntity(string createdBy, ClientImagePayload clientImage) => new()
     {
         Id = Guid.NewGuid().ToString(),
         Filename = clientImage.Filename,
