@@ -11,9 +11,10 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Identity.Application.Features.Account.gRPC;
+namespace Identity.Application.Features.Administration.gRPC;
 
-public record AddIdentityAccountCommand(AddIdentityAccountRequest Payload) : IRequest<IdentityAccountDetailResponse>;
+
+public record AddIdentityAccountCommand(AddIdentityAccountPayload Payload) : IRequest<IdentityAccountDetailResponse>;
 
 
 public class AddIdentityAccountCommandValidator : AbstractValidator<AddIdentityAccountCommand>
@@ -22,12 +23,12 @@ public class AddIdentityAccountCommandValidator : AbstractValidator<AddIdentityA
     {
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
-            .SetValidator(new AddIdentityAccountRequestValidator());
+            .SetValidator(new AddIdentityAccountPayloadValidator());
     }
 
-    class AddIdentityAccountRequestValidator : AbstractValidator<AddIdentityAccountRequest>
+    class AddIdentityAccountPayloadValidator : AbstractValidator<AddIdentityAccountPayload>
     {
-        public AddIdentityAccountRequestValidator()
+        public AddIdentityAccountPayloadValidator()
         {
             RuleFor(x => x.TenantId)
                 .NotEmpty().WithMessage("Tenant Id is required.");
@@ -110,7 +111,7 @@ internal sealed class AddIdentityAccountCommandHandler(
         return ToDto(newAccount);
     }
 
-    private static User ToEntity(AddIdentityAccountRequest request) => new()
+    private static User ToEntity(AddIdentityAccountPayload request) => new()
     {
         Id = Guid.NewGuid(),
         FirstName = request.FirstName,

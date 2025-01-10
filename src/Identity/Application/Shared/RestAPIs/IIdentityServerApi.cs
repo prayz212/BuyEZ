@@ -1,7 +1,7 @@
 using System.Dynamic;
 using Refit;
 
-namespace Identity.Application.Features.Identity.Shared.RestAPIs;
+namespace Identity.Application.Shared.RestAPIs;
 
 public interface IIdentityServerApi
 {

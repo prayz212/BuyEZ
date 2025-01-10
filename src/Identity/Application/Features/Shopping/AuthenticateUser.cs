@@ -1,12 +1,13 @@
 using Identity.Application.Common;
-using Identity.Application.Features.Identity.Shared.RestAPIs;
+using Identity.Application.Shared.RestAPIs;
 
 using MediatR;
 using Newtonsoft.Json;
 using FluentValidation;
 using Duende.IdentityServer.Models;
 
-namespace Identity.Application.Features.Identity;
+namespace Identity.Application.Features.Shopping;
+
 
 public record AuthenticateUserResponse(
     [property: JsonProperty("access_token")] string AccessToken, 
@@ -15,12 +16,12 @@ public record AuthenticateUserResponse(
     [property: JsonProperty("token_type")] string TokenType, 
     [property: JsonProperty("scope")] string Scope);
 
-public record AuthenticateUserCommand(string Username, string Password) : IRequest<AuthenticateUserResponse>;
+public record AuthenticateUserQuery(string Username, string Password) : IRequest<AuthenticateUserResponse>;
 
 
-public class AuthenticateUserCommandValidator : AbstractValidator<AuthenticateUserCommand>
+public class AuthenticateUserQueryValidator : AbstractValidator<AuthenticateUserQuery>
 {
-    public AuthenticateUserCommandValidator()
+    public AuthenticateUserQueryValidator()
     {
         RuleFor(x => x.Username)
             .NotEmpty().WithMessage("Username is required.")
@@ -33,27 +34,26 @@ public class AuthenticateUserCommandValidator : AbstractValidator<AuthenticateUs
             .MaximumLength(100).WithMessage("Password must not exceed 100 characters.");
     }
 
-    private bool NotContainSpaceBetween(string username)
-    {
-        return!username.Contains(' ');
-    }
+    private bool NotContainSpaceBetween(string username) => 
+        !username.Contains(' ');
 }
 
 
-internal sealed class AuthenticateUserCommandHandler : IRequestHandler<AuthenticateUserCommand, AuthenticateUserResponse>
+internal sealed class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuery, AuthenticateUserResponse>
 {
     private readonly IIdentityServerApi _identityServerApi;
     private readonly Client _client;
 
-    public AuthenticateUserCommandHandler(IIdentityServerApi identityServerApi)
+    public AuthenticateUserQueryHandler(IIdentityServerApi identityServerApi)
     {
         _identityServerApi = identityServerApi;
 
+        /* Hard coding the BuyEZ Shopping ClientId */
         var clientId = "01f9f062-cedb-4a30-877c-c7295ddcc82d";
         _client = Config.Clients.First(c => c.ClientId == clientId);
     }
 
-    public async Task<AuthenticateUserResponse> Handle(AuthenticateUserCommand request, CancellationToken cancellationToken)
+    public async Task<AuthenticateUserResponse> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
         // Make a call to connect/token to get the token
         var contentKeyValues = new Dictionary<string, string>()

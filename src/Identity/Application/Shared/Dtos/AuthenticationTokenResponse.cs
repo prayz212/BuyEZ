@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Identity.Application.Features.Identity.Shared.Dtos;
+namespace Identity.Application.Shared.Dtos;
 
 public record AuthenticationTokenResponse(
     [property: JsonProperty("id_token")] string IdToken, 

@@ -1,6 +1,6 @@
 using Identity.Application.Common;
-using Identity.Application.Features.Identity.Shared.Dtos;
-using Identity.Application.Features.Identity.Shared.RestAPIs;
+using Identity.Application.Shared.Dtos;
+using Identity.Application.Shared.RestAPIs;
 
 using Shared.Common.Exceptions;
 
@@ -8,14 +8,15 @@ using FluentValidation;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Identity.Application.Features.Identity;
-
-public record RefreshTokenCommand(string ClientId, string RefreshToken) : IRequest<AuthenticationTokenResponse>;
+namespace Identity.Application.Features.Shopping;
 
 
-public class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenCommand>
+public record RefreshTokenQuery(string ClientId, string RefreshToken) : IRequest<AuthenticationTokenResponse>;
+
+
+public class RefreshTokenQueryValidator : AbstractValidator<RefreshTokenQuery>
 {
-    public RefreshTokenCommandValidator()
+    public RefreshTokenQueryValidator()
     {
         RuleFor(x => x.ClientId)
             .NotEmpty().WithMessage("Client Id is required.");
@@ -26,11 +27,11 @@ public class RefreshTokenCommandValidator : AbstractValidator<RefreshTokenComman
 }
 
 
-internal sealed class RefreshTokenCommandHandler(IIdentityServerApi identityServerApi) : IRequestHandler<RefreshTokenCommand, AuthenticationTokenResponse>
+internal sealed class RefreshTokenQueryHandler(IIdentityServerApi identityServerApi) : IRequestHandler<RefreshTokenQuery, AuthenticationTokenResponse>
 {
     private readonly IIdentityServerApi _identityServerApi = identityServerApi;
 
-    public async Task<AuthenticationTokenResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<AuthenticationTokenResponse> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
         // Make a call to connect/token to get the token
         var client = Config.Clients.FirstOrDefault(c => c.ClientId == request.ClientId);

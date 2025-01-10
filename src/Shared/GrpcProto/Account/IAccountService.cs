@@ -7,5 +7,5 @@ namespace Shared.GrpcProto.Account;
 public interface IAccountService
 {
     [Operation]
-    Task<IdentityAccountDetailResponse> AddIdentityAccountAsync(AddIdentityAccountRequest request, CallContext context = default);
+    Task<IdentityAccountDetailResponse> AddIdentityAccountAsync(AddIdentityAccountPayload request, CallContext context = default);
 }

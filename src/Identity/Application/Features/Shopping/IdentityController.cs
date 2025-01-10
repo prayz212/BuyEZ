@@ -1,11 +1,11 @@
-using Identity.Application.Features.Identity.Shared.Dtos;
+using Identity.Application.Shared.Dtos;
 
 using Shared.Common;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Identity.Application.Features.Identity;
+namespace Identity.Application.Features.Shopping;
 
 [ApiController]
 [Route($"{ApiPaths.Root}/identity")]
@@ -15,7 +15,7 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<AuthenticateUserResponse> Authenticate(AuthenticateUserCommand command)
+    public async Task<AuthenticateUserResponse> Authenticate(AuthenticateUserQuery command)
     {
         return await Mediator.Send(command);
     }
@@ -25,7 +25,7 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<AuthenticationTokenResponse> GetAuthenticationToken(GetAuthenticationTokenCommand command)
+    public async Task<AuthenticationTokenResponse> GetAuthenticationToken(GetAuthenticationTokenQuery command)
     {
         return await Mediator.Send(command);
     }
@@ -35,7 +35,7 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<AuthenticationTokenResponse> RefreshToken(RefreshTokenCommand command)
+    public async Task<AuthenticationTokenResponse> RefreshToken(RefreshTokenQuery command)
     {
         return await Mediator.Send(command);
     }

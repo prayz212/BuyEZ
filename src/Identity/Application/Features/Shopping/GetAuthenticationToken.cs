@@ -1,6 +1,6 @@
 using Identity.Application.Common;
-using Identity.Application.Features.Identity.Shared.Dtos;
-using Identity.Application.Features.Identity.Shared.RestAPIs;
+using Identity.Application.Shared.Dtos;
+using Identity.Application.Shared.RestAPIs;
 
 using Shared.Common.Exceptions;
 
@@ -9,14 +9,15 @@ using MediatR;
 using Newtonsoft.Json;
 using Duende.IdentityServer.Models;
 
-namespace Identity.Application.Features.Identity;
-
-public record GetAuthenticationTokenCommand(string ClientId, string Code, string CodeVerifier) : IRequest<AuthenticationTokenResponse>;
+namespace Identity.Application.Features.Shopping;
 
 
-public class GetAuthenticationTokenCommandValidator : AbstractValidator<GetAuthenticationTokenCommand>
+public record GetAuthenticationTokenQuery(string ClientId, string Code, string CodeVerifier) : IRequest<AuthenticationTokenResponse>;
+
+
+public class GetAuthenticationTokenQueryValidator : AbstractValidator<GetAuthenticationTokenQuery>
 {
-    public GetAuthenticationTokenCommandValidator()
+    public GetAuthenticationTokenQueryValidator()
     {
         RuleFor(x => x.ClientId)
             .NotEmpty().WithMessage("Client Id is required.");
@@ -30,11 +31,11 @@ public class GetAuthenticationTokenCommandValidator : AbstractValidator<GetAuthe
 }
 
 
-internal sealed class GetAuthenticationTokenCommandHandler(IIdentityServerApi identityServerApi) : IRequestHandler<GetAuthenticationTokenCommand, AuthenticationTokenResponse>
+internal sealed class GetAuthenticationTokenQueryHandler(IIdentityServerApi identityServerApi) : IRequestHandler<GetAuthenticationTokenQuery, AuthenticationTokenResponse>
 {
     private readonly IIdentityServerApi _identityServerApi = identityServerApi;
 
-    public async Task<AuthenticationTokenResponse> Handle(GetAuthenticationTokenCommand request, CancellationToken cancellationToken)
+    public async Task<AuthenticationTokenResponse> Handle(GetAuthenticationTokenQuery request, CancellationToken cancellationToken)
     {
         // Make a call to connect/token to get the token
         var client = Config.Clients.FirstOrDefault(c => c.ClientId == request.ClientId);

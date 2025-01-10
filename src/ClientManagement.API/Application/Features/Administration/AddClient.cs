@@ -168,7 +168,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
         CreatedBy = createdBy
     };
 
-    private static AddIdentityAccountRequest GenerateGrpcRequestPayload(string currentUserId, Client newClient)
+    private static AddIdentityAccountPayload GenerateGrpcRequestPayload(string currentUserId, Client newClient)
     {
         var clientNameUnderscore = newClient.Name.Trim().ToLower().Replace(" ", "_");
         return new()
