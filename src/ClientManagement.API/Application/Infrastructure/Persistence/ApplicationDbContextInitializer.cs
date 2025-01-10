@@ -1,5 +1,5 @@
 using System.Text.Json;
-using ClientManagementAPI.Application.Domain.Clients;
+using ClientManagementAPI.Application.Domain;
 
 using Shared.Infrastructure.Persistence;
 

@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClientManagementAPI.Application.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241202111614_Initial")]
-    partial class Initial
+    [Migration("20250110040025_ChangeEnumValueToString")]
+    partial class ChangeEnumValueToString
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace ClientManagementAPI.Application.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Clients.Client", b =>
+            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Client", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -57,12 +57,13 @@ namespace ClientManagementAPI.Application.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<int[]>("RegisteredProductType")
+                    b.Property<string>("RegisteredProductType")
                         .IsRequired()
-                        .HasColumnType("integer[]");
+                        .HasColumnType("text");
 
-                    b.Property<int>("SubscriptionType")
-                        .HasColumnType("integer");
+                    b.Property<string>("SubscriptionType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("ValidUntil")
                         .HasColumnType("timestamp with time zone");
@@ -75,7 +76,7 @@ namespace ClientManagementAPI.Application.Infrastructure.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Clients.Image", b =>
+            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Image", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -124,18 +125,16 @@ namespace ClientManagementAPI.Application.Infrastructure.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Clients.Image", b =>
+            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Image", b =>
                 {
-                    b.HasOne("ClientManagementAPI.Application.Domain.Clients.Client", "Client")
+                    b.HasOne("ClientManagementAPI.Application.Domain.Client", null)
                         .WithOne("Logo")
-                        .HasForeignKey("ClientManagementAPI.Application.Domain.Clients.Image", "ClientId")
+                        .HasForeignKey("ClientManagementAPI.Application.Domain.Image", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Clients.Client", b =>
+            modelBuilder.Entity("ClientManagementAPI.Application.Domain.Client", b =>
                 {
                     b.Navigation("Logo");
                 });

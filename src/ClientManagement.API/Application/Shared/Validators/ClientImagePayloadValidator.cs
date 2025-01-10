@@ -1,11 +1,11 @@
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using ClientManagementAPI.Application.Shared.Dtos;
 using FluentValidation;
 
-namespace ClientManagementAPI.Application.Features.Clients.Shared.Validators;
+namespace ClientManagementAPI.Application.Shared.Validators;
 
-public class ClientImageRequestValidator : AbstractValidator<ClientImageRequest>
+public class ClientImagePayloadValidator : AbstractValidator<ClientImagePayload>
 {
-    public ClientImageRequestValidator() 
+    public ClientImagePayloadValidator() 
     {
         RuleFor(x => x.Filename)
             .NotEmpty().WithMessage("Filename is required.")

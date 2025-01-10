@@ -1,6 +1,11 @@
-using ClientManagementAPI.Application.Domain.Clients;
+using ClientManagementAPI.Application.Domain;
+
+using Shared.Common.Enums;
+using Shared.Infrastructure;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence.Configurations;
 
@@ -22,14 +27,11 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasMaxLength(512)
             .IsRequired();
 
-        builder.Property(e => e.ValidUntil)
-            .HasColumnType("datetime");    
+        builder.Property(e => e.SubscriptionType)
+            .HasConversion(new EnumToStringConverter<SubscriptionType>());
 
-        builder.Property(e => e.Created)
-            .HasColumnType("datetime");
-
-        builder.Property(e => e.LastModified)
-            .HasColumnType("datetime");
+        builder.Property(e => e.RegisteredProductType)
+            .HasConversion(new EnumArrayToStringConverter<ProductType>());
 
         builder.Property(x => x.ValidUntil)
             .HasColumnType("timestamp with time zone");

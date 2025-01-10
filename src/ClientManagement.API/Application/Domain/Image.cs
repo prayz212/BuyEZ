@@ -1,7 +1,7 @@
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
+using ClientManagementAPI.Application.Shared.Dtos;
 using Shared.Domain;
 
-namespace ClientManagementAPI.Application.Domain.Clients;
+namespace ClientManagementAPI.Application.Domain;
 
 public class Image : ImageBase
 {

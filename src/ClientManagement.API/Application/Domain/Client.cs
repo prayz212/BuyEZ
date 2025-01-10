@@ -1,7 +1,9 @@
-using ClientManagementAPI.Application.Features.Clients.Shared.Dtos;
-using Shared.Common;
+using ClientManagementAPI.Application.Shared.Dtos;
 
-namespace ClientManagementAPI.Application.Domain.Clients;
+using Shared.Common;
+using Shared.Common.Enums;
+
+namespace ClientManagementAPI.Application.Domain;
 
 public class Client : AuditableEntity, IHasDomainEvent
 {
@@ -59,19 +61,4 @@ public enum SubscriptionType
         Unlimited registered product types.
     */
     Premium
-}
-
-// TODO: Refactor to centralize in share project
-public enum ProductType
-{
-    /* CLOTHES */
-    // Men
-    Men_TShirt = 1,
-    Men_Pants,
-    Men_Jacket,
-
-    // Women
-    Women_Pants,
-    Women_TShirt,
-    Women_Jacket,
 }
