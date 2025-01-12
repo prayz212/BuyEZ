@@ -1,10 +1,15 @@
 using Identity.Application.Common;
 using Identity.Application.Shared.RestAPIs;
 
+using ValidationException = Shared.Common.Exceptions.ValidationException;
+
+using Refit;
 using MediatR;
+using System.Net;
 using Newtonsoft.Json;
 using FluentValidation;
 using Duende.IdentityServer.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.Shopping;
 
@@ -41,11 +46,13 @@ public class AuthenticateUserQueryValidator : AbstractValidator<AuthenticateUser
 
 internal sealed class AuthenticateUserQueryHandler : IRequestHandler<AuthenticateUserQuery, AuthenticateUserResponse>
 {
+    private readonly ILogger<AuthenticateUserQueryHandler> _logger;
     private readonly IIdentityServerApi _identityServerApi;
     private readonly Client _client;
 
-    public AuthenticateUserQueryHandler(IIdentityServerApi identityServerApi)
+    public AuthenticateUserQueryHandler(ILogger<AuthenticateUserQueryHandler> logger, IIdentityServerApi identityServerApi)
     {
+        _logger = logger;
         _identityServerApi = identityServerApi;
 
         /* Hard coding the BuyEZ Shopping ClientId */
@@ -59,7 +66,7 @@ internal sealed class AuthenticateUserQueryHandler : IRequestHandler<Authenticat
         var contentKeyValues = new Dictionary<string, string>()
         {
             { "client_id", _client.ClientId },
-            { "client_secret", Config.ClientSecretOf(_client.ClientId) },
+            { "client_secret", Config.GetClientSecret(_client.ClientId)! },
             { "grant_type", GrantType.ResourceOwnerPassword },
             { "username", request.Username },
             { "password", request.Password },
@@ -67,12 +74,26 @@ internal sealed class AuthenticateUserQueryHandler : IRequestHandler<Authenticat
         };
 
         var content = new FormUrlEncodedContent(contentKeyValues);
-        var response = await _identityServerApi.PostGetTokenAsync(content);
 
-        string jsonResponse = JsonConvert.SerializeObject(response);
-        var tokenResponse = JsonConvert.DeserializeObject<AuthenticateUserResponse>(jsonResponse);
+        try 
+        {
+            var response = await _identityServerApi.PostGetTokenAsync(content);
 
-        return tokenResponse ?? throw new Exception("Cannot parse token response object.");
+            string jsonResponse = JsonConvert.SerializeObject(response);
+            var tokenResponse = JsonConvert.DeserializeObject<AuthenticateUserResponse>(jsonResponse);
+
+            return tokenResponse ?? throw new Exception("Cannot parse token response object.");
+        }
+        catch (ApiException exception) when (exception.StatusCode == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError($"Authenticate user failure: {exception.StatusCode} - {exception.Content}");
+            throw new ValidationException("Invalid credentials.");
+        }
+        catch (ApiException exception)
+        {
+            _logger.LogError($"Unhandled authenticate user failure: {exception.StatusCode} - {exception.Content}");
+            throw new Exception("Failed to perform user authentication in ROP flow.", exception);
+        }
     }
 }
 

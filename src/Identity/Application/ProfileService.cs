@@ -27,8 +27,13 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, context.Subject.FindFirstValue("name") ?? string.Empty),
-            new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantid", user.TenantId ?? string.Empty)
         };
+
+        /* Add tenant id if existed */
+        if (!string.IsNullOrWhiteSpace(user.TenantId))
+        {
+            claims.Add(new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantid", user.TenantId));
+        }
 
         /* Add claims to id token and user info endpoint */
         if (context.Caller == ProfileDataCallers.ClaimsProviderIdentityToken || 
@@ -39,7 +44,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         }
 
         /* Add claims to access token and user info endpoint */
-        // TODO: Use Redis to store user information of the access token instead
+        // TODO: Use Redis to store user information instead
         if (context.Caller == ProfileDataCallers.ClaimsProviderAccessToken || 
             context.Caller == ProfileDataCallers.UserInfoEndpoint)
         {
@@ -53,7 +58,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
     {
         if (string.IsNullOrWhiteSpace(userRole) || 
             !Config.IsInClientRole(clientId, userRole))
-            throw new UnauthorizedAccessException("Invalid user role.");
+            throw new UnauthorizedAccessException($"User role {userRole} is not accessible to this client.");
     }
 
     public Task IsActiveAsync(IsActiveContext context)

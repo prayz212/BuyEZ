@@ -2,6 +2,10 @@
 
 ## Identity Provider (IdP)
 
+1. Id Token
+
+2. Access Token
+
 ### Resource Owner Password Grant Type
 
 ### Authorization Code Grant Type
