@@ -17,6 +17,13 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
+        /* Handle get profile data for user info endpoint */
+        if (context.Caller == ProfileDataCallers.UserInfoEndpoint)
+        {
+            await HandleUserInfoEndpoint(context);
+            return;
+        }
+
         /* Validate user role based on ClientId */
         var userRole = context.Subject.FindFirstValue("role");
         ValidateUserRoleForClient(userRole, context.Client.ClientId);
@@ -37,7 +44,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
             context.Caller == ProfileDataCallers.UserInfoEndpoint)
         {
             claims.Add(new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
-            claims.Add(new(ClaimTypes.Email, context.Subject.FindFirstValue("email") ?? string.Empty));
+            claims.Add(new(ClaimTypes.Email, context.Subject.FindFirstValue("email")!));
         }
 
         /* Add claims to access token and user info endpoint */
@@ -51,6 +58,13 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         context.IssuedClaims.AddRange(claims);
     }
 
+    public Task IsActiveAsync(IsActiveContext context)
+    {
+        // TODO: Check if the user is active or not
+        context.IsActive = true;
+        return Task.CompletedTask;
+    }
+
     private void ValidateUserRoleForClient(string? userRole, string clientId)
     {
         if (string.IsNullOrWhiteSpace(userRole) || 
@@ -58,10 +72,25 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
             throw new UnauthorizedAccessException($"User role {userRole} is not accessible to this client.");
     }
 
-    public Task IsActiveAsync(IsActiveContext context)
+    private async Task HandleUserInfoEndpoint(ProfileDataRequestContext context)
     {
-        // TODO: Check if the user is active or not
-        context.IsActive = true;
-        return Task.CompletedTask;
+        var userId = context.Subject.GetSubjectId();
+        var user = (await _userManager.FindByIdAsync(userId))!;
+        var userRoles = await _userManager.GetRolesAsync(user);
+
+        List<Claim> claims = [
+            new(ClaimTypes.NameIdentifier, user.UserName!),
+            new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+            new(ClaimTypes.Email, user.Email!),
+            new(ClaimTypes.Role, userRoles.First()),
+        ];
+
+        /* Add tenant id if existed */
+        if (!string.IsNullOrWhiteSpace(user.TenantId))
+        {
+            claims.Add(new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantid", user.TenantId));
+        }
+
+        context.IssuedClaims.AddRange(claims);
     }
 }
