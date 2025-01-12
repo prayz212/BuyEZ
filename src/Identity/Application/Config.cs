@@ -111,6 +111,9 @@ public static class Config
                     IdentityConstants.StandardScopes.IDENTITY_API
                 },
 
+                // Add custom claims to Id Token
+                AlwaysIncludeUserClaimsInIdToken = true,
+
                 // Where to redirect after login
                 RedirectUris = { "http://localhost:9100/auth/signin-oidc" },
 
@@ -147,6 +150,9 @@ public static class Config
                     IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API,
                     IdentityConstants.StandardScopes.IDENTITY_API,
                 },
+
+                // Add custom claims to Id Token
+                AlwaysIncludeUserClaimsInIdToken = true,
 
                 // Where to redirect after login
                 RedirectUris = { "http://localhost:9100/auth/signin-oidc" },

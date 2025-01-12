@@ -24,10 +24,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         var userId = context.Subject.GetSubjectId();
         var user = (await _userManager.FindByIdAsync(userId))!;
 
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, context.Subject.FindFirstValue("name") ?? string.Empty),
-        };
+        List<Claim> claims = [new(ClaimTypes.NameIdentifier, context.Subject.FindFirstValue("name")!)];
 
         /* Add tenant id if existed */
         if (!string.IsNullOrWhiteSpace(user.TenantId))
