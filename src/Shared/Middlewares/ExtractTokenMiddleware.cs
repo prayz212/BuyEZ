@@ -54,7 +54,7 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
 
         var tenantIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == TenantIdClaimType);
 
-        context.Items.Add("TenantId", tenantIdClaim?.Value);
+        context.Items.Add("TenantId", tenantIdClaim?.Value ?? string.Empty);
         context.Items.Add("UserId", userIdClaim.Value);
         context.Items.Add("UserRole", roleClaim.Value);
 

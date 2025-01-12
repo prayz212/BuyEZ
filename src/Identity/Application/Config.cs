@@ -4,17 +4,34 @@ using Shared.Common.Constants;
 
 namespace Identity.Application.Common;
 
+public record ClientInfo(string SecretKey, List<string> Roles);
+
 public static class Config
 {
-    private static List<KeyValuePair<string, string>> ClientKeyValues 
-        => new List<KeyValuePair<string, string>>
+    private static Dictionary<string, ClientInfo> ClientInfos 
+        => new()
         {
-            new("01f9f062-cedb-4a30-877c-c7295ddcc82d", "jCp9M7DrMz9mV7efrhhVH7"),
-            new("e3e1e5e3-29cc-4c65-8ed3-4678041d37d7", "2wFu6kC3X9Dxh13G2KHADr"),
-            new("b285f6f7-c2ac-40e2-a456-cd2d087bf251", "6bTAtekG3KZ2ihtPYzAapD")
+            { 
+                "01f9f062-cedb-4a30-877c-c7295ddcc82d", 
+                new ClientInfo(
+                    SecretKey: "jCp9M7DrMz9mV7efrhhVH7", 
+                    Roles: [IdentityConstants.Role.USER])
+            },
+            { 
+                "e3e1e5e3-29cc-4c65-8ed3-4678041d37d7", 
+                new ClientInfo(
+                    SecretKey: "2wFu6kC3X9Dxh13G2KHADr", 
+                    Roles: [IdentityConstants.Role.TENANT_ADMIN, IdentityConstants.Role.TENANT_MANAGER, IdentityConstants.Role.TENANT_STAFF])
+            },
+            {
+                "b285f6f7-c2ac-40e2-a456-cd2d087bf251", 
+                new ClientInfo(
+                    SecretKey: "6bTAtekG3KZ2ihtPYzAapD", 
+                    Roles: [IdentityConstants.Role.SYSTEM_ADMIN, IdentityConstants.Role.SYSTEM_SUPPORT])
+            },
         };
-    public static string ClientSecretOf(string clientId) 
-        => ClientKeyValues.FirstOrDefault(kv => kv.Key == clientId).Value;
+    public static string? GetClientSecret(string clientId) 
+        => ClientInfos.GetValueOrDefault(clientId)?.SecretKey;
 
     public static IEnumerable<IdentityResource> IdentityResources => 
         new List<IdentityResource>
@@ -52,10 +69,10 @@ public static class Config
         {
             new()
             {
-                ClientId = ClientKeyValues[0].Key,
+                ClientId = "01f9f062-cedb-4a30-877c-c7295ddcc82d",
                 ClientName = "BuyEZ Shopping",
                 AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                ClientSecrets = { new Secret(ClientKeyValues[0].Value.Sha256()) },
+                ClientSecrets = { new Secret(ClientInfos["01f9f062-cedb-4a30-877c-c7295ddcc82d"].SecretKey.Sha256()) },
                 AllowedScopes = 
                 { 
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -80,10 +97,10 @@ public static class Config
             },
             new()
             {
-                ClientId = ClientKeyValues[1].Key,
+                ClientId = "e3e1e5e3-29cc-4c65-8ed3-4678041d37d7",
                 ClientName = "BuyEZ CRM",
                 AllowedGrantTypes = GrantTypes.Code,
-                ClientSecrets = { new Secret(ClientKeyValues[1].Value.Sha256()) },
+                ClientSecrets = { new Secret(ClientInfos["e3e1e5e3-29cc-4c65-8ed3-4678041d37d7"].SecretKey.Sha256()) },
                 AllowedScopes = 
                 { 
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -93,6 +110,9 @@ public static class Config
                     IdentityConstants.StandardScopes.ORDER_API, 
                     IdentityConstants.StandardScopes.IDENTITY_API
                 },
+
+                // Add custom claims to Id Token
+                AlwaysIncludeUserClaimsInIdToken = true,
 
                 // Where to redirect after login
                 RedirectUris = { "http://localhost:9100/auth/signin-oidc" },
@@ -116,10 +136,10 @@ public static class Config
             },
             new()
             {
-                ClientId = ClientKeyValues[2].Key,
+                ClientId = "b285f6f7-c2ac-40e2-a456-cd2d087bf251",
                 ClientName = "BuyEZ Administration",
                 AllowedGrantTypes = GrantTypes.Code,
-                ClientSecrets = { new Secret(ClientKeyValues[2].Value.Sha256()) },
+                ClientSecrets = { new Secret(ClientInfos["b285f6f7-c2ac-40e2-a456-cd2d087bf251"].SecretKey.Sha256()) },
                 AllowedScopes = 
                 { 
                     IdentityServerConstants.StandardScopes.OpenId,
@@ -130,6 +150,9 @@ public static class Config
                     IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API,
                     IdentityConstants.StandardScopes.IDENTITY_API,
                 },
+
+                // Add custom claims to Id Token
+                AlwaysIncludeUserClaimsInIdToken = true,
 
                 // Where to redirect after login
                 RedirectUris = { "http://localhost:9100/auth/signin-oidc" },
@@ -152,4 +175,13 @@ public static class Config
                 AbsoluteRefreshTokenLifetime = 86400, // 1 days
             }
         };
+
+    public static bool IsInClientRole(string clientId, string role)
+    {
+        var clientInfo = ClientInfos.GetValueOrDefault(clientId);
+
+        return clientInfo != null 
+            ? clientInfo.Roles.Contains(role) 
+            : false;
+    }
 }

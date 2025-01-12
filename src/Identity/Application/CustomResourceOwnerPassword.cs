@@ -46,7 +46,12 @@ public class CustomResourceOwnerPassword(SignInManager<User> signInManager, User
 
         context.Result = new GrantValidationResult(
             subject: user.Id.ToString(),
-            authenticationMethod: "custom"
+            authenticationMethod: "custom",
+            claims: [
+                new("name", context.UserName),
+                new("role", IdentityConstants.Role.USER),
+                new("email", user.Email!),
+            ]
         );
     }
 }
