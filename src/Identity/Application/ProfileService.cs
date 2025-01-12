@@ -1,9 +1,13 @@
 using Identity.Application.Domain;
+using Identity.Application.Common;
+
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using ClaimTypes = System.Security.Claims.ClaimTypes;
 using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
-using Microsoft.AspNetCore.Identity;
+using static Duende.IdentityServer.IdentityServerConstants;
 
 namespace Identity.Application;
 
@@ -13,23 +17,48 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
 
     public async Task GetProfileDataAsync(ProfileDataRequestContext context)
     {
+        /* Validate user role based on ClientId */
+        var userRole = context.Subject.FindFirstValue("role");
+        ValidateUserRoleForClient(userRole, context.Client.ClientId);
+
         var userId = context.Subject.GetSubjectId();
-        var user = await _userManager.FindByIdAsync(userId);
-        var userRoles = await _userManager.GetRolesAsync(user);
-        var claims = new Claim[]
+        var user = (await _userManager.FindByIdAsync(userId))!;
+
+        var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, userId),
-            new(ClaimTypes.Name, user.UserName!),
-            new(ClaimTypes.Email, user.Email!),
-            new(ClaimTypes.Role, userRoles.First()),
+            new(ClaimTypes.NameIdentifier, context.Subject.FindFirstValue("name") ?? string.Empty),
             new("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/tenantid", user.TenantId ?? string.Empty)
         };
+
+        /* Add claims to id token and user info endpoint */
+        if (context.Caller == ProfileDataCallers.ClaimsProviderIdentityToken || 
+            context.Caller == ProfileDataCallers.UserInfoEndpoint)
+        {
+            claims.Add(new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
+            claims.Add(new(ClaimTypes.Email, context.Subject.FindFirstValue("email") ?? string.Empty));
+        }
+
+        /* Add claims to access token and user info endpoint */
+        // TODO: Use Redis to store user information of the access token instead
+        if (context.Caller == ProfileDataCallers.ClaimsProviderAccessToken || 
+            context.Caller == ProfileDataCallers.UserInfoEndpoint)
+        {
+            claims.Add(new(ClaimTypes.Role, userRole!));
+        }
 
         context.IssuedClaims.AddRange(claims);
     }
 
+    private void ValidateUserRoleForClient(string? userRole, string clientId)
+    {
+        if (string.IsNullOrWhiteSpace(userRole) || 
+            !Config.IsInClientRole(clientId, userRole))
+            throw new UnauthorizedAccessException("Invalid user role.");
+    }
+
     public Task IsActiveAsync(IsActiveContext context)
     {
+        // TODO: Check if the user is active or not
         context.IsActive = true;
         return Task.CompletedTask;
     }
