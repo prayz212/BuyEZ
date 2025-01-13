@@ -11,14 +11,17 @@ namespace ClientManagementAPI.Application.Features.Administration;
 
 public record ClientInfoResponse(string TenantId, string Name, DateTimeOffset ValidTo, ProductType[] ProductType, SubscriptionType Subscription, bool IsActive);
 
-public record GetClientInfoRequest(string? Id) : IRequest<ClientInfoResponse>;
+public record GetClientInfoQuery(string? Id) : IRequest<ClientInfoResponse>;
 
-internal sealed class GetTenantInfoHandler(ApplicationDbContext context) : IRequestHandler<GetClientInfoRequest, ClientInfoResponse>
+internal sealed class GetTenantInfoHandler(ApplicationDbContext context) : IRequestHandler<GetClientInfoQuery, ClientInfoResponse>
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<ClientInfoResponse> Handle(GetClientInfoRequest request, CancellationToken cancellationToken)
+    public async Task<ClientInfoResponse> Handle(GetClientInfoQuery request, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(request.Id))
+            throw new ValidationException("Invalid client id.");
+
         var client = await _context.Clients
             .FirstOrDefaultAsync(c => c.Id == request.Id);
 

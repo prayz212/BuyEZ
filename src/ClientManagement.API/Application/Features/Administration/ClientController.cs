@@ -106,10 +106,12 @@ public class ClientController : ApiControllerBase
     [HttpGet("tenant-info")]
     [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_OR_STAFF_POLICY)]
     [ProducesResponseType(typeof(ClientInfoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ClientInfoResponse> ClientInfo()
+    public async Task<ClientInfoResponse> GetClientInfo()
     {
-        return await Mediator.Send(new GetClientInfoRequest(GetTenantId()));
+        return await Mediator.Send(new GetClientInfoQuery(GetTenantId()));
     }
 }
