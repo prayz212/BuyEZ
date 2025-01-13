@@ -40,8 +40,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         }
 
         /* Add claims to id token and user info endpoint */
-        if (context.Caller == ProfileDataCallers.ClaimsProviderIdentityToken || 
-            context.Caller == ProfileDataCallers.UserInfoEndpoint)
+        if (context.Caller == ProfileDataCallers.ClaimsProviderIdentityToken)
         {
             claims.Add(new(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"));
             claims.Add(new(ClaimTypes.Email, context.Subject.FindFirstValue("email")!));
@@ -49,8 +48,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
 
         /* Add claims to access token and user info endpoint */
         // TODO: Use Redis to store user information instead
-        if (context.Caller == ProfileDataCallers.ClaimsProviderAccessToken || 
-            context.Caller == ProfileDataCallers.UserInfoEndpoint)
+        if (context.Caller == ProfileDataCallers.ClaimsProviderAccessToken)
         {
             claims.Add(new(ClaimTypes.Role, userRole!));
         }
