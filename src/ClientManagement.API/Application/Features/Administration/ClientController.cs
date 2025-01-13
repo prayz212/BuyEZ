@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace ClientManagementAPI.Application.Features.Administration;
 
 [ApiController]
+[Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
 [Route($"{ApiPaths.Root}/client-administrations")]
 public class ClientController : ApiControllerBase
 {
     [HttpGet("{id}")]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -29,7 +29,6 @@ public class ClientController : ApiControllerBase
     }
 
     [HttpPost("query")]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(PaginatedList<ClientBriefResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -41,7 +40,6 @@ public class ClientController : ApiControllerBase
     }
 
     [HttpPost]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(ClientDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -54,7 +52,6 @@ public class ClientController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -78,7 +75,6 @@ public class ClientController : ApiControllerBase
             2. Call this API (toggle activate in the client management page)
     */
     [HttpPut("{id}/deactivate")]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -91,7 +87,6 @@ public class ClientController : ApiControllerBase
     }
 
     [HttpPut("{id}/activate")]
-    [Authorize(PolicyConstants.SYSTEM_ADMIN_POLICY)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -101,15 +96,5 @@ public class ClientController : ApiControllerBase
     {
         await Mediator.Send(new ActivateClientCommand(GetUserId(), new ActivateClientPayload(id)));
         return NoContent();
-    }
-
-    [HttpGet("tenant-info")]
-    [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_OR_STAFF_POLICY)]
-    [ProducesResponseType(typeof(ClientInfoResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ClientInfoResponse> ClientInfo()
-    {
-        return await Mediator.Send(new GetClientInfoRequest(GetTenantId()));
     }
 }
