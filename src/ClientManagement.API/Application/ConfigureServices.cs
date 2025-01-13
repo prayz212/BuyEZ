@@ -96,6 +96,12 @@ public static class DependencyInjection {
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CLIENT_MANAGEMENT_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN, IdentityConstants.Role.SYSTEM_SUPPORT);
             });
+
+            options.AddPolicy(PolicyConstants.TENANT_ADMIN_OR_MANAGER_OR_STAFF_POLICY, policy =>
+            {
+               policy.RequireAuthenticatedUser();
+               policy.RequireRole(IdentityConstants.Role.TENANT_ADMIN, IdentityConstants.Role.TENANT_MANAGER, IdentityConstants.Role.TENANT_STAFF);
+            });
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
