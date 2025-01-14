@@ -13,8 +13,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using static Duende.IdentityServer.IdentityServerConstants;
 
-namespace Identity.Application.Features.Shopping;
-
+namespace Identity.Application.Features;
 
 public record ExchangeAuthorizationCodeQuery(string ClientId, string Code, string CodeVerifier) : IRequest<AuthenticationTokenResponse>;
 

@@ -5,7 +5,7 @@ using Shared.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Identity.Application.Features.Shopping;
+namespace Identity.Application.Features;
 
 [ApiController]
 [Route($"{ApiPaths.Root}/identity")]
