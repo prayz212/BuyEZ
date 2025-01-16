@@ -87,11 +87,21 @@ public static class DependencyInjection
 
         services.AddSingleton(provider => 
         {
-            var channel = GrpcChannel.ForAddress(catalogAddress);
+            // TODO: using SSL certificate in real production and remove this workaround
+            var httpHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+            
+            var channel = GrpcChannel.ForAddress(catalogAddress, new GrpcChannelOptions
+            {
+                HttpClient = new(httpHandler)
+            });
             return channel.CreateGrpcService<ICatalogService>();
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
     }

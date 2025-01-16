@@ -1,5 +1,7 @@
 using OrderAPI.Application;
+using OrderAPI.Application.Infrastructure.Persistence;
 
+using Shared.Extensions;
 using Shared.Filters;
 using Shared.Middlewares;
 
@@ -63,6 +65,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();
