@@ -40,4 +40,14 @@ public class IdentityController : ApiControllerBase
     {
         return await Mediator.Send(query);
     }
+
+    [HttpPost("register")]
+    [ProducesResponseType(typeof(UserDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<UserDetailResponse> Register(RegisterUserCommand command)
+    {
+        return await Mediator.Send(command);
+    }
 }
