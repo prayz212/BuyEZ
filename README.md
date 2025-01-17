@@ -94,14 +94,13 @@ To build a Dockerfile manually, standing at folder BuyEZ/src then run the follow
 ```bash
 docker build -t <service-name>:<version> -f Dockerfile ../../
 ```
-
-To run a Docker container, using those environment variables in **env.txt**
+> Use environment variables in **env.txt** to configure when running docker container
 
 ## Docker Compose
 To build and run docker containers automatically, standing at folder BuyEZ then run the following command:
 
 ```bash
-docker-compose up -d--build
+docker-compose up -d --build
 ```
 
 To stop/start/restart those running containers, run the following command:
