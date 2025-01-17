@@ -73,6 +73,12 @@ public static class DependencyInjection
 
                     ValidateLifetime = true,
                 };
+
+                // TODO: using SSL certificate in real production and remove this workaround
+                options.BackchannelHttpHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
             });
 
         services.AddAuthorization(options =>
