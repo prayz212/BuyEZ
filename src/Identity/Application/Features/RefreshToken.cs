@@ -13,8 +13,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using static Duende.IdentityServer.IdentityServerConstants;
 
-namespace Identity.Application.Features.Shopping;
-
+namespace Identity.Application.Features;
 
 public record RefreshTokenQuery(string ClientId, string RefreshToken) : IRequest<AuthenticationTokenResponse>;
 

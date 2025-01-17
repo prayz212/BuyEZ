@@ -11,8 +11,7 @@ using FluentValidation;
 using Duende.IdentityServer.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Identity.Application.Features.Shopping;
-
+namespace Identity.Application.Features;
 
 public record AuthenticateUserResponse(
     [property: JsonProperty("access_token")] string AccessToken, 
