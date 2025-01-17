@@ -28,7 +28,6 @@ RUN dotnet publish "Catalog.API.csproj" -c Release -o /app/publish /p:UseAppHost
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=publish /app/build /src/build
 
 # Set environment variables
 ENV ASPNETCORE_HTTP_PORTS=15205
