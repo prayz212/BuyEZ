@@ -86,6 +86,38 @@ dotnet ef database update MigrationName --project .\Application --startup-projec
 
    => `http://localhost:5205/v1/api/products-administrations`
 
+# Docker
+## Dockerfile
+
+To build a Dockerfile manually, standing at folder BuyEZ/src then run the following command:
+
+```bash
+docker build -t <service-name>:<version> -f Dockerfile ../../
+```
+
+To run a Docker container, using those environment variables in **env.txt**
+
+## Docker Compose
+To build and run docker containers automatically, standing at folder BuyEZ then run the following command:
+
+```bash
+docker-compose up -d--build
+```
+
+To stop/start/restart those running containers, run the following command:
+
+```bash
+docker-compose stop/start/restart
+```
+
+To stop and remove those running containers, run the following command:
+
+```bash
+docker-compose down
+```
+
+> Add **--rmi all** if you want to delete related images as well
+
 # GitHub
 
 ## Commit rules

@@ -42,5 +42,9 @@ msbuild.log
 msbuild.err
 msbuild.wrn
 
+**/.env
+**/node_modules
+**/.angular
+
 src/Identity/WebApp/keys
 src/Identity/WebApp/tempkey.jwk
