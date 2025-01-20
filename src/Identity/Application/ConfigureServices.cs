@@ -128,9 +128,20 @@ public static class DependencyInjection
             )
         );
 
-        services.AddIdentity<User, IdentityRole<Guid>>()
+        services.AddIdentity<User, IdentityRole<Guid>>(options =>
+        {
+            // Configure password reset token expiration
+            options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+        })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            // Set expiration time for password reset token
+            options.TokenLifespan = TimeSpan.FromHours(3);
+        });
+
 
         return services;
     }

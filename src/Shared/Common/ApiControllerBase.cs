@@ -11,6 +11,8 @@ public abstract class ApiControllerBase : ControllerBase
 
     protected ISender Mediator => _mediator ??= HttpContext.RequestServices.GetRequiredService<ISender>();
 
+    protected string? GetBaseUrl() => HttpContext.Request.Scheme + "://" + HttpContext?.Request.Host.Value;
+
     protected string? GetTenantId() => HttpContext.Items["TenantId"] as string;
     
     protected string? GetUserId() => HttpContext.Items["UserId"] as string;
