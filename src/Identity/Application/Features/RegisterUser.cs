@@ -97,6 +97,11 @@ internal sealed class RegisterUserCommandHandler(
             u.UserName == requestPayload.UserName, cancellationToken: cancellationToken) != null;
         if (isExistedUserName)
             throw new ValidationException("UserName already exists.");
+
+        var isExistedEmail = await _context.Users.FirstOrDefaultAsync(u => 
+            u.Email == requestPayload.Email, cancellationToken: cancellationToken) != null;
+        if (isExistedEmail)
+            throw new ValidationException("Email already exists.");
         
         var newAccount = ToEntity(requestPayload);
         newAccount.PasswordHash = _passwordHasher.HashPassword(newAccount, requestPayload.Password);
