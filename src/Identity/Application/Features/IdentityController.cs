@@ -67,7 +67,7 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ResetPasswordResponse> ResetPasswordReset(string email, string token, ResetPasswordPayload payload)
+    public async Task<ResetPasswordResponse> ResetPassword(string email, string token, ResetPasswordPayload payload)
     {
         return await Mediator.Send(new ResetPasswordCommand(email, token, payload));
     }
