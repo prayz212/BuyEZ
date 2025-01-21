@@ -1,0 +1,147 @@
+version: "3"
+
+name: buyez
+
+services:
+  # Identity API service
+  identity_api:
+    build:
+      context: src/
+      dockerfile: Identity/Apis/Dockerfile
+    container_name: identity-api-svc
+    ports:
+      - "15105:15105"
+      - "17105:17105"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Identity;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      IdentityOptions__IssuerUri: https://identity_webapp:17106
+      GrpcServerOptions__ApiKeys__BB92DRENLQP2KFDdUB7XuMCxcAWinc:0: Account.AccountService
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
+  # Identity Webapp service
+  identity_webapp:
+    build:
+      context: src/
+      dockerfile: Identity/WebApp/Dockerfile
+    container_name: identity-webapp-svc
+    ports:
+      - "15106:15106"
+      - "17106:17106"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Identity;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      IdentityOptions__IssuerUri: https://identity_webapp:17106
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
+  # Catalog Service
+  catalog:
+    build:
+      context: src/
+      dockerfile: Catalog.API/Apis/Dockerfile
+    container_name: catalog-svc
+    ports:
+      - "15205:15205"
+      - "17205:17205"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Catalog;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      IdentityOptions__IssuerUri: https://identity_webapp:17106
+      GrpcServerOptions__ApiKeys__EBhUiAjNsIn92aToaxnNqgZkggeWnR:0: Catalog.CatalogService
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
+  # Order Service
+  order:
+    build:
+      context: src/
+      dockerfile: Order.API/Apis/Dockerfile
+    container_name: order-svc
+    ports:
+      - "15405:15405"
+      - "17405:17405"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Order;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      IdentityOptions__IssuerUri: https://identity_webapp:17106
+      GrpcClientOptions__Catalog__ApiKey: EBhUiAjNsIn92aToaxnNqgZkggeWnR
+      GrpcClientOptions__Catalog__Address: https://catalog-svc:17205
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
+  # Gateway service
+  gateway:
+    build:
+      context: src/
+      dockerfile: Yarp.Gateway/Dockerfile
+    container_name: gateway-svc
+    ports:
+      - "15000:15000"
+      - "17000:17000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ReverseProxy__Clusters__BuyEZIdentityCluster__Destinations__destination1__Address: https://identity_api:17105
+      ReverseProxy__Clusters__BuyEZCatalogCluster__Destinations__destination1__Address: https://catalog:17205
+      # ReverseProxy__Clusters__BuyEZClientManagementCluster__Destinations__destination1__Address: https://localhost:17305
+      ReverseProxy__Clusters__BuyEZOrderCluster__Destinations__destination1__Address: https://order:17405
+
+      # TODO: using SSL certificate in real production and remove this workaround
+      ReverseProxy__Clusters__BuyEZIdentityCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
+      ReverseProxy__Clusters__BuyEZCatalogCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
+      # ReverseProxy__Clusters__BuyEZClientManagementCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
+      ReverseProxy__Clusters__BuyEZOrderCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
+  # Database service
+  db:
+    image: postgres:17.2
+    container_name: buyez-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "15432:5432"
+    volumes:
+      - buyez-db-vol:/var/lib/postgresql/data
+    networks:
+      - backend-network
+
+volumes:
+  buyez-db-vol:
+
+networks:
+  backend-network:
+    driver: bridge
