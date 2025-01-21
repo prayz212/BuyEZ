@@ -44,9 +44,11 @@ public static class DependencyInjection
         });
 
         services.AddRefitClient<IIdentityServerApi>()
-            .ConfigureHttpClient(config => 
+            .ConfigureHttpClient(config => config.BaseAddress = new Uri(identityOptions["IssuerUri"]!))
+            // TODO: using SSL certificate in real production and remove this workaround
+            .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
-                config.BaseAddress = new Uri(identityOptions["IssuerUri"]!);
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             });
 
         services.AddOptions<GrpcServerOptions>()

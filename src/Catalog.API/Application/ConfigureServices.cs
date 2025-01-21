@@ -72,6 +72,12 @@ public static class DependencyInjection {
                     //     return parameters.IssuerSigningKeys;
                     // }
                 };
+
+                // TODO: using SSL certificate in real production and remove this workaround
+                options.BackchannelHttpHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
             });
 
         services.AddAuthorization(options =>
