@@ -5,6 +5,8 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 
+using IdentityConstants = Shared.Common.Constants.IdentityConstants;
+
 namespace Identity.Application.Features;
 
 public record ForgotPasswordResponse(string ResetLink);
@@ -47,11 +49,16 @@ internal sealed class ForgotPasswordCommandHandler(
         var requestPayload = request.Payload;
 
         var user = await _userManager.FindByEmailAsync(requestPayload.Email);
-            
         if (user == null)
         {
             throw new NotFoundException($"User with email: {requestPayload.Email} was not found.");
         }
+
+        var isCustomer = await _userManager.IsInRoleAsync(user, IdentityConstants.Role.USER);
+        if (!isCustomer) 
+        {
+            throw new ForbiddenException("Password reset request is only permitted for customer account.");
+        }   
 
         // Generate the password reset token and the reset link
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
