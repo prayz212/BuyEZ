@@ -6,16 +6,14 @@ using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
+using Microsoft.Extensions.Configuration;
 
 namespace Identity.Application.Features;
 
-public record ForgotPasswordResponse(string ResetLink);
+public record ForgotPasswordResponse(string ResetUrl);
 public record ForgotPasswordCommand(string PathUrl, ForgotPasswordPayload Payload) : IRequest<ForgotPasswordResponse>;
 
-public record ForgotPasswordPayload
-{
-    public required string Email { get; init; }
-}
+public record ForgotPasswordPayload(string Email);
 
 public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCommand>
 {
@@ -39,9 +37,11 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
 
 
 internal sealed class ForgotPasswordCommandHandler(
-    UserManager<User> userManager
+    UserManager<User> userManager,
+    IConfiguration configuration
 ) : IRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
+    private readonly IConfiguration _configuration = configuration;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task<ForgotPasswordResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
@@ -62,9 +62,9 @@ internal sealed class ForgotPasswordCommandHandler(
 
         // Generate the password reset token and the reset link
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resetLink = $"{request.PathUrl}?email={requestPayload.Email}&token={token}";
+        var ResetUrl = $"{request.PathUrl}?email={requestPayload.Email}&token={token}";
 
         // TODO: Send the reset link via email
-        return new ForgotPasswordResponse(resetLink ?? string.Empty);
+        return new ForgotPasswordResponse(ResetUrl);
     }
 }

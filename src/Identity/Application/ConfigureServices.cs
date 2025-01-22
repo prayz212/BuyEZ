@@ -141,7 +141,7 @@ public static class DependencyInjection
         services.Configure<DataProtectionTokenProviderOptions>(options =>
         {
             // Set expiration time for password reset token
-            options.TokenLifespan = TimeSpan.FromHours(3);
+            options.TokenLifespan = TimeSpan.FromMinutes(10);
         });
 
 

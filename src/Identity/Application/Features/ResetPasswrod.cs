@@ -9,12 +9,9 @@ using Microsoft.AspNetCore.Http;
 namespace Identity.Application.Features;
 
 public record ResetPasswordResponse(bool Successed, string Message);
-public record ResetPasswordCommand(string Email, string ResetToken, ResetPasswordPayload Payload) : IRequest<ResetPasswordResponse>;
+public record ResetPasswordCommand(string Email, string ResetToken, ResetPasswordPayload Payload) : IRequest;
 
-public record ResetPasswordPayload
-{
-    public required string NewPassword { get; init; }
-}
+public record ResetPasswordPayload(string NewPassword);
 
 public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
 {
@@ -61,11 +58,11 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
 
 internal sealed class ResetPasswordCommandHandler(
     UserManager<User> userManager
-) : IRequestHandler<ResetPasswordCommand, ResetPasswordResponse>
+) : IRequestHandler<ResetPasswordCommand>
 {
     private readonly UserManager<User> _userManager = userManager;
     
-    public async Task<ResetPasswordResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+    public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
         var requestPayload = request.Payload;
 
@@ -87,8 +84,5 @@ internal sealed class ResetPasswordCommandHandler(
 
         user.LastModified = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
-
-        return new ResetPasswordResponse(result.Succeeded, 
-            result.Succeeded ? "Password reset successful" : $"Password reset failed");
     }
 }
