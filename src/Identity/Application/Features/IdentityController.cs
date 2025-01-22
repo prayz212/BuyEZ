@@ -57,10 +57,9 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordPayload payload)
+    public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordCommand command)
     {
-        var pathUrl = $"{GetBaseUrl()}/{ApiPaths.Root}/identity/reset-password";
-        return await Mediator.Send(new ForgotPasswordCommand(pathUrl, payload));
+        return await Mediator.Send(command);
     }
 
     [HttpPost("reset-password")]

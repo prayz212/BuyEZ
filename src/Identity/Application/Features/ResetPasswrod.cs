@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Identity.Application.Shared.Validators;
 
 namespace Identity.Application.Features;
 
@@ -17,12 +18,10 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
 {
     public ResetPasswordCommandValidator()
     {
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("Email address is required.")
-            .EmailAddress().WithMessage("Email address is not valid.");
+        RuleFor(x => x.Email).IsValidEmail();
 
         RuleFor(x => x.ResetToken)
-            .NotNull().WithMessage("Request reset token is required.");
+            .NotNull().WithMessage("Request token is required.");
 
         RuleFor(x => x.Payload)
             .NotNull().WithMessage("Request payload is required.")
@@ -33,24 +32,7 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
     {
         public ResetPasswordPayloadValidator()
         {
-            RuleFor(x => x.NewPassword)
-                .NotEmpty().WithMessage("Password is required.")
-                .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
-                .MaximumLength(16).WithMessage("Password cannot exceed 16 characters.")
-                .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
-                .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter.")
-                .Matches(@"[0-9]").WithMessage("Password must contain at least one number.")
-                .Matches(@"[\W_]").WithMessage("Password must contain at least one special character (!, @, #, $, %, &, etc.).")
-                .Must(BeAValidPassword).WithMessage("Password cannot contain easily guessable words like 'password' or '123456'.")
-                .NotEqual(x => x.NewPassword.ToLower()).WithMessage("Password cannot be entirely lowercase.")
-                .NotEqual(x => x.NewPassword.ToUpper()).WithMessage("Password cannot be entirely uppercase.");
-        }
-
-        private bool BeAValidPassword(string password)
-        {
-            // Add logic to reject common passwords like 'password123', '123456', etc.
-            var commonPasswords = new[] { "password123", "123456", "letmein", "qwerty", "admin", "welcome" };
-            return !commonPasswords.Contains(password.ToLower());
+            RuleFor(x => x.NewPassword).IsValidPassword();
         }
     }
 }
@@ -66,20 +48,24 @@ internal sealed class ResetPasswordCommandHandler(
     {
         var requestPayload = request.Payload;
 
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        var decodedEmail = Uri.UnescapeDataString(request.Email);
+        var user = await _userManager.FindByEmailAsync(decodedEmail);
         if (user == null)
         {
-            throw new NotFoundException($"User with email: {request.Email} was not found.");
+            throw new NotFoundException($"User with email: {decodedEmail} was not found.");
         }
 
-        // The ResetToken received from the request may contain spaces due to URL encoding issues.
-        // Since URL encoding often replaces spaces with "%20", some tokens might also use a plus sign ('+') instead of a space.
-        // To ensure the token is correctly formatted and usable, we replace any spaces (" ") in the token with "+".
-        var token = request.ResetToken.Replace(" ", "+");
-        var result = await _userManager.ResetPasswordAsync(user, token, requestPayload.NewPassword);
-        if (!result.Succeeded && result.Errors.Any(e => e.Code == "InvalidToken"))
+        var decodedToken = Uri.UnescapeDataString(request.ResetToken);
+        bool isTokenValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", decodedToken);
+        if (!isTokenValid)
         {
-            throw new BadHttpRequestException("The provided reset token is invalid or expired. Please request a new reset link");
+            throw new BadHttpRequestException("The provided reset token is invalid or expired. Please request a new reset link.");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, requestPayload.NewPassword);
+        if (!result.Succeeded)
+        {
+            throw new BadHttpRequestException("Password reset failed.");
         }
 
         user.LastModified = DateTime.UtcNow;

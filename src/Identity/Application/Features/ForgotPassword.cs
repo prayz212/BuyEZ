@@ -7,11 +7,13 @@ using Shared.Common.Exceptions;
 
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using Microsoft.Extensions.Configuration;
+using Identity.Application.Shared.Validators;
+using Shared.Common;
 
 namespace Identity.Application.Features;
 
 public record ForgotPasswordResponse(string ResetUrl);
-public record ForgotPasswordCommand(string PathUrl, ForgotPasswordPayload Payload) : IRequest<ForgotPasswordResponse>;
+public record ForgotPasswordCommand(ForgotPasswordPayload Payload) : IRequest<ForgotPasswordResponse>;
 
 public record ForgotPasswordPayload(string Email);
 
@@ -28,9 +30,7 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
     {
         public ForgotPasswordPayloadValidator()
         {
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email address is required.")
-                .EmailAddress().WithMessage("Email address is not valid.");
+            RuleFor(x => x.Email).IsValidEmail();
         }
     }
 }
@@ -62,9 +62,20 @@ internal sealed class ForgotPasswordCommandHandler(
 
         // Generate the password reset token and the reset link
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var ResetUrl = $"{request.PathUrl}?email={requestPayload.Email}&token={token}";
+        var resetUrl = GenerateResetPasswordUrl(requestPayload.Email, token);
 
         // TODO: Send the reset link via email
-        return new ForgotPasswordResponse(ResetUrl);
+        return new ForgotPasswordResponse(resetUrl);
+    }
+
+    private string GenerateResetPasswordUrl(string email, string token)
+    {
+        var baseUrl = _configuration["Services:BaseUrl"];
+        var apiPath = $"{ApiPaths.Root}/identity/reset-password";
+        
+        var encodedToken = Uri.EscapeDataString(token);
+        var encodedEmail = Uri.EscapeDataString(email);
+
+        return $"{baseUrl}/{apiPath}?email={encodedEmail}&token={encodedToken}";
     }
 }
