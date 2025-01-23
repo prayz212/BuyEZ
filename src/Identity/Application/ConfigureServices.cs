@@ -2,6 +2,7 @@ using Identity.Application.Domain;
 using Identity.Application.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
 using Identity.Application.Features.Administration.gRPC;
+using Identity.Application.Infrastructure.Options;
 
 using Shared.Options;
 using Shared.GrpcProto;
@@ -55,7 +56,12 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(nameof(GrpcServerOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
+        
+        services.AddOptions<ServiceOptions>()
+            .Bind(configuration.GetSection(nameof(ServiceOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+            
         return services;
     }
 

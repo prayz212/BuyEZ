@@ -2,7 +2,7 @@ using Identity.Application.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ClientManagementAPI.Application.Infrastructure.Persistence.Configurations;
+namespace Identity.Application.Infrastructure.Persistence.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {

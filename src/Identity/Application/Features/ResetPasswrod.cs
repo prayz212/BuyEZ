@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Identity.Application.Shared.Validators;
+using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 namespace Identity.Application.Features;
 
@@ -18,7 +19,7 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
 {
     public ResetPasswordCommandValidator()
     {
-        RuleFor(x => x.Email).IsValidEmail();
+        RuleFor(x => x.Email).BeValidEmail();
 
         RuleFor(x => x.ResetToken)
             .NotNull().WithMessage("Request token is required.");
@@ -32,7 +33,7 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
     {
         public ResetPasswordPayloadValidator()
         {
-            RuleFor(x => x.NewPassword).IsValidPassword();
+            RuleFor(x => x.NewPassword).BeValidPassword();
         }
     }
 }
@@ -59,7 +60,7 @@ internal sealed class ResetPasswordCommandHandler(
         bool isTokenValid = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, "ResetPassword", decodedToken);
         if (!isTokenValid)
         {
-            throw new BadHttpRequestException("The provided reset token is invalid or expired. Please request a new reset link.");
+            throw new ValidationException("The provided reset token is invalid or expired. Please request a new reset link.");
         }
 
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, requestPayload.NewPassword);

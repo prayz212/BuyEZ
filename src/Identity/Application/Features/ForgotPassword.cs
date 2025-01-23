@@ -8,6 +8,7 @@ using Shared.Common.Exceptions;
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using Microsoft.Extensions.Configuration;
 using Identity.Application.Shared.Validators;
+using Identity.Application.Infrastructure.Options;
 using Shared.Common;
 
 namespace Identity.Application.Features;
@@ -30,7 +31,7 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
     {
         public ForgotPasswordPayloadValidator()
         {
-            RuleFor(x => x.Email).IsValidEmail();
+            RuleFor(x => x.Email).BeValidEmail();
         }
     }
 }
@@ -70,7 +71,10 @@ internal sealed class ForgotPasswordCommandHandler(
 
     private string GenerateResetPasswordUrl(string email, string token)
     {
-        var baseUrl = _configuration["Services:BaseUrl"];
+        var baseUrl = _configuration.GetSection(nameof(ServiceOptions))["BaseUrl"]?.ToString();
+        if (string.IsNullOrWhiteSpace(baseUrl))
+            throw new Exception("ServiceOptions:BaseUrl is a required configuration.");
+        
         var apiPath = $"{ApiPaths.Root}/identity/reset-password";
         
         var encodedToken = Uri.EscapeDataString(token);

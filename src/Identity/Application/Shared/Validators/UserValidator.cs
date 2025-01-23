@@ -4,36 +4,36 @@ namespace Identity.Application.Shared.Validators;
 
 public static class UserValidator
 {   
-    public static IRuleBuilderOptions<T, string> IsValidFirstName<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidFirstName<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("First name is required.");
     }
 
-    public static IRuleBuilderOptions<T, string> IsValidLastName<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidLastName<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("Last name is required.");
     }
 
-    public static IRuleBuilderOptions<T, string> IsValidUsername<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidUsername<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("Username is required.")
                 .MinimumLength(6).WithMessage("Username must be at least 6 characters long.")
                 .MaximumLength(100).WithMessage("Username must not exceed 100 characters.");
     }
 
-    public static IRuleBuilderOptions<T, string> IsValidEmail<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidEmail<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("Email address is required.")
                 .EmailAddress().WithMessage("Email address is not valid.");
     }
 
-    public static IRuleBuilderOptions<T, string> IsValidPhoneNumber<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidPhoneNumber<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("Phone number is required.")
                 .Matches(@"^\d{10}$").WithMessage("Phone number must contain exactly 10 digits.");
     }
 
-    public static IRuleBuilderOptions<T, string> IsValidPassword<T>(this IRuleBuilder<T, string> rule)
+    public static IRuleBuilderOptions<T, string> BeValidPassword<T>(this IRuleBuilder<T, string> rule)
     {
         return rule.NotEmpty().WithMessage("Password is required.")
                 .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")

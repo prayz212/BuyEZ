@@ -30,12 +30,12 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
     {
         public RegisterUserPayloadValidator()
         {
-            RuleFor(x => x.FirstName).IsValidFirstName();
-            RuleFor(x => x.LastName).IsValidLastName();
-            RuleFor(x => x.UserName).IsValidUsername();
-            RuleFor(x => x.Email).IsValidEmail();
-            RuleFor(x => x.Password).IsValidPassword();
-            RuleFor(x => x.PhoneNumber).IsValidPhoneNumber();
+            RuleFor(x => x.FirstName).BeValidFirstName();
+            RuleFor(x => x.LastName).BeValidLastName();
+            RuleFor(x => x.UserName).BeValidUsername();
+            RuleFor(x => x.Email).BeValidEmail();
+            RuleFor(x => x.Password).BeValidPassword();
+            RuleFor(x => x.PhoneNumber).BeValidPhoneNumber();
         }
     }
 }
