@@ -73,9 +73,6 @@ internal sealed class ForgotPasswordCommandHandler(
     private string GenerateResetPasswordUrl(string email, string token)
     {
         var baseUrl = _serviceOptions.BaseUrl;
-        if (string.IsNullOrWhiteSpace(baseUrl))
-            throw new Exception("ServiceOptions:BaseUrl is a required configuration.");
-        
         var apiPath = $"{ApiPaths.Root}/identity/reset-password";
         
         var encodedToken = Uri.EscapeDataString(token);

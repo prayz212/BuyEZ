@@ -66,7 +66,7 @@ internal sealed class ResetPasswordCommandHandler(
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, requestPayload.NewPassword);
         if (!result.Succeeded)
         {
-            throw new BadHttpRequestException("Password reset failed.");
+            throw new ValidationException("Password reset failed.");
         }
 
         user.LastModified = DateTime.UtcNow;
