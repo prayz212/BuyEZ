@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Identity.Application.Shared.Validators;
 using Identity.Application.Infrastructure.Options;
 using Shared.Common;
+using Microsoft.Extensions.Options;
 
 namespace Identity.Application.Features;
 
@@ -39,11 +40,11 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
 
 internal sealed class ForgotPasswordCommandHandler(
     UserManager<User> userManager,
-    IConfiguration configuration
+    IOptions<ServiceOptions> ServiceOptions
 ) : IRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
-    private readonly IConfiguration _configuration = configuration;
     private readonly UserManager<User> _userManager = userManager;
+    private readonly ServiceOptions _serviceOptions = ServiceOptions.Value;
     
     public async Task<ForgotPasswordResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -71,7 +72,7 @@ internal sealed class ForgotPasswordCommandHandler(
 
     private string GenerateResetPasswordUrl(string email, string token)
     {
-        var baseUrl = _configuration.GetSection(nameof(ServiceOptions))["BaseUrl"]?.ToString();
+        var baseUrl = _serviceOptions.BaseUrl;
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new Exception("ServiceOptions:BaseUrl is a required configuration.");
         

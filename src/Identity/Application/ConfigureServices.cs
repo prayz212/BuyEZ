@@ -150,6 +150,10 @@ public static class DependencyInjection
             options.TokenLifespan = TimeSpan.FromMinutes(10);
         });
 
+        services.Configure<ServiceOptions>(options =>
+        {
+            configuration.GetSection(nameof(ServiceOptions));
+        });
 
         return services;
     }
