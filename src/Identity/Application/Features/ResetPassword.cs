@@ -4,7 +4,6 @@ using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
-using Microsoft.AspNetCore.Http;
 using Identity.Application.Shared.Validators;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 
@@ -66,6 +65,7 @@ internal sealed class ResetPasswordCommandHandler(
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, requestPayload.NewPassword);
         if (!result.Succeeded)
         {
+            //TODO: When implementing the log, ensure to capture the specific details when password reset fails.
             throw new ValidationException("Password reset failed.");
         }
 

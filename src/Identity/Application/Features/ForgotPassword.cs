@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
-using Microsoft.Extensions.Configuration;
 using Identity.Application.Shared.Validators;
 using Identity.Application.Infrastructure.Options;
 using Shared.Common;
