@@ -9,9 +9,6 @@ services:
       context: src/
       dockerfile: Identity/Apis/Dockerfile
     container_name: identity-api-svc
-    ports:
-      - "15105:15105"
-      - "17105:17105"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
@@ -54,9 +51,6 @@ services:
       context: src/
       dockerfile: Catalog.API/Apis/Dockerfile
     container_name: catalog-svc
-    ports:
-      - "15205:15205"
-      - "17205:17205"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
@@ -77,9 +71,6 @@ services:
       context: src/
       dockerfile: Order.API/Apis/Dockerfile
     container_name: order-svc
-    ports:
-      - "15405:15405"
-      - "17405:17405"
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
