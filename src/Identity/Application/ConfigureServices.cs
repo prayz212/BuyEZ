@@ -2,6 +2,7 @@ using Identity.Application.Domain;
 using Identity.Application.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
 using Identity.Application.Features.Administration.gRPC;
+using Identity.Application.Infrastructure.Options;
 
 using Shared.Options;
 using Shared.GrpcProto;
@@ -55,7 +56,12 @@ public static class DependencyInjection
             .Bind(configuration.GetSection(nameof(GrpcServerOptions)))
             .ValidateDataAnnotations()
             .ValidateOnStart();
-
+        
+        services.AddOptions<ServiceOptions>()
+            .Bind(configuration.GetSection(nameof(ServiceOptions)))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+            
         return services;
     }
 
@@ -130,9 +136,24 @@ public static class DependencyInjection
             )
         );
 
-        services.AddIdentity<User, IdentityRole<Guid>>()
+        services.AddIdentity<User, IdentityRole<Guid>>(options =>
+        {
+            // Configure password reset token expiration
+            options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultProvider;
+        })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+        services.Configure<DataProtectionTokenProviderOptions>(options =>
+        {
+            // Set expiration time for password reset token
+            options.TokenLifespan = TimeSpan.FromMinutes(10);
+        });
+
+        services.Configure<ServiceOptions>(options =>
+        {
+            configuration.GetSection(nameof(ServiceOptions));
+        });
 
         return services;
     }
