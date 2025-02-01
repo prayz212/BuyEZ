@@ -87,7 +87,7 @@ services:
     networks:
       - backend-network
 
-  # ClientManagement API service
+  # Client Management Service
   client_management:
     build:
       context: src/
