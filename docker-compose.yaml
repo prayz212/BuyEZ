@@ -16,7 +16,7 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Identity;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcServerOptions__ApiKeys__BB92DRENLQP2KFDdUB7XuMCxcAWinc:0: Account.AccountService
-      ServiceOptions__BaseUrl: https://localhost:17000
+      ServiceOptions__BaseUrl: https://gateway:17000
     depends_on:
       - db
     volumes:
