@@ -16,6 +16,7 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Identity;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcServerOptions__ApiKeys__BB92DRENLQP2KFDdUB7XuMCxcAWinc:0: Account.AccountService
+      ServiceOptions__BaseUrl: https://gateway:17000
     depends_on:
       - db
     volumes:
@@ -86,6 +87,27 @@ services:
     networks:
       - backend-network
 
+  # Client Management Service
+  client_management:
+    build:
+      context: src/
+      dockerfile: ClientManagement.API/Apis/Dockerfile
+    container_name: client-management-svc
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-ClientManagement;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      IdentityOptions__IssuerUri: https://identity_webapp:17106
+      GrpcServerOptions__Identity__ApiKey: BB92DRENLQP2KFDdUB7XuMCxcAWinc
+      GrpcClientOptions__Identity__Address: https://identity_api:17105
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
   # Gateway service
   gateway:
     build:
@@ -101,13 +123,13 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
       ReverseProxy__Clusters__BuyEZIdentityCluster__Destinations__destination1__Address: https://identity_api:17105
       ReverseProxy__Clusters__BuyEZCatalogCluster__Destinations__destination1__Address: https://catalog:17205
-      # ReverseProxy__Clusters__BuyEZClientManagementCluster__Destinations__destination1__Address: https://localhost:17305
+      ReverseProxy__Clusters__BuyEZClientManagementCluster__Destinations__destination1__Address: https://client_management:17305
       ReverseProxy__Clusters__BuyEZOrderCluster__Destinations__destination1__Address: https://order:17405
 
       # TODO: using SSL certificate in real production and remove this workaround
       ReverseProxy__Clusters__BuyEZIdentityCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
       ReverseProxy__Clusters__BuyEZCatalogCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
-      # ReverseProxy__Clusters__BuyEZClientManagementCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
+      ReverseProxy__Clusters__BuyEZClientManagementCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
       ReverseProxy__Clusters__BuyEZOrderCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
     depends_on:
       - db
