@@ -1,5 +1,6 @@
 using CatalogAPI.Application.Shared.Dtos;
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +12,12 @@ using Shared.Common.Exceptions;
 namespace CatalogAPI.Application.Features.Administration;
 
 [ApiController]
+[ApiVersion(1)]
 [Route($"{ApiPaths.Root}/product-administrations")]
 public class ProductController : ApiControllerBase
 {
     [HttpPost]
+    [MapToApiVersion(1)]
     [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_POLICY)]
     [ProducesResponseType(typeof(ProductDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -28,6 +31,7 @@ public class ProductController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
+    [MapToApiVersion(1)]
     [Authorize(PolicyConstants.TENANT_ADMIN_OR_MANAGER_POLICY)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
