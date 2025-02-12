@@ -1,11 +1,11 @@
 using Identity.Application;
 using Identity.Application.Infrastructure.Persistence;
 
-using Shared.Extensions;
+using Shared.Common;
 using Shared.Filters;
+using Shared.Extensions;
 using Shared.Middlewares;
 
-using Microsoft.OpenApi.Models;
 using ProtoBuf.Grpc.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,47 +24,20 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(
         .AllowAnyMethod()
         .AllowAnyHeader()));
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGeneration();
+builder.Services.AddApiVersioningConfiguration();
 
 builder.Services.AddProblemDetails();
 
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddSwaggerGen(options =>
-{
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Name = "Authorization",
-        Description = "Bearer Authentication with JWT Token",
-        Type = SecuritySchemeType.Http
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Id = "Bearer",
-                    Type = ReferenceType.SecurityScheme
-                }
-            },
-            new List<string>()
-        }
-    });
-});
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerConfiguration();
 
     app.MapCodeFirstGrpcReflectionService();
 

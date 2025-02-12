@@ -1,22 +1,25 @@
 using OrderAPI.Application.Shared.Dtos;
 
 using Shared.Common;
+using Shared.Common.Models;
 using Shared.Common.Constants;
 using Shared.Common.Exceptions;
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shared.Common.Models;
 
 namespace OrderAPI.Application.Features.Shopping;
 
 [ApiController]
+[ApiVersion(1)]
 [Route($"{ApiPaths.Root}/order-shoppings")]
 [Authorize(Policy = PolicyConstants.CUSTOMER_POLICY)]
 public class OrderController : ApiControllerBase
 {
     [HttpGet("{id}")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(OrderDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -28,6 +31,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPost("query")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(PaginatedList<OrderBriefResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -39,6 +43,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPost]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(OrderDetailResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -51,6 +56,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -68,6 +74,7 @@ public class OrderController : ApiControllerBase
     }
 
     [HttpPost("{id}/cancel")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]

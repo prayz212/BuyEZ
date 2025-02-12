@@ -12,11 +12,13 @@ using Grpc.Net.Client;
 using System.Reflection;
 using FluentValidation;
 using ProtoBuf.Grpc.Client;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ClientManagementAPI.Application;
 
@@ -112,6 +114,7 @@ public static class DependencyInjection {
 
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         services.AddSingleton(provider =>
         {

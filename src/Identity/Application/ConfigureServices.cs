@@ -15,8 +15,10 @@ using Refit;
 using FluentValidation;
 using System.Reflection;
 using ProtoBuf.Grpc.Server;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -123,6 +125,7 @@ public static class DependencyInjection
         services.AddServices(configuration);
         
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;
     }

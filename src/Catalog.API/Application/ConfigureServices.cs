@@ -10,13 +10,15 @@ using Shared.Infrastructure.Services;
 
 using System.Reflection;
 using FluentValidation;
+using ProtoBuf.Grpc.Server;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Builder;
-using ProtoBuf.Grpc.Server;
 
 namespace CatalogAPI.Application;
 
@@ -66,11 +68,6 @@ public static class DependencyInjection {
                     ValidateAudience = false,
 
                     ValidateLifetime = true,
-                    // IssuerSigningKeyResolver = (token, securityToken, kid, parameters) =>
-                    // {
-                    //     // Optional: Custom logic to resolve signing keys if needed
-                    //     return parameters.IssuerSigningKeys;
-                    // }
                 };
 
                 // TODO: using SSL certificate in real production and remove this workaround
@@ -129,6 +126,8 @@ public static class DependencyInjection {
 
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<ApplicationDbContextInitializer>();
+
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;
     }
