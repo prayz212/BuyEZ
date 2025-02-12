@@ -2,16 +2,19 @@ using Identity.Application.Shared.Dtos;
 
 using Shared.Common;
 
+using Asp.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Application.Features;
 
 [ApiController]
+[ApiVersion(1)]
 [Route($"{ApiPaths.Root}/identity")]
 public class IdentityController : ApiControllerBase
 {
     [HttpPost("login")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -22,6 +25,7 @@ public class IdentityController : ApiControllerBase
     }
 
     [HttpPost("token")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -32,6 +36,7 @@ public class IdentityController : ApiControllerBase
     }
 
     [HttpPost("refresh-token")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -42,6 +47,7 @@ public class IdentityController : ApiControllerBase
     }
 
     [HttpPost("register")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(UserDetailResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -52,6 +58,7 @@ public class IdentityController : ApiControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(ForgotPasswordResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
@@ -63,6 +70,7 @@ public class IdentityController : ApiControllerBase
     }
 
     [HttpPost("reset-password")]
+    [MapToApiVersion(1)]
     [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
