@@ -12,7 +12,9 @@ using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using System.Reflection;
 using FluentValidation;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -108,6 +110,7 @@ public static class DependencyInjection
 
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;
     }
