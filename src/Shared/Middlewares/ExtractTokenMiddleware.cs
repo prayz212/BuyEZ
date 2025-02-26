@@ -26,7 +26,7 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
         var authorization = context.Request.Headers.Authorization.FirstOrDefault();
         if (authorization == null)
         {
-            _logger.LogInformation("Cannot get authorization in request header. Path: {Path}", context.Request.Path);
+            _logger.LogError("Cannot get authorization in request header. Path: {Path}", context.Request.Path);
             await _next(context);
             return;
         }
@@ -36,7 +36,7 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
 
         if (!handler.CanReadToken(token))
         {
-            _logger.LogInformation("Cannot read authorization token. Token: {Token}", token);
+            _logger.LogError("Cannot read authorization token. Token: {Token}", token);
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }
@@ -47,7 +47,7 @@ public class ExtractTokenMiddleware(RequestDelegate next, ILogger<ExtractTokenMi
         if (userIdClaim == null || roleClaim == null 
             || string.IsNullOrWhiteSpace(userIdClaim.Value) || string.IsNullOrWhiteSpace(roleClaim.Value))
         {
-            _logger.LogInformation("Cannot find user claims in token. Token: {Token}", token);
+            _logger.LogError("Cannot find user claims in token. Token: {Token}", token);
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             return;
         }

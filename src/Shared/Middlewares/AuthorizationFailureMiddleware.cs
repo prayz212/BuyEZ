@@ -25,12 +25,12 @@ public class AuthorizationFailureMiddleware : BaseMiddleware
 
         if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
         {
-            _logger.LogWarning("Unauthorized access attempt detected. Path: {Path}", context.Request.Path);
+            _logger.LogError("Unauthorized access attempt detected. Path: {Path}", context.Request.Path);
             await HandleUnauthorizedAccessException(context);
         }
         else if (context.Response.StatusCode == StatusCodes.Status403Forbidden)
         {
-            _logger.LogWarning("Forbidden access for user: {User}. Path: {Path}", 
+            _logger.LogError("Forbidden access for user: {User}. Path: {Path}", 
                 context.User.Identity?.Name ?? "Anonymous", context.Request.Path);
 
             await HandleForbiddenAccessException(context);

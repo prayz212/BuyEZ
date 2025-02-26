@@ -26,20 +26,20 @@ public class GrpcApiKeyInterceptor(ILogger<GrpcApiKeyInterceptor> logger, IOptio
         var apiKey = context.RequestHeaders.FirstOrDefault(md => md.Key == "x-api-key");
         if (apiKey == null || !_grpcOptions.ApiKeys.ContainsKey(apiKey.Value))
         {
-            _logger.LogInformation($"{nameof(GrpcApiKeyInterceptor)}: Unauthenticated API Key.");
+            _logger.LogError($"Unauthenticated API Key.");
             throw new UnauthorizedAccessException();
         }
-        _logger.LogInformation($"{nameof(GrpcApiKeyInterceptor)}: Authenticated API Key.");
+        _logger.LogInformation($"Authenticated API Key.");
 
         // Authorize
         var allowedServices = _grpcOptions.ApiKeys[apiKey.Value];
         var requestingService = context.Method.Split("/")[1].Substring(ServicePrefix.Length);
         if (allowedServices == null || !allowedServices.Any(s => s.Equals(requestingService, StringComparison.InvariantCultureIgnoreCase)))
         {
-            _logger.LogInformation($"{nameof(GrpcApiKeyInterceptor)}: Unauthorized API Key ({apiKey.Value}) with service ({requestingService}).");
+            _logger.LogError($"API Key ({apiKey.Value}) has no access to service ({requestingService}).");
             throw new ForbiddenException();
         }
-        _logger.LogInformation($"{nameof(GrpcApiKeyInterceptor)}: Authorized API Key.");
+        _logger.LogInformation($"Authorized API Key.");
 
         /* Temporary disable this IP restriction */
         // _logger.LogInformation($"Validating IP Address...");
