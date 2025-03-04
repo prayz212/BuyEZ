@@ -8,6 +8,7 @@ using Shared.Common.Enums;
 
 using MediatR;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Features.Administration;
 
@@ -62,13 +63,16 @@ public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
 }
 
 
-internal sealed class AddProductCommandHandler(ApplicationDbContext context)
+internal sealed class AddProductCommandHandler(ILogger<AddProductCommandHandler> logger, ApplicationDbContext context)
     : IRequestHandler<AddProductCommand, ProductDetailResponse>
 {
+    private readonly ILogger<AddProductCommandHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<ProductDetailResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request add product: {@Request}", request);
+        
         // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.TenantId) || string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
@@ -78,6 +82,7 @@ internal sealed class AddProductCommandHandler(ApplicationDbContext context)
         var newProductImages = requestPayload.Images.Select(i => ToEntity(request.CurrentUserId, i));
         newProduct.Images = newProductImages.ToList();
 
+        _logger.LogInformation("Adding product to database: {@NewProduct}", newProduct);
         await _context.Products.AddAsync(newProduct, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 

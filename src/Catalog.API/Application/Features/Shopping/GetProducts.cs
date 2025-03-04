@@ -8,6 +8,7 @@ using Shared.Common.Mappings;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Features.Shopping;
 
@@ -34,13 +35,16 @@ public class GetProductsQueryValidator : AbstractValidator<GetProductsQuery>
 }
 
 
-internal sealed class GetProductsQueryHandler(ApplicationDbContext context) 
+internal sealed class GetProductsQueryHandler(ILogger<GetProductsQueryHandler> logger, ApplicationDbContext context) 
     : IRequestHandler<GetProductsQuery, PaginatedList<ProductBriefResponse>>
 {
+    private readonly ILogger<GetProductsQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<PaginatedList<ProductBriefResponse>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request query products list: {@Request}", request);
+        
         return await _context.Products
             .Include(p => p.Images.Where(i => i.IsPrimary))
             .OrderBy(p => p.Created)

@@ -5,6 +5,7 @@ using Shared.GrpcProto.Catalog;
 using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Features.Shopping.gRPC;
 
@@ -41,12 +42,15 @@ public class GetOrderItemsQueryValidator : AbstractValidator<GetOrderItemsQuery>
 }
 
 
-internal sealed class GetOrderItemsQueryHandler(ApplicationDbContext context) : IRequestHandler<GetOrderItemsQuery, GetOrderItemsResponse>
+internal sealed class GetOrderItemsQueryHandler(ILogger<GetOrderItemsQueryHandler> logger, ApplicationDbContext context) : IRequestHandler<GetOrderItemsQuery, GetOrderItemsResponse>
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly ILogger<GetOrderItemsQueryHandler> _logger = logger;
 
     public async Task<GetOrderItemsResponse> Handle(GetOrderItemsQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get order items: {@Request}", request);
+
         var ids = request.Payload.Ids;
         var products = await _context.Products
             .Where(p => ids.Contains(p.Id))

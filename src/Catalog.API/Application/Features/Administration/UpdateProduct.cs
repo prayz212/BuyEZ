@@ -11,6 +11,7 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Features.Administration;
 
@@ -84,12 +85,15 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
 }
 
 
-internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) : IRequestHandler<UpdateProductCommand>
+internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHandler> logger, ApplicationDbContext context) : IRequestHandler<UpdateProductCommand>
 {
     private readonly ApplicationDbContext _context = context;
+    private readonly ILogger<UpdateProductCommandHandler> _logger = logger;
 
     public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request update product: {@Request}", request);
+
         // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.TenantId) || string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
@@ -145,6 +149,8 @@ internal sealed class UpdateProductCommandHandler(ApplicationDbContext context) 
         if (newImages.Any())
             product.Images.AddRange(newImages);
 
+        _logger.LogInformation("Updating product to database: {@UpdatedProduct}", product);
+        
         _context.Update(product);
         
         await _context.SaveChangesAsync(cancellationToken);

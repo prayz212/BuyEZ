@@ -4,6 +4,7 @@ using CatalogAPI.Application.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Shared.Common.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Features.Shopping;
 
@@ -11,13 +12,16 @@ namespace CatalogAPI.Application.Features.Shopping;
 public record GetProductDetailQuery(string Id) : IRequest<ProductDetailResponse>;
 
 
-internal sealed class GetProductDetailQueryHandler(ApplicationDbContext context)
+internal sealed class GetProductDetailQueryHandler(ILogger<GetProductDetailQueryHandler> logger, ApplicationDbContext context)
     : IRequestHandler<GetProductDetailQuery, ProductDetailResponse>
 {
+    private readonly ILogger<GetProductDetailQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<ProductDetailResponse> Handle(GetProductDetailQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get product detail: {ProductId}", request.Id);
+
         if (string.IsNullOrWhiteSpace(request.Id)) 
             throw new ValidationException("Invalid product id.");
 
@@ -30,5 +34,4 @@ internal sealed class GetProductDetailQueryHandler(ApplicationDbContext context)
 
         return Product.ToDto(product);
     }
-
 }
