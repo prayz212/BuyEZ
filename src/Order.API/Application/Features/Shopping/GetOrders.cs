@@ -6,6 +6,7 @@ using Shared.Common.Models;
 
 using MediatR;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Application.Features.Shopping;
 
@@ -44,12 +45,18 @@ public class GetOrdersQueryValidator : AbstractValidator<GetOrdersQuery>
 }
 
 
-internal sealed class GetOrdersQueryHandler(ApplicationDbContext context) : IRequestHandler<GetOrdersQuery, PaginatedList<OrderBriefResponse>>
+internal sealed class GetOrdersQueryHandler(
+    ILogger<GetOrdersQueryHandler> logger, 
+    ApplicationDbContext context
+) : IRequestHandler<GetOrdersQuery, PaginatedList<OrderBriefResponse>>
 {
+    private readonly ILogger<GetOrdersQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<PaginatedList<OrderBriefResponse>> Handle(GetOrdersQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get orders: {@Request}", request);
+        
         // TODO: Refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
