@@ -5,12 +5,14 @@ WORKDIR /src
 # Copy the solution and project files first
 # This is done separately to take advantage of Docker's layer caching
 COPY ["Yarp.Gateway/Yarp.Gateway.csproj", "Gateway/"]
+COPY ["Shared/BuyEZ.Shared.csproj", "Shared/"]
 
 # Restore NuGet packages
 RUN dotnet restore "Gateway/Yarp.Gateway.csproj"
 
 # Copy the rest of the source code
 COPY ["Yarp.Gateway/", "Gateway/"]
+COPY ["Shared/", "Shared/"]
 
 # Build the application
 WORKDIR "/src/Gateway"
