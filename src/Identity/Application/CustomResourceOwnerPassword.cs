@@ -5,16 +5,24 @@ using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using Microsoft.AspNetCore.Identity;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application;
 
-public class CustomResourceOwnerPassword(SignInManager<User> signInManager, UserManager<User> userManager) : IResourceOwnerPasswordValidator
+public class CustomResourceOwnerPassword(
+    ILogger<CustomResourceOwnerPassword> logger, 
+    SignInManager<User> signInManager, 
+    UserManager<User> userManager
+) : IResourceOwnerPasswordValidator
 {
+    private readonly ILogger<CustomResourceOwnerPassword> _logger = logger;
     private readonly SignInManager<User> _signInManager = signInManager;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
     {
+        _logger.LogInformation("Handling validation for user {UserName}", context.UserName);
+
         var user = await _userManager.FindByNameAsync(context.UserName);
         if (user == null) 
         {
@@ -24,6 +32,8 @@ public class CustomResourceOwnerPassword(SignInManager<User> signInManager, User
         }
 
         var userRoles = await _userManager.GetRolesAsync(user);
+        _logger.LogInformation("User {UserName} has role(s): {@UserRoles}", context.UserName, userRoles);
+
         if (userRoles == null || !userRoles.Any() || userRoles.First() != IdentityConstants.Role.USER)
         {
             context.Result = new GrantValidationResult(

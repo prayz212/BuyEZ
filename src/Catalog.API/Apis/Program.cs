@@ -31,6 +31,7 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Host.UseCustomSerilog();
 
 builder.Services.AddHealthChecks();
 builder.Services.AddHttpContextAccessor();

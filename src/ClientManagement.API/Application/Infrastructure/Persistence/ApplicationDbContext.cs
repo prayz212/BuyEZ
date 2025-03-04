@@ -5,18 +5,21 @@ using Shared.Common.Interfaces;
 
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext
 {
+    private readonly ILogger<ApplicationDbContext> _logger;
     private readonly IDomainEventService _domainEventService;
 
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Image> Images => Set<Image>(); 
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventService domainEventService) : base(options)
+    public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IDomainEventService domainEventService) : base(options)
     {
+        _logger = logger;
         _domainEventService = domainEventService;
     }
 
@@ -51,8 +54,10 @@ public class ApplicationDbContext : DbContext
             .Where(domainEvent => !domainEvent.IsPublished)
             .ToList();
 
+        _logger.LogInformation("Saving changes to database...");
         var result = await base.SaveChangesAsync(cancellationToken);
 
+        _logger.LogInformation($"Dispatching {events.Count} events...");
         await DispatchEvents(events);
 
         return result;

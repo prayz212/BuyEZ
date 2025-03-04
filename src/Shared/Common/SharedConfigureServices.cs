@@ -1,9 +1,11 @@
+using Serilog;
+using Serilog.Sinks.Elasticsearch;
+using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Asp.Versioning;
+using Microsoft.Extensions.Hosting;
 
 namespace Shared.Common;
 
@@ -75,5 +77,45 @@ public static class SharedConfigureServices
         });
 
         return app;
+    }
+
+    public static IHostBuilder UseCustomSerilog(this IHostBuilder builder)
+    {
+        builder.UseSerilog((context, config) => 
+        {
+            var elasticSearchUri = context.Configuration["Serilog:ElasticsearchUri"] 
+                ?? throw new ArgumentNullException("ElasticsearchUri configuration is required.");
+
+            var environment = context.HostingEnvironment.EnvironmentName.Substring(0, 3).ToLower();
+                
+            config
+                .Enrich.FromLogContext()
+                .Enrich.WithProcessId()
+                .Enrich.WithThreadId()
+                .WriteTo.Console()
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticSearchUri))
+                {
+                    // Custom index format (daily indices)
+                    IndexFormat = $"{context.Configuration["Serilog:ApplicationName"]}-{environment}-logs-{DateTime.UtcNow:yyyy.MM.dd}",
+
+                    // Automatically detect Elasticsearch clusters nodes
+                    AutoRegisterTemplate = true,
+                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+
+                    NumberOfShards = 2,
+                    NumberOfReplicas = 1,
+
+                    // Connection configuration
+                    ConnectionTimeout = TimeSpan.FromSeconds(5),
+                    EmitEventFailure = EmitEventFailureHandling.WriteToSelfLog,
+
+                    // Handle failures
+                    FailureCallback = (@event) => Console.WriteLine($"Failed to send log: {@event.Exception?.Message}", @event)
+                })
+                .ReadFrom.Configuration(context.Configuration);
+
+        });
+
+        return builder;
     }
 }

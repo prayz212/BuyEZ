@@ -6,6 +6,7 @@ using Shared.Common.Exceptions;
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Application.Features.Shopping;
 
@@ -13,12 +14,15 @@ namespace OrderAPI.Application.Features.Shopping;
 public record GetOrderDetailQuery(string? CurrentUserId, string OrderId) : IRequest<OrderDetailResponse>;
 
 
-internal sealed class GetOrderDetailQueryHandler(ApplicationDbContext context) : IRequestHandler<GetOrderDetailQuery, OrderDetailResponse>
+internal sealed class GetOrderDetailQueryHandler(ILogger<GetOrderDetailQueryHandler> logger, ApplicationDbContext context) : IRequestHandler<GetOrderDetailQuery, OrderDetailResponse>
 {
+    private readonly ILogger<GetOrderDetailQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<OrderDetailResponse> Handle(GetOrderDetailQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get order detail: {@Request}", request);
+        
         // TODO: Refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");

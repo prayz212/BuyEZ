@@ -8,6 +8,7 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 using MediatR;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Application.Features.Shopping;
 
@@ -51,12 +52,18 @@ public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 }
 
 
-internal sealed class UpdateOrderCommandHandler(ApplicationDbContext context) : IRequestHandler<UpdateOrderCommand>
+internal sealed class UpdateOrderCommandHandler(
+    ILogger<UpdateOrderCommandHandler> logger, 
+    ApplicationDbContext context
+) : IRequestHandler<UpdateOrderCommand>
 {
+    private readonly ILogger<UpdateOrderCommandHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request update order: {@Request}", request);
+
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
 
@@ -73,6 +80,7 @@ internal sealed class UpdateOrderCommandHandler(ApplicationDbContext context) : 
         order.CustomerPhoneNumber = payload.CustomerInfo.PhoneNumber;
         order.LastModifiedBy = request.CurrentUserId;
 
+        _logger.LogInformation("Updating order to database: {@UpdatedOrder}", order);
         _context.Orders.Update(order);
         await _context.SaveChangesAsync(cancellationToken);
     }

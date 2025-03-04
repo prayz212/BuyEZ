@@ -11,6 +11,7 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Application.Features.Shopping;
 
@@ -61,12 +62,18 @@ public class AddOrderCommandValidator : AbstractValidator<AddOrderCommand>
 
 internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, OrderDetailResponse>
 {
+    private readonly ILogger<AddOrderCommandHandler> _logger;
     private readonly ApplicationDbContext _context;
     private readonly ICatalogService _catalogService;
     private readonly GrpcBaseOptions _grpcClientOptions;
 
-    public AddOrderCommandHandler(ApplicationDbContext context, ICatalogService catalogService, IOptions<GrpcClientOptions> clientOptions)
+    public AddOrderCommandHandler(
+        ILogger<AddOrderCommandHandler> logger, 
+        ApplicationDbContext context, 
+        ICatalogService catalogService, 
+        IOptions<GrpcClientOptions> clientOptions)
     {
+        _logger = logger;
         _context = context;
         _catalogService = catalogService;
         _grpcClientOptions = clientOptions.Value.Catalog;
@@ -74,6 +81,8 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
 
     public async Task<OrderDetailResponse> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request add new order: {@Request}", request);
+
         // TODO: Refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
@@ -89,6 +98,8 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
         // TODO: Apply gRPC retry logic
         var grpcRequestPayload = GenerateGrpcRequestPayload(payload.Items); 
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
+
+        _logger.LogInformation("Calling to Catalog to get order items info: {@Payload}", grpcRequestPayload);
         var orderItems = await _catalogService.GetOrderItemsAsync(grpcRequestPayload, callContext);
 
         EnsureHasEnoughProductQuantity(orderItems, itemsDictionary);
@@ -100,6 +111,7 @@ internal sealed class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, 
 
         newOrder.AddOrderItems(newOrderItems);
 
+        _logger.LogInformation("Adding new order: {@NewOrder}", newOrder);
         await _context.Orders.AddAsync(newOrder, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 

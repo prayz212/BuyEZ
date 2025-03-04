@@ -34,13 +34,18 @@ public class ExchangeAuthorizationCodeQueryValidator : AbstractValidator<Exchang
 }
 
 
-internal sealed class ExchangeAuthorizationCodeQueryHandler(ILogger<ExchangeAuthorizationCodeQueryHandler> logger, IIdentityServerApi identityServerApi) : IRequestHandler<ExchangeAuthorizationCodeQuery, AuthenticationTokenResponse>
+internal sealed class ExchangeAuthorizationCodeQueryHandler(
+    ILogger<ExchangeAuthorizationCodeQueryHandler> logger, 
+    IIdentityServerApi identityServerApi
+) : IRequestHandler<ExchangeAuthorizationCodeQuery, AuthenticationTokenResponse>
 {
     private readonly ILogger<ExchangeAuthorizationCodeQueryHandler> _logger = logger;
     private readonly IIdentityServerApi _identityServerApi = identityServerApi;
 
     public async Task<AuthenticationTokenResponse> Handle(ExchangeAuthorizationCodeQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request exchange authorization code: {@Request}", request);
+
         // Make a call to connect/token to get the token
         var client = Config.Clients.FirstOrDefault(c => c.ClientId == request.ClientId);
         if (client == null)
@@ -60,6 +65,7 @@ internal sealed class ExchangeAuthorizationCodeQueryHandler(ILogger<ExchangeAuth
 
         try 
         {
+            _logger.LogInformation("Calling to Identity Server to get token: {@Payload}", contentKeyValues.Where(kv => kv.Key != "client_secret"));
             var response = await _identityServerApi.PostGetTokenAsync(content);
 
             string jsonResponse = JsonConvert.SerializeObject(response);

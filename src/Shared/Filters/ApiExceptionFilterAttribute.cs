@@ -3,15 +3,19 @@ using Shared.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Shared.Filters;
 
 public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 {
+    private readonly ILogger<ApiExceptionFilterAttribute> _logger;
     private readonly IDictionary<Type, Action<ExceptionContext>> _exceptionHandlers;
 
-    public ApiExceptionFilterAttribute()
+    public ApiExceptionFilterAttribute(ILogger<ApiExceptionFilterAttribute> logger)
     {
+        _logger = logger;
+
         // Register known exception types and handlers.
         _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
         {
@@ -49,6 +53,9 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     private void HandleValidationException(ExceptionContext context)
     {
         ValidationException? exception = context.Exception as ValidationException;
+
+        _logger.LogError("Validation Exception occurred: {exception}", exception);
+
         ValidationProblemDetails details = new(exception!.Errors)
         {
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
@@ -60,6 +67,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleInvalidModelStateException(ExceptionContext context)
     {
+        _logger.LogError("Invalid Model State Exception occurred: {exception}", context);
+
         ValidationProblemDetails details = new(context.ModelState)
         {
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1",
@@ -72,6 +81,9 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     private void HandleNotFoundException(ExceptionContext context)
     {
         NotFoundException? exception = context.Exception as NotFoundException;
+        
+        _logger.LogError("Not Found Exception occurred: {exception}", exception);
+
         ProblemDetails details = new()
         {
             Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
@@ -85,6 +97,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleUnauthorizedAccessException(ExceptionContext context)
     {
+        _logger.LogError("Unauthorized Access Exception occurred: {exception}", context);
+
         ProblemDetails details = new()
         {
             Status = StatusCodes.Status401Unauthorized,
@@ -98,6 +112,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleForbiddenAccessException(ExceptionContext context)
     {
+        _logger.LogError("Forbidden Access Exception occurred: {exception}", context);
+
         ProblemDetails details = new()
         {
             Status = StatusCodes.Status403Forbidden,
@@ -111,6 +127,8 @@ public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
 
     private void HandleUnknownException(ExceptionContext context)
     {
+        _logger.LogError("Unknown Exception occurred: {exception}", context);
+
         ProblemDetails details = new()
         {
             Status = StatusCodes.Status500InternalServerError,

@@ -6,6 +6,7 @@ using Shared.Common.Mappings;
 
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
 
@@ -30,12 +31,14 @@ public class GetClientsQueryValidator : AbstractValidator<GetClientsQuery>
 }
 
 
-internal sealed class GetClientsQueryHandler(ApplicationDbContext context) : IRequestHandler<GetClientsQuery, PaginatedList<ClientBriefResponse>>
+internal sealed class GetClientsQueryHandler(ILogger<GetClientsQueryHandler> logger, ApplicationDbContext context) : IRequestHandler<GetClientsQuery, PaginatedList<ClientBriefResponse>>
 {
+    private readonly ILogger<GetClientsQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<PaginatedList<ClientBriefResponse>> Handle(GetClientsQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get clients: {@Request}", request);
         return await _context.Clients
             .OrderBy(c => c.Created)
             .Select(c => ToDto(c))

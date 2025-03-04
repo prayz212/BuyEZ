@@ -5,19 +5,25 @@ using Shared.Common.Interfaces;
 
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContext
 {
     private readonly IDomainEventService _domainEventService;
+    private readonly ILogger<ApplicationDbContext> _logger;
 
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Image> Images => Set<Image>();
 
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IDomainEventService domainEventService) : base(options)
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options, 
+        IDomainEventService domainEventService, 
+        ILogger<ApplicationDbContext> logger) : base(options)
     {
         _domainEventService = domainEventService;
+        _logger = logger;
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -47,8 +53,10 @@ public class ApplicationDbContext : DbContext
             .Where(domainEvent => !domainEvent.IsPublished)
             .ToList();
 
+        _logger.LogInformation("Saving changes to database...");
         var result = await base.SaveChangesAsync(cancellationToken);
 
+        _logger.LogInformation($"Dispatching {events.Count} events...");
         await DispatchEvents(events);
 
         return result;

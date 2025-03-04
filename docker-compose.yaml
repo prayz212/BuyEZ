@@ -17,6 +17,12 @@ services:
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcServerOptions__ApiKeys__BB92DRENLQP2KFDdUB7XuMCxcAWinc:0: Account.AccountService
       ServiceOptions__BaseUrl: https://gateway:17000
+      Serilog__ApplicationName: "identity-api"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
     depends_on:
       - db
     volumes:
@@ -59,6 +65,12 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Catalog;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcServerOptions__ApiKeys__EBhUiAjNsIn92aToaxnNqgZkggeWnR:0: Catalog.CatalogService
+      Serilog__ApplicationName: "catalog-api"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
     depends_on:
       - db
     volumes:
@@ -80,6 +92,12 @@ services:
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcClientOptions__Catalog__ApiKey: EBhUiAjNsIn92aToaxnNqgZkggeWnR
       GrpcClientOptions__Catalog__Address: https://catalog-svc:17205
+      Serilog__ApplicationName: "order-api"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
     depends_on:
       - db
     volumes:
@@ -101,6 +119,12 @@ services:
       IdentityOptions__IssuerUri: https://identity_webapp:17106
       GrpcServerOptions__Identity__ApiKey: BB92DRENLQP2KFDdUB7XuMCxcAWinc
       GrpcClientOptions__Identity__Address: https://identity_api:17105
+      Serilog__ApplicationName: "client-management-api"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
     depends_on:
       - db
     volumes:
@@ -125,6 +149,11 @@ services:
       ReverseProxy__Clusters__BuyEZCatalogCluster__Destinations__destination1__Address: https://catalog:17205
       ReverseProxy__Clusters__BuyEZClientManagementCluster__Destinations__destination1__Address: https://client_management:17305
       ReverseProxy__Clusters__BuyEZOrderCluster__Destinations__destination1__Address: https://order:17405
+      Serilog__ApplicationName: "api-gateway"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
 
       # TODO: using SSL certificate in real production and remove this workaround
       ReverseProxy__Clusters__BuyEZIdentityCluster__HttpClient__DangerousAcceptAnyServerCertificate: true
@@ -152,8 +181,47 @@ services:
     networks:
       - backend-network
 
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    ports:
+      - 19200:9200
+    volumes:
+      - elasticsearch-vol:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    networks:
+      - backend-network
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    ports:
+      - 15601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - backend-network
+
+  # Disable logstash at the moment to keep it simple
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.17.0
+  #   container_name: logstash
+  #   volumes:
+  #     - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  #   environment:
+  #     - ELASTICSEARCH_HOST=http://elasticsearch:9200
+  #   ports:
+  #     - "15044:5044"
+    
+
 volumes:
   buyez-db-vol:
+  elasticsearch-vol:
 
 networks:
   backend-network:

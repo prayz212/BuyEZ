@@ -10,6 +10,7 @@ using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.Administration.gRPC;
 
@@ -70,17 +71,20 @@ public class AddIdentityAccountCommandValidator : AbstractValidator<AddIdentityA
 
 
 internal sealed class AddIdentityAccountCommandHandler(
+    ILogger<AddIdentityAccountCommandHandler> logger,
     ApplicationDbContext context, 
     IPasswordHasher<User> passwordHasher, 
     UserManager<User> userManager
 ) : IRequestHandler<AddIdentityAccountCommand, IdentityAccountDetailResponse>
 {
+    private readonly ILogger<AddIdentityAccountCommandHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
     private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task<IdentityAccountDetailResponse> Handle(AddIdentityAccountCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request add identity account: {@Request}", request);
         var requestPayload = request.Payload;
 
         var requestingUser = await _userManager.FindByIdAsync(requestPayload.RequestingUserId);
@@ -98,6 +102,8 @@ internal sealed class AddIdentityAccountCommandHandler(
             throw new ValidationException("UserName already exists.");
         
         var newAccount = ToEntity(requestPayload);
+        _logger.LogInformation("Adding new account to database: {@NewAccount}", newAccount);
+        
         var randomPassword = GenerateRandomPassword();
         newAccount.PasswordHash = _passwordHasher.HashPassword(newAccount, randomPassword);
         newAccount.SecurityStamp = Guid.NewGuid().ToString();
@@ -105,6 +111,7 @@ internal sealed class AddIdentityAccountCommandHandler(
         await _context.Users.AddAsync(newAccount);
         await _context.SaveChangesAsync();
 
+        _logger.LogInformation("Adding new account's role  to database: {@AccountRole}", requestPayload.Role);
         await _userManager.AddToRoleAsync(newAccount, requestPayload.Role);
 
         // TODO: trigger an event new user created to send email notification before returning the result
