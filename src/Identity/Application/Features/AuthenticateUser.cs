@@ -61,6 +61,8 @@ internal sealed class AuthenticateUserQueryHandler : IRequestHandler<Authenticat
 
     public async Task<AuthenticateUserResponse> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request authenticate user: {@Request}", request with { Password = "###" });
+
         // Make a call to connect/token to get the token
         var contentKeyValues = new Dictionary<string, string>()
         {
@@ -76,6 +78,7 @@ internal sealed class AuthenticateUserQueryHandler : IRequestHandler<Authenticat
 
         try 
         {
+            _logger.LogInformation("Calling to Identity Server to get token: {@Payload}", contentKeyValues.Where(kv => kv.Key != "password"));
             var response = await _identityServerApi.PostGetTokenAsync(content);
 
             string jsonResponse = JsonConvert.SerializeObject(response);

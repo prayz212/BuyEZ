@@ -38,6 +38,8 @@ internal sealed class RefreshTokenQueryHandler(ILogger<RefreshTokenQueryHandler>
 
     public async Task<AuthenticationTokenResponse> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request refresh token: {@Request}", request);
+
         // Make a call to connect/token to get the token
         var client = Config.Clients.FirstOrDefault(c => c.ClientId == request.ClientId);
         if (client == null)
@@ -55,6 +57,7 @@ internal sealed class RefreshTokenQueryHandler(ILogger<RefreshTokenQueryHandler>
 
         try 
         {
+            _logger.LogInformation("Calling to Identity Server to get token: {@Payload}", contentKeyValues.Where(kv => kv.Key != "client_secret"));
             var response = await _identityServerApi.PostGetTokenAsync(content);
 
             string jsonResponse = JsonConvert.SerializeObject(response);

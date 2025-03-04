@@ -10,13 +10,16 @@ using Identity.Application.Shared.Validators;
 using Identity.Application.Infrastructure.Options;
 using Shared.Common;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features;
+
 
 public record ForgotPasswordResponse(string ResetUrl);
 public record ForgotPasswordCommand(ForgotPasswordPayload Payload) : IRequest<ForgotPasswordResponse>;
 
 public record ForgotPasswordPayload(string Email);
+
 
 public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCommand>
 {
@@ -38,15 +41,18 @@ public class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCo
 
 
 internal sealed class ForgotPasswordCommandHandler(
+    ILogger<ForgotPasswordCommandHandler> logger,
     UserManager<User> userManager,
     IOptions<ServiceOptions> ServiceOptions
 ) : IRequestHandler<ForgotPasswordCommand, ForgotPasswordResponse>
 {
+    private readonly ILogger<ForgotPasswordCommandHandler> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
     private readonly ServiceOptions _serviceOptions = ServiceOptions.Value;
     
     public async Task<ForgotPasswordResponse> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request forgot password: {@Request}", request);
         var requestPayload = request.Payload;
 
         var user = await _userManager.FindByEmailAsync(requestPayload.Email);
@@ -61,9 +67,10 @@ internal sealed class ForgotPasswordCommandHandler(
             throw new ForbiddenException("Password reset request is only permitted for customer account.");
         }   
 
-        // Generate the password reset token and the reset link
-        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        var resetUrl = GenerateResetPasswordUrl(requestPayload.Email, token);
+        // Generate the reset password token and the reset link
+        var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var resetUrl = GenerateResetPasswordUrl(requestPayload.Email, resetToken);
+        _logger.LogInformation("Reset password url: {ResetUrl}", resetUrl);
 
         // TODO: Send the reset link via email
         return new ForgotPasswordResponse(resetUrl);

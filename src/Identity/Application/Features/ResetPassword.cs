@@ -6,13 +6,16 @@ using Microsoft.AspNetCore.Identity;
 using Shared.Common.Exceptions;
 using Identity.Application.Shared.Validators;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features;
+
 
 public record ResetPasswordResponse(bool Successed, string Message);
 public record ResetPasswordCommand(string Email, string ResetToken, ResetPasswordPayload Payload) : IRequest;
 
 public record ResetPasswordPayload(string NewPassword);
+
 
 public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
 {
@@ -39,13 +42,16 @@ public class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordComm
 
 
 internal sealed class ResetPasswordCommandHandler(
+    ILogger<ResetPasswordCommandHandler> logger,
     UserManager<User> userManager
 ) : IRequestHandler<ResetPasswordCommand>
 {
+    private readonly ILogger<ResetPasswordCommandHandler> _logger = logger;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request reset password: {@Request}", request with { Payload = request.Payload with { NewPassword = "###" } });
         var requestPayload = request.Payload;
 
         var decodedEmail = Uri.UnescapeDataString(request.Email);
@@ -65,11 +71,13 @@ internal sealed class ResetPasswordCommandHandler(
         var result = await _userManager.ResetPasswordAsync(user, decodedToken, requestPayload.NewPassword);
         if (!result.Succeeded)
         {
-            //TODO: When implementing the log, ensure to capture the specific details when password reset fails.
+            _logger.LogError("Failed to reset password for user: {UserId}. Error: {@Errors}", user.Id, result.Errors);
             throw new ValidationException("Password reset failed.");
         }
 
         user.LastModified = DateTime.UtcNow;
+        
+        _logger.LogInformation("Reset password for user: {UserId} completed successfully.", user.Id);
         await _userManager.UpdateAsync(user);
     }
 }

@@ -10,12 +10,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Identity.Application.Shared.Dtos;
 using Identity.Application.Shared.Validators;
+using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features;
+
 
 public record RegisterUserCommand(RegisterUserPayload Payload) : IRequest<UserDetailResponse>;
 
 public record RegisterUserPayload(string FirstName, string LastName, string UserName, string Email, string Password, string PhoneNumber);
+
 
 public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
 {
@@ -42,17 +45,20 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 
 
 internal sealed class RegisterUserCommandHandler(
+    ILogger<RegisterUserCommandHandler> logger,
     ApplicationDbContext context, 
     IPasswordHasher<User> passwordHasher, 
     UserManager<User> userManager
 ) : IRequestHandler<RegisterUserCommand, UserDetailResponse>
 {
+    private readonly ILogger<RegisterUserCommandHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
     private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task<UserDetailResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request register user: {@Request}", request with { Payload = request.Payload with { Password = "###" }});
         var requestPayload = request.Payload;
         
         var user = await _context.Users
@@ -64,6 +70,8 @@ internal sealed class RegisterUserCommandHandler(
             throw new ValidationException("Email already exists.");
         
         var newAccount = ToEntity(requestPayload);
+        _logger.LogInformation("Adding new account to database: {@NewAccount}", newAccount);
+
         newAccount.PasswordHash = _passwordHasher.HashPassword(newAccount, requestPayload.Password);
         newAccount.SecurityStamp = Guid.NewGuid().ToString();
 
