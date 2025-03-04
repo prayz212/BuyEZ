@@ -17,6 +17,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
 
@@ -106,12 +107,14 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
 
 internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand, ClientDetailResponse>
 {
+    private readonly ILogger<AddClientCommandHandler> _logger;
     private readonly ApplicationDbContext _context;
     private readonly IAccountService _accountService;
     private readonly GrpcBaseOptions _grpcClientOptions;
 
-    public AddClientCommandHandler(ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
+    public AddClientCommandHandler(ILogger<AddClientCommandHandler> logger, ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
     {
+        _logger = logger;
         _context = context;
         _accountService = accountService;
         _grpcClientOptions = clientOptions.Value.Identity;
@@ -119,6 +122,8 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
 
     public async Task<ClientDetailResponse> Handle(AddClientCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request add new client: {@Request}", request);
+
         // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
@@ -135,11 +140,14 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
             newClient.Logo = clientLogo;
         }
 
+        _logger.LogInformation("Adding new client to database: {@NewClient}", newClient);
         await _context.Clients.AddAsync(newClient, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
+        
+        _logger.LogInformation("Creating default tenant admin account for new client: {@NewAccount}", grpcRequestPayload);
         await _accountService.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return Client.ToDto(newClient);

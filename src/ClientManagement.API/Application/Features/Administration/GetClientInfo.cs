@@ -6,19 +6,25 @@ using Shared.Common.Exceptions;
 
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
+
 
 public record ClientInfoResponse(string TenantId, string Name, DateTimeOffset ValidTo, ProductType[] ProductType, SubscriptionType Subscription, bool IsActive);
 
 public record GetClientInfoQuery(string? Id) : IRequest<ClientInfoResponse>;
 
-internal sealed class GetTenantInfoHandler(ApplicationDbContext context) : IRequestHandler<GetClientInfoQuery, ClientInfoResponse>
+
+internal sealed class GetClientInfoQueryHandler(ILogger<GetClientInfoQueryHandler> logger, ApplicationDbContext context) : IRequestHandler<GetClientInfoQuery, ClientInfoResponse>
 {
+    private readonly ILogger<GetClientInfoQueryHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task<ClientInfoResponse> Handle(GetClientInfoQuery request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request get client info: {@Request}", request);
+
         if (string.IsNullOrWhiteSpace(request.Id))
             throw new ValidationException("Invalid client id.");
 
@@ -40,5 +46,4 @@ internal sealed class GetTenantInfoHandler(ApplicationDbContext context) : IRequ
         client.SubscriptionType,
         client.IsActivated
     );
-
 }

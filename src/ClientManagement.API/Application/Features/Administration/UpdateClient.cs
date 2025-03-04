@@ -11,6 +11,7 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
 
@@ -88,12 +89,15 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
 }
 
 
-internal sealed class UpdateClientCommandHandler(ApplicationDbContext context) : IRequestHandler<UpdateClientCommand>
+internal sealed class UpdateClientCommandHandler(ILogger<UpdateClientCommandHandler> logger, ApplicationDbContext context) : IRequestHandler<UpdateClientCommand>
 {
+    private readonly ILogger<UpdateClientCommandHandler> _logger = logger;
     private readonly ApplicationDbContext _context = context;
 
     public async Task Handle(UpdateClientCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Handling request update client: {@Request}", request);
+
         // TODO: refactor to reuse this validation
         if (string.IsNullOrWhiteSpace(request.CurrentUserId))
             throw new UnauthorizedAccessException("Invalid token.");
@@ -125,6 +129,7 @@ internal sealed class UpdateClientCommandHandler(ApplicationDbContext context) :
         if (hasChangedLogo && requestPayload.Logo is not null)
             client.Logo = ToEntity(request.CurrentUserId, requestPayload.Logo);
 
+        _logger.LogInformation("Updating client to database: {@UpdatedClient}", client);
         _context.Clients.Update(client);
         await _context.SaveChangesAsync(cancellationToken);
     }
