@@ -49,9 +49,9 @@ public class OrderController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<OrderDetailResponse>> Add(AddOrderPayload request)
+    public async Task<ActionResult<OrderDetailResponse>> Add(AddOrderPayload payload)
     {
-        var order = await Mediator.Send(new AddOrderCommand(GetUserId(), request));
+        var order = await Mediator.Send(new AddOrderCommand(GetUserId(), payload));
         return CreatedAtAction(nameof(Get), new { id = order.Id }, order);
     }
 
@@ -63,12 +63,12 @@ public class OrderController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateOrderPayload request)
+    public async Task<ActionResult> Update(string id, UpdateOrderPayload payload)
     {
-        if (id != request.Id) 
+        if (id != payload.Id) 
             throw new ValidationException("Order Id is not correct.");
             
-        await Mediator.Send(new UpdateOrderCommand(GetUserId(), request));
+        await Mediator.Send(new UpdateOrderCommand(GetUserId(), payload));
 
         return NoContent();
     }
