@@ -52,9 +52,9 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<UserDetailResponse> Register(RegisterUserCommand command)
+    public async Task<UserDetailResponse> Register(RegisterUserPayload payload)
     {
-        return await Mediator.Send(command);
+        return await Mediator.Send(new RegisterUserCommand(payload));
     }
 
     [HttpPost("forgot-password")]
@@ -64,9 +64,9 @@ public class IdentityController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordCommand command)
+    public async Task<ForgotPasswordResponse> ForgotPassword(ForgotPasswordPayload payload)
     {
-        return await Mediator.Send(command);
+        return await Mediator.Send(new ForgotPasswordCommand(payload));
     }
 
     [HttpPost("reset-password")]

@@ -24,9 +24,9 @@ public class ProductController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductPayload request)
+    public async Task<ActionResult<ProductDetailResponse>> Add(AddProductPayload payload)
     {
-        var product = await Mediator.Send(new AddProductCommand(GetTenantId(), GetUserId(), request));
+        var product = await Mediator.Send(new AddProductCommand(GetTenantId(), GetUserId(), payload));
         return CreatedAtRoute("GetProductDetails", new { id = product.Id}, product);
     }
 
@@ -39,12 +39,12 @@ public class ProductController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateProductPayload request)
+    public async Task<ActionResult> Update(string id, UpdateProductPayload payload)
     {
-        if (id != request.Id) 
+        if (id != payload.Id) 
             throw new ValidationException("Product Id is not correct.");
 
-        await Mediator.Send(new UpdateProductCommand(GetTenantId(), GetUserId(), request));
+        await Mediator.Send(new UpdateProductCommand(GetTenantId(), GetUserId(), payload));
         return NoContent();
     }
 }

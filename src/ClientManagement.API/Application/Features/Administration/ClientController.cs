@@ -52,9 +52,9 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientPayload request)
+    public async Task<ActionResult<ClientDetailResponse>> Add(AddClientPayload payload)
     {
-        var client = await Mediator.Send(new AddClientCommand(GetUserId(), request));
+        var client = await Mediator.Send(new AddClientCommand(GetUserId(), payload));
         return CreatedAtAction(nameof(Get), new { id = client.Id }, client);
     }
 
@@ -67,12 +67,12 @@ public class ClientController : ApiControllerBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Update(string id, UpdateClientPayload request)
+    public async Task<ActionResult> Update(string id, UpdateClientPayload payload)
     {
-        if (id != request.Id) 
+        if (id != payload.Id) 
             throw new ValidationException("Client Id is not correct.");
 
-        await Mediator.Send(new UpdateClientCommand(GetUserId(), request));
+        await Mediator.Send(new UpdateClientCommand(GetUserId(), payload));
 
         return NoContent();
     }
