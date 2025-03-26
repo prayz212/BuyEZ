@@ -1,3 +1,6 @@
 <div class="text-white pt-6">
-  <p>home works!</p>
+  <p>Home page works!</p>
+
+  <p *ngIf="isAuthenticated$ | async">Welcome, authenticated user!</p>
+  <p *ngIf="!(isAuthenticated$ | async)">BuyEZ Home!</p>
 </div>

@@ -184,4 +184,13 @@ public static class Config
             ? clientInfo.Roles.Contains(role) 
             : false;
     }
+
+    public static bool IsInClientGrantType(string clientId, string type)
+    {
+        var client = Clients.FirstOrDefault(c => c.ClientId == clientId);
+        
+        return client != null
+            ? client.AllowedGrantTypes.Any(gt => gt == type)
+            : false;
+    }
 }

@@ -262,6 +262,23 @@
           >Gift Cards</a
         >
 
+        <!-- TODO: Make it display conditionally with the Order Now button -->
+        <a
+          class="text-sm font-medium text-white hover:text-neutral-300 md:py-4 focus:outline-none focus:text-neutral-300 "
+          routerLink="/login"
+          routerLinkActive="!text-yellow-300/90 cursor-default"
+          #allProductsActive="routerLinkActive"
+          >Login</a
+        >
+
+        <a
+          class="text-sm font-medium text-white hover:text-neutral-300 md:py-4 focus:outline-none focus:text-neutral-300 "
+          routerLink="/register"
+          routerLinkActive="!text-yellow-300/90 cursor-default"
+          #allProductsActive="routerLinkActive"
+          >Register</a
+        >
+
         <div>
           <a
             class="group inline-flex items-center gap-x-2 py-2 px-3 bg-[#ff0] border border-[#ff0] font-medium text-sm text-neutral-800 rounded-full focus:outline-none hover:bg-transparent hover:text-neutral-300 hover:border hover:border-[#ff0]"

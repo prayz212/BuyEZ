@@ -7,10 +7,12 @@ import {
   loadingInterceptor,
 } from './interceptors';
 import { BreadcrumbService, CatalogService, LoadingService } from './services';
+import { AuthService } from './services/auth.service';
 
 @NgModule({
   providers: [
     CatalogService,
+    AuthService,
     LoadingService,
     BreadcrumbService,
     provideHttpClient(
