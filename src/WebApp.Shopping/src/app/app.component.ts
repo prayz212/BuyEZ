@@ -1,5 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { IStaticMethods } from 'preline/preline';
+
+declare global {
+  interface Window {
+    HSStaticMethods: IStaticMethods;
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -11,5 +18,16 @@ export class AppComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.router.events.subscribe({
+      next: (event) => {
+        /* Preline configuration */
+        if (event instanceof NavigationEnd) {
+          setTimeout(() => {
+            window.HSStaticMethods.autoInit();
+          }, 100);
+        }
+      },
+    });
+  }
 }

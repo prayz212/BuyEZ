@@ -1,7 +1,6 @@
 using Identity.Application.Common;
 using Identity.Application.Shared.RestAPIs;
 
-using Shared.Common.Exceptions;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 using Refit;
@@ -21,7 +20,7 @@ public record AuthenticateUserResponse(
     [property: JsonProperty("token_type")] string TokenType, 
     [property: JsonProperty("scope")] string Scope);
 
-public record AuthenticateUserQuery(string ClientId, string Username, string Password) : IRequest<AuthenticateUserResponse>;
+public record AuthenticateUserQuery(string Username, string Password) : IRequest<AuthenticateUserResponse>;
 
 
 public class AuthenticateUserQueryValidator : AbstractValidator<AuthenticateUserQuery>
@@ -48,34 +47,31 @@ internal sealed class AuthenticateUserQueryHandler : IRequestHandler<Authenticat
 {
     private readonly ILogger<AuthenticateUserQueryHandler> _logger;
     private readonly IIdentityServerApi _identityServerApi;
+    private readonly Client _client;
 
     public AuthenticateUserQueryHandler(ILogger<AuthenticateUserQueryHandler> logger, IIdentityServerApi identityServerApi)
     {
         _logger = logger;
         _identityServerApi = identityServerApi;
+
+        /* Hard coding the BuyEZ Shopping ClientId */
+        var clientId = "01f9f062-cedb-4a30-877c-c7295ddcc82d";
+        _client = Config.Clients.First(c => c.ClientId == clientId);
     }
 
     public async Task<AuthenticateUserResponse> Handle(AuthenticateUserQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling request authenticate user: {@Request}", request with { Password = "###" });
 
-        var client = Config.Clients.FirstOrDefault(c => c.ClientId == request.ClientId);
-        if (client == null)
-            throw new NotFoundException($"Client with id: {request.ClientId} was not found.");
-
-        var isInClientGrantType = Config.IsInClientGrantType(client.ClientId, GrantType.ResourceOwnerPassword);
-        if (!isInClientGrantType)
-            throw new ValidationException($"Client with id: {request.ClientId} is not configured for ResourceOwnerPassword grant type.");
-
         // Make a call to connect/token to get the token
         var contentKeyValues = new Dictionary<string, string>()
         {
-            { "client_id", client.ClientId },
-            { "client_secret", Config.GetClientSecret(client.ClientId)! },
+            { "client_id", _client.ClientId },
+            { "client_secret", Config.GetClientSecret(_client.ClientId)! },
             { "grant_type", GrantType.ResourceOwnerPassword },
             { "username", request.Username },
             { "password", request.Password },
-            { "scope", string.Join(" ", client.AllowedScopes) }
+            { "scope", string.Join(" ", _client.AllowedScopes) }
         };
 
         var content = new FormUrlEncodedContent(contentKeyValues);
