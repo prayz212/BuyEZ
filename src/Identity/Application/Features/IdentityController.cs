@@ -35,6 +35,19 @@ public class IdentityController : ApiControllerBase
         return await Mediator.Send(query);
     }
 
+    [HttpPost("revoke-token")]
+    [MapToApiVersion(1)]
+    [ProducesResponseType(typeof(NoContentResult), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> RevokeToken(RevokeTokenQuery query)
+    {
+        await Mediator.Send(query);
+        
+        return NoContent();
+    }
+
     [HttpPost("refresh-token")]
     [MapToApiVersion(1)]
     [ProducesResponseType(typeof(AuthenticationTokenResponse), StatusCodes.Status200OK)]
