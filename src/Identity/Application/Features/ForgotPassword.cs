@@ -79,7 +79,7 @@ internal sealed class ForgotPasswordCommandHandler(
     private string GenerateResetPasswordUrl(string email, string token)
     {
         var baseUrl = _serviceOptions.BaseUrl;
-        var apiPath = $"{ApiPaths.Root}/identity/reset-password";
+        var apiPath = $"{ApiPaths.Root}/identities/reset-password";
         
         var encodedToken = Uri.EscapeDataString(token);
         var encodedEmail = Uri.EscapeDataString(email);

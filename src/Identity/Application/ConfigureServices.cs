@@ -3,6 +3,7 @@ using Identity.Application.Shared.RestAPIs;
 using Identity.Application.Infrastructure.Persistence;
 using Identity.Application.Features.Administration.gRPC;
 using Identity.Application.Infrastructure.Options;
+using Identity.Application.Shared.RestAPIs.Handlers;
 
 using Shared.Options;
 using Shared.GrpcProto;
@@ -15,6 +16,7 @@ using Refit;
 using FluentValidation;
 using System.Reflection;
 using ProtoBuf.Grpc.Server;
+using Duende.IdentityServer;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +50,7 @@ public static class DependencyInjection
 
         services.AddRefitClient<IIdentityServerApi>()
             .ConfigureHttpClient(config => config.BaseAddress = new Uri(identityOptions["IssuerUri"]!))
+            .AddHttpMessageHandler<TokenAuthenticationHandlers>()
             // TODO: using SSL certificate in real production and remove this workaround
             .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
             {
@@ -91,15 +94,31 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
+            options.AddPolicy(PolicyConstants.CUSTOMER_POLICY, policy =>
+            {
+                // Override the Cookies authentication (conflict with AddIdentity)
+                policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+                
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("scope", IdentityServerConstants.StandardScopes.Profile);
+                policy.RequireRole(IdentityConstants.Role.USER);
+            });
+
             options.AddPolicy(PolicyConstants.SYSTEM_ADMIN_POLICY, policy =>
             {
+                // Override the Cookies authentication (conflict with AddIdentity)
+                policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.IDENTITY_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN);
-            });
-            
+            });           
+
             options.AddPolicy(PolicyConstants.SYSTEM_SUPPORTER_POLICY, policy =>
             {
+                // Override the Cookies authentication (conflict with AddIdentity)
+                policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.IDENTITY_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_SUPPORT);
@@ -107,6 +126,9 @@ public static class DependencyInjection
 
             options.AddPolicy(PolicyConstants.SYSTEM_ADMIN_OR_SUPPORTER_POLICY, policy =>
             {
+                // Override the Cookies authentication (conflict with AddIdentity)
+                policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
+
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.IDENTITY_API);
                 policy.RequireRole(IdentityConstants.Role.SYSTEM_ADMIN, IdentityConstants.Role.SYSTEM_SUPPORT);
@@ -126,6 +148,7 @@ public static class DependencyInjection
         
         services.AddScoped<ApplicationDbContextInitializer>();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+        services.AddTransient<TokenAuthenticationHandlers>();
 
         return services;
     }
