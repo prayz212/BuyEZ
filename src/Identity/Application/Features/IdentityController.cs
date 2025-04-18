@@ -10,7 +10,7 @@ namespace Identity.Application.Features;
 
 [ApiController]
 [ApiVersion(1)]
-[Route($"{ApiPaths.Root}/identity")]
+[Route($"{ApiPaths.Root}/identities")]
 public class IdentityController : ApiControllerBase
 {
     [HttpPost("login")]
