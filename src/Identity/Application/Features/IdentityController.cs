@@ -1,10 +1,12 @@
 using Identity.Application.Shared.Dtos;
 
 using Shared.Common;
+using Shared.Common.Constants;
 
 using Asp.Versioning;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Identity.Application.Features;
 
@@ -93,5 +95,20 @@ public class IdentityController : ApiControllerBase
         await Mediator.Send(new ResetPasswordCommand(email, token, payload));
 
         return NoContent();
+    }
+
+    [HttpGet("user-info")]
+    [MapToApiVersion(1)]
+    [Authorize(Policy = PolicyConstants.CUSTOMER_POLICY)]
+    [ProducesResponseType(typeof(GetUserInfoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+    public async Task<GetUserInfoResponse> GetUserInfo()
+    {
+        var authorization = HttpContext.Request.Headers.Authorization.First()!;
+        var accessToken = authorization.Substring("Bearer ".Length).Trim();
+        
+        return await Mediator.Send(new GetUserInfoQuery(accessToken));
     }
 }

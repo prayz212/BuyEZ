@@ -12,4 +12,7 @@ public interface IIdentityServerApi
     [Headers("Content-Type: application/x-www-form-urlencoded")]
     [Post("/connect/revocation")]
     Task PostRevokeTokenAsync([Body(BodySerializationMethod.UrlEncoded)] FormUrlEncodedContent encodedContent);
+
+    [Get("/connect/userinfo")]
+    Task<ExpandoObject> GetUserInfoAsync();
 }
