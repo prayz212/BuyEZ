@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer : IApplicationDbContextInitializer
+public class ApplicationDbContextInitializer : IDbContextInitializer
 {
     private readonly ILogger<ApplicationDbContextInitializer> _logger;
     private readonly ApplicationDbContext _context;

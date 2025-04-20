@@ -1,15 +1,23 @@
 using Identity.Application;
 using Identity.Application.Extensions;
+using Identity.Application.Infrastructure.Persistence;
+
+using Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 
-builder.Services.AddServices(builder.Configuration);
+builder.Services.ConfigureService();
+builder.Services.AddCustomIdentity(builder.Configuration);
 builder.Services.AddCustomIdentityServer(builder.Configuration);
 
 var app = builder.Build();
+
+// Ensure table and data been migrated and seeded
+await app.InitializeDatabaseAsync<PersistedGrantDbContextInitializer>();
+await app.InitializeDatabaseAsync<ConfigurationDbContextInitializer>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

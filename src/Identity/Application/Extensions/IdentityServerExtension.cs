@@ -1,10 +1,11 @@
-using Identity.Application.Common;
 using Identity.Application.Domain;
+using Identity.Application.Infrastructure.Persistence;
 
 using Shared.Options;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Application.Extensions;
 
@@ -24,11 +25,16 @@ public static class IdentityServerExtension
                 options.Events.RaiseSuccessEvents = true;
                 options.IssuerUri = identityOptions["IssuerUri"];
             })
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiResources(Config.ApiResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients)
             .AddAspNetIdentity<User>()
+            .AddConfigurationStore(options => 
+                options.ConfigureDbContext = b => 
+                    b.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), 
+                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)))
+            .AddOperationalStore(options => 
+                options.ConfigureDbContext = b => 
+                    b.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+                )
             .AddProfileService<ProfileService>()
             .AddResourceOwnerValidator<CustomResourceOwnerPassword>();
 

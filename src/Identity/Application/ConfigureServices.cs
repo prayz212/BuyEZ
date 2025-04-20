@@ -18,14 +18,15 @@ using System.Reflection;
 using ProtoBuf.Grpc.Server;
 using Duende.IdentityServer;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Builder;
 
 namespace Identity.Application;
 
@@ -90,15 +91,21 @@ public static class DependencyInjection
 
                     ValidateLifetime = true,
                 };
+
+                // TODO: using SSL certificate in real production and remove this workaround
+                options.BackchannelHttpHandler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
             });
 
         services.AddAuthorization(options =>
         {
             options.AddPolicy(PolicyConstants.CUSTOMER_POLICY, policy =>
-            {
+            {         
                 // Override the Cookies authentication (conflict with AddIdentity)
                 policy.AuthenticationSchemes.Add(JwtBearerDefaults.AuthenticationScheme);
-                
+
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("scope", IdentityServerConstants.StandardScopes.Profile);
                 policy.RequireRole(IdentityConstants.Role.USER);
@@ -143,17 +150,18 @@ public static class DependencyInjection
         });
 
         services.AddCodeFirstGrpcReflection();
-
-        services.AddServices(configuration);
+        services.AddCustomIdentity(configuration);
         
         services.AddScoped<ApplicationDbContextInitializer>();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
         services.AddTransient<TokenAuthenticationHandlers>();
 
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
         return services;
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddCustomIdentity(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<ApplicationDbContext>(options => 
             options.UseNpgsql(
@@ -176,11 +184,6 @@ public static class DependencyInjection
             options.TokenLifespan = TimeSpan.FromMinutes(10);
         });
 
-        services.Configure<ServiceOptions>(options =>
-        {
-            configuration.GetSection(nameof(ServiceOptions));
-        });
-
         return services;
     }
 
@@ -189,5 +192,13 @@ public static class DependencyInjection
         app.MapGrpcService<AccountService>();
 
         return app;
+    }
+
+    public static IServiceCollection ConfigureService(this IServiceCollection services)
+    {
+        services.AddScoped<PersistedGrantDbContextInitializer>();
+        services.AddScoped<ConfigurationDbContextInitializer>();
+
+        return services;
     }
 }
