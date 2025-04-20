@@ -1,19 +1,22 @@
 using Shared.Infrastructure.Persistence;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Duende.IdentityServer.EntityFramework.DbContexts;
 
-namespace OrderAPI.Application.Infrastructure.Persistence;
+namespace Identity.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer : IDbContextInitializer
+public class PersistedGrantDbContextInitializer : IDbContextInitializer
 {
-    private readonly ILogger<ApplicationDbContextInitializer> _logger;
-    private readonly ApplicationDbContext _context;
+    private readonly ILogger<PersistedGrantDbContextInitializer> _logger;
+    private readonly PersistedGrantDbContext _context;
 
-    public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger, ApplicationDbContext context)
+    public PersistedGrantDbContextInitializer(
+        ILogger<PersistedGrantDbContextInitializer> logger, PersistedGrantDbContext context
+    )
     {
         _logger = logger;
-        _context = context;
+        _context = context;    
     }
 
     public async Task InitializeAsync()
@@ -33,7 +36,7 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
 
     public Task SeedAsync()
     {
-        // Do nothing here since we not seed the database
+        _logger.LogInformation("No data seeding...");
         return Task.CompletedTask;
     }
 }

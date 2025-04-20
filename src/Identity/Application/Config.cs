@@ -30,6 +30,7 @@ public static class Config
                     Roles: [IdentityConstants.Role.SYSTEM_ADMIN, IdentityConstants.Role.SYSTEM_SUPPORT])
             },
         };
+        
     public static string? GetClientSecret(string clientId) 
         => ClientInfos.GetValueOrDefault(clientId)?.SecretKey;
 
