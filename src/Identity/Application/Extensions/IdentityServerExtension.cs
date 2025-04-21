@@ -30,11 +30,11 @@ public static class IdentityServerExtension
             .AddConfigurationStore(options => 
                 options.ConfigureDbContext = b => 
                     b.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), 
-                    b => b.MigrationsAssembly(typeof(ConfigurationDbContext).Assembly.FullName)))
+                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)))
             .AddOperationalStore(options => 
                 options.ConfigureDbContext = b => 
                     b.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly(typeof(PersistedGrantDbContext).Assembly.FullName))
+                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
                 )
             .AddProfileService<ProfileService>()
             .AddResourceOwnerValidator<CustomResourceOwnerPassword>();
