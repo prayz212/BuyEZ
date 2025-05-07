@@ -1,6 +1,6 @@
 version: "3"
 
-name: buyez
+name: buyez-api
 
 services:
   # Identity API service
@@ -45,6 +45,12 @@ services:
       ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
       ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Identity;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
       IdentityOptions__IssuerUri: https://identity_webapp:17106
+      Serilog__ApplicationName: "identity-webapp"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
     depends_on:
       - db
     volumes:
@@ -218,9 +224,8 @@ services:
   #   ports:
   #     - "15044:5044"
     
-
 volumes:
-  buyez-db-vol:
+  buyez-db-vol:      
   elasticsearch-vol:
 
 networks:

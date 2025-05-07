@@ -135,3 +135,17 @@ Should maintain clean, understandable and easily navigate project history by fol
 | perf | Improve performance. |
 | ci | Changes to CI/CD configuration. |
 | build | Changes to build system. |
+
+# How to run the application
+
+## Step 1: Build and run Docker compose
+
+To dockerize and run the application, use the below command and wait until all 10 containers are running
+
+```bash
+docker-compose up -d --build
+```
+
+## Step 2: Seed data (1st time only)
+
+To seeding dummy data, we need to stop all services in group buyez-api, excluding buyez-db container. Then, manually run these 3 applications using the port of buyez-db (which is **15432** in my case): Catalog.API, ClientManagement.API, Identity.API
