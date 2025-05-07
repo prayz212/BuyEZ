@@ -1,7 +1,7 @@
 using Identity.Application;
 using Identity.Application.Extensions;
 using Identity.Application.Infrastructure.Persistence;
-
+using Shared.Common;
 using Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +12,7 @@ builder.Services.AddRazorPages();
 builder.Services.ConfigureService();
 builder.Services.AddCustomIdentity(builder.Configuration);
 builder.Services.AddCustomIdentityServer(builder.Configuration);
+builder.Host.UseCustomSerilog();
 
 var app = builder.Build();
 
