@@ -1,0 +1,6 @@
+@Shipping.BackgroundJob_HostAddress = http://localhost:5173
+
+GET {{Shipping.BackgroundJob_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

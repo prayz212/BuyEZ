@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Order.Application", "src\Or
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuyEZ.Shared", "src\Shared\BuyEZ.Shared.csproj", "{3818F7DA-2F91-405C-9316-BA34764D3EC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipping.BackgroundJob", "src\Shipping.Worker\BackgroundJobs\Shipping.BackgroundJob.csproj", "{68517375-AF47-4D33-B731-EE4269964968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipping.Application", "src\Shipping.Worker\Application\Shipping.Application.csproj", "{C06EC820-9852-4A89-A94A-2903A597DB99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,5 +86,13 @@ Global
 		{3818F7DA-2F91-405C-9316-BA34764D3EC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3818F7DA-2F91-405C-9316-BA34764D3EC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3818F7DA-2F91-405C-9316-BA34764D3EC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68517375-AF47-4D33-B731-EE4269964968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68517375-AF47-4D33-B731-EE4269964968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68517375-AF47-4D33-B731-EE4269964968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68517375-AF47-4D33-B731-EE4269964968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C06EC820-9852-4A89-A94A-2903A597DB99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C06EC820-9852-4A89-A94A-2903A597DB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C06EC820-9852-4A89-A94A-2903A597DB99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C06EC820-9852-4A89-A94A-2903A597DB99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
