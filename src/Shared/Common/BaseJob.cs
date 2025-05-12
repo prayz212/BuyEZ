@@ -1,23 +1,24 @@
-using ShippingWorker.Application.Domain;
-using ShippingWorker.Application.Infrastructure.Persistence;
+using Shared.Domain;
+using Shared.Infrastructure.Persistence;
 
 using Quartz;
+using Microsoft.Extensions.Logging;
 
-namespace ShippingWorker.BackgroundJobs.Jobs;
+namespace Shared.Common;
 
 [DisallowConcurrentExecution]
-public abstract class BaseJob<TJob> : IJob
+public abstract class BaseJob<TJob, TDbContext, TTrackingEvent> : IJob where TDbContext : JobDbContext<TTrackingEvent>
 {
     protected readonly ILogger<TJob> _logger;
-    protected readonly ApplicationDbContext _context;
-    protected readonly JobExecutionHistory _executionHistory;
-    protected readonly List<ShipmentTrackingEvent> _events;
+    protected readonly TDbContext _context;
+    protected readonly JobExecutionHistory<TTrackingEvent> _executionHistory;
+    protected readonly List<TTrackingEvent> _events;
 
-    public BaseJob(ILogger<TJob> logger, ApplicationDbContext context)
+    public BaseJob(ILogger<TJob> logger, TDbContext context)
     {
         _logger = logger;
         _context = context;
-        _executionHistory = new JobExecutionHistory(GetType().Name);
+        _executionHistory = new JobExecutionHistory<TTrackingEvent>(GetType().Name);
         _events = [];
     }
 

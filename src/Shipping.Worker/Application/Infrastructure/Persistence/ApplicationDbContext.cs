@@ -2,6 +2,7 @@ using ShippingWorker.Application.Domain;
 
 using Shared.Common;
 using Shared.Common.Interfaces;
+using Shared.Infrastructure.Persistence;
 
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -9,13 +10,12 @@ using Microsoft.Extensions.Logging;
 
 namespace ShippingWorker.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : JobDbContext<ShipmentTrackingEvent>
 {
     private readonly ILogger<ApplicationDbContext> _logger;
     private readonly IDomainEventService _domainEventService;
 
     public DbSet<Shipment> Shipments => Set<Shipment>();
-    public DbSet<JobExecutionHistory> JobExecutionHistories => Set<JobExecutionHistory>();
     public DbSet<ShipmentTrackingEvent> ShipmentTrackingEvents => Set<ShipmentTrackingEvent>();
 
     public ApplicationDbContext(

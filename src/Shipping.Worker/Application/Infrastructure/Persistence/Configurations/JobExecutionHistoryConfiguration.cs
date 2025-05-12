@@ -1,14 +1,16 @@
 using ShippingWorker.Application.Domain;
 
+using Shared.Domain;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ShippingWorker.Application.Infrastructure.Persistence.Configurations;
 
-public class JobExecutionHistoryConfiguration : IEntityTypeConfiguration<JobExecutionHistory>
+public class JobExecutionHistoryConfiguration : IEntityTypeConfiguration<JobExecutionHistory<ShipmentTrackingEvent>>
 {
-    public void Configure(EntityTypeBuilder<JobExecutionHistory> builder)
+    public void Configure(EntityTypeBuilder<JobExecutionHistory<ShipmentTrackingEvent>> builder)
     {
         builder.Ignore(j => j.TrackingEvents);
 

@@ -1,12 +1,14 @@
 using ShippingWorker.Application.Domain;
 using ShippingWorker.Application.Infrastructure.Persistence;
 
+using Shared.Common;
+
 using Quartz;
 using Microsoft.EntityFrameworkCore;
 
 namespace ShippingWorker.BackgroundJobs.Jobs;
 
-public class FindDriver : BaseJob<FindDriver>
+public class FindDriver : BaseJob<FindDriver, ApplicationDbContext, ShipmentTrackingEvent>
 {
     public FindDriver(ILogger<FindDriver> logger, ApplicationDbContext context) 
         : base(logger, context) { }
@@ -19,10 +21,12 @@ public class FindDriver : BaseJob<FindDriver>
 
         foreach (var shipment in shipments)
         {
-            _logger.LogInformation("Assigning driver to shipment {ShipmentId}", shipment.Id);
+            _logger.LogInformation("Assigning driver to shipment: {@Shipment}", shipment);
 
             _events.Add(new(shipment, _executionHistory, ShipmentStatus.DriverAssigned));
             shipment.UpdateStatus(ShipmentStatus.DriverAssigned);
         }
+
+        await _context.SaveChangesAsync();
     }
 }

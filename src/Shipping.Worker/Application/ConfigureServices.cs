@@ -54,6 +54,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
     }

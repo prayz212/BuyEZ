@@ -1,6 +1,6 @@
-namespace ShippingWorker.Application.Domain;
+namespace Shared.Domain;
 
-public class JobExecutionHistory
+public class JobExecutionHistory<TTrackingEvent>
 {
     public string Id { get; private set; } = string.Empty;
 
@@ -15,8 +15,8 @@ public class JobExecutionHistory
     public string? ErrorMessage { get; private set; }
 
     // Navigation Properties
-    private readonly List<ShipmentTrackingEvent> _trackingEvents = [];
-    public IReadOnlyList<ShipmentTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
+    private readonly List<TTrackingEvent> _trackingEvents = [];
+    public IReadOnlyList<TTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
 
     // Constructors
     /*
@@ -48,7 +48,7 @@ public class JobExecutionHistory
         ErrorMessage = errorMessage ?? "Unknown error message.";
     }
 
-    public void AddTrackingEvent(List<ShipmentTrackingEvent> @events)
+    public void AddTrackingEvent(List<TTrackingEvent> @events)
     {
         _trackingEvents.AddRange(@events);
     }

@@ -37,6 +37,12 @@ public class Shipment : AuditableEntity, IHasDomainEvent
     public void UpdateStatus(ShipmentStatus status)
     {
         Status = status;
+
+        if (Status == ShipmentStatus.DeliveringOrder)
+        {
+            // TODO: add update order status event
+            Console.WriteLine("UpdateOrderStatus event to DeliveringOrder");
+        }
     }
 }
 

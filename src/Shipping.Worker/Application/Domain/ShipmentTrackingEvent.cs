@@ -1,3 +1,5 @@
+using Shared.Domain;
+
 namespace ShippingWorker.Application.Domain;
 
 public class ShipmentTrackingEvent
@@ -13,7 +15,7 @@ public class ShipmentTrackingEvent
     // Navigation Properties
     public Shipment? Shipment { get; private set; }
 
-    public JobExecutionHistory? ExecutionHistory { get; private set; }
+    public JobExecutionHistory<ShipmentTrackingEvent>? ExecutionHistory { get; private set; }
 
     // Constructors
     /*
@@ -26,7 +28,7 @@ public class ShipmentTrackingEvent
 
     public ShipmentTrackingEvent(
         Shipment shipment,
-        JobExecutionHistory executionHistory,
+        JobExecutionHistory<ShipmentTrackingEvent> executionHistory,
         ShipmentStatus newStatus)
     {
         ShipmentId = shipment.Id;
