@@ -41,9 +41,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerConfiguration();
 
     app.MapCodeFirstGrpcReflectionService();
-
-    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
+
+await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>(app.Environment);
 
 app.UseMiddleware<AuthorizationFailureMiddleware>();
 app.UseMiddleware<ExtractTokenMiddleware>();

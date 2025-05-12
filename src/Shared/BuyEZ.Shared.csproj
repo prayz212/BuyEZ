@@ -29,6 +29,9 @@
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.3" />
     
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+
+    <PackageReference Include="Quartz" Version="3.14.0" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
   </ItemGroup>
 
 </Project>
