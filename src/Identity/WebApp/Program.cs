@@ -17,8 +17,8 @@ builder.Host.UseCustomSerilog();
 var app = builder.Build();
 
 // Ensure table and data been migrated and seeded
-await app.InitializeDatabaseAsync<PersistedGrantDbContextInitializer>();
-await app.InitializeDatabaseAsync<ConfigurationDbContextInitializer>();
+await app.InitializeDatabaseAsync<PersistedGrantDbContextInitializer>(app.Environment);
+await app.InitializeDatabaseAsync<ConfigurationDbContextInitializer>(app.Environment);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

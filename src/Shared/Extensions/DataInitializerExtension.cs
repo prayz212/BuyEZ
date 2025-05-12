@@ -1,12 +1,15 @@
 using Shared.Infrastructure.Persistence;
+
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Shared.Extensions;
 
 public static class DataInitializerExtension
 {
-    public static async Task InitializeDatabaseAsync<TInitializer>(this WebApplication app) where TInitializer : IDbContextInitializer
+    public static async Task InitializeDatabaseAsync<TInitializer>(this WebApplication app, IWebHostEnvironment environment) where TInitializer : IDbContextInitializer
     {
         using IServiceScope scope = app.Services.CreateScope();
         
@@ -14,6 +17,7 @@ public static class DataInitializerExtension
 
         await initializer.InitializeAsync();
 
-        await initializer.SeedAsync();
+        if (environment.IsDevelopment())
+            await initializer.SeedAsync();
     }
 }

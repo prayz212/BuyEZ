@@ -25,13 +25,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-    await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>();
 }
+
+await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>(app.Environment);
 
 app.UseHttpsRedirection();
 
-
+// TODO: remove it when integrate with event sourcing
 app.MapGet("/dummy", async (ApplicationDbContext context) =>
 {
     var shipment = new Shipment(Guid.NewGuid().ToString());
