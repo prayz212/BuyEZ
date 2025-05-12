@@ -32,7 +32,7 @@ public abstract class BaseJob<TJob, TDbContext, TTrackingEvent> : IJob where TDb
         {
             await JobExecute(context);
             
-            if (_events.Any()) _executionHistory.AddTrackingEvent(_events);
+            if (_events.Any()) _executionHistory.AddTrackingEvents(_events);
             _executionHistory.ExecuteSuccess();
         }
         catch (Exception ex)

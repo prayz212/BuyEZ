@@ -48,7 +48,7 @@ public class JobExecutionHistory<TTrackingEvent>
         ErrorMessage = errorMessage ?? "Unknown error message.";
     }
 
-    public void AddTrackingEvent(List<TTrackingEvent> @events)
+    public void AddTrackingEvents(List<TTrackingEvent> @events)
     {
         _trackingEvents.AddRange(@events);
     }

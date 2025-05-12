@@ -17,12 +17,12 @@ public static class BackgroundJobSetup
         return options;
     }
 
-    public static QuartzOptions AddQuartzTriggers(this QuartzOptions options, JobCronOptions cronsOptions)
+    public static QuartzOptions AddQuartzTriggers(this QuartzOptions options, JobCronOptions cronOptions)
     {
         options
-            .AddTrigger(trigger => trigger.ForJob(nameof(FindDriver)).WithCronSchedule(cronsOptions.FindDriver))
-            .AddTrigger(trigger => trigger.ForJob(nameof(PickUpOrder)).WithCronSchedule(cronsOptions.PickUpOrder))
-            .AddTrigger(trigger => trigger.ForJob(nameof(DeliverOrder)).WithCronSchedule(cronsOptions.DeliverOrder));
+            .AddTrigger(trigger => trigger.ForJob(nameof(FindDriver)).WithCronSchedule(cronOptions.FindDriver))
+            .AddTrigger(trigger => trigger.ForJob(nameof(PickUpOrder)).WithCronSchedule(cronOptions.PickUpOrder))
+            .AddTrigger(trigger => trigger.ForJob(nameof(DeliverOrder)).WithCronSchedule(cronOptions.DeliverOrder));
 
         return options;
     }
