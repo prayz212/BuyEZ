@@ -200,6 +200,32 @@ services:
     networks:
       - backend-network
 
+  # Warehouse Worker
+  warehouse:
+    build:
+      context: src/
+      dockerfile: Warehouse.Worker/BackgroundJobs/Dockerfile
+    container_name: warehouse-wkr
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_Kestrel__Certificates__Default__Password: ${CERT_PASSWORD}
+      ASPNETCORE_Kestrel__Certificates__Default__Path: ${CERT_PATH}
+      ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Warehouse;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
+      JobCronOptions__PackOrder: 0 */5 * ? * *
+      JobCronOptions__NotifyShippingVendor: 0 */10 * ? * *
+      Serilog__ApplicationName: "warehouse-worker"
+      Serilog__ElasticsearchUri: "http://elasticsearch:9200"
+      Serilog__MinimumLevel__Default: "Information"
+      Serilog__MinimumLevel__Override__Microsoft: "Warning"
+      Serilog__MinimumLevel__Override__System: "Warning"
+      Serilog__MinimumLevel__Override__Microsoft.EntityFrameworkCore: "Information"
+    depends_on:
+      - db
+    volumes:
+      - C:/Users/${USERNAME}/.aspnet/https:/https/
+    networks:
+      - backend-network
+
   # Database service
   db:
     image: postgres:17.2

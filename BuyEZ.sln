@@ -29,6 +29,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipping.BackgroundJob", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shipping.Application", "src\Shipping.Worker\Application\Shipping.Application.csproj", "{C06EC820-9852-4A89-A94A-2903A597DB99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.BackgroundJob", "src\Warehouse.Worker\BackgroundJobs\Warehouse.BackgroundJob.csproj", "{B529B8B2-E0AC-4B7A-B7B1-2CB40FE5F8BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Application", "src\Warehouse.Worker\Application\Warehouse.Application.csproj", "{DBA7B2F3-FBAD-4B58-A452-D41D41346D7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,5 +98,13 @@ Global
 		{C06EC820-9852-4A89-A94A-2903A597DB99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C06EC820-9852-4A89-A94A-2903A597DB99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C06EC820-9852-4A89-A94A-2903A597DB99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B529B8B2-E0AC-4B7A-B7B1-2CB40FE5F8BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B529B8B2-E0AC-4B7A-B7B1-2CB40FE5F8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B529B8B2-E0AC-4B7A-B7B1-2CB40FE5F8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B529B8B2-E0AC-4B7A-B7B1-2CB40FE5F8BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBA7B2F3-FBAD-4B58-A452-D41D41346D7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBA7B2F3-FBAD-4B58-A452-D41D41346D7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBA7B2F3-FBAD-4B58-A452-D41D41346D7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBA7B2F3-FBAD-4B58-A452-D41D41346D7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
