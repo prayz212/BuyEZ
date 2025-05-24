@@ -2,7 +2,7 @@ namespace Shared.Common;
 
 public abstract class DomainEvent
 {
-    public bool IsPublished { get; set; }
+    public bool IsPublished { get; private set; }
 
     public DateTimeOffset DateOccurred { get; protected set; } = DateTimeOffset.UtcNow;
 
@@ -10,9 +10,9 @@ public abstract class DomainEvent
     {
         DateOccurred = DateTimeOffset.UtcNow;
     }
-}
 
-public interface IHasDomainEvent
-{
-    public List<DomainEvent> DomainEvents { get; }
+    public void MarkAsPublished()
+    {
+        IsPublished = true;
+    }
 }

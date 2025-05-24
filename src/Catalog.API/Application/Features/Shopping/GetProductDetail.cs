@@ -1,10 +1,11 @@
-using CatalogAPI.Application.Domain;
 using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Infrastructure.Persistence;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+
 using Shared.Common.Exceptions;
+
+using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace CatalogAPI.Application.Features.Shopping;
 
@@ -32,6 +33,6 @@ internal sealed class GetProductDetailQueryHandler(ILogger<GetProductDetailQuery
         if (product is null)
             throw new NotFoundException($"Product with id: {request.Id} was not found.");
 
-        return Product.ToDto(product);
+        return product.ToDto();
     }
 }

@@ -1,12 +1,9 @@
-using CatalogAPI.Application.Domain;
-using CatalogAPI.Application.Shared.Common;
 using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Shared.Validators;
-using CatalogAPI.Application.Infrastructure.Persistence;
+using CatalogAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Enums;
 using Shared.Common.Exceptions;
-using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 using MediatR;
 using FluentValidation;
@@ -16,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace CatalogAPI.Application.Features.Administration;
 
 
-public record UpdateProductPayload(string Id, string Name, string Description, double Price, ProductType Type, ProductStatus Status, int AvailableStock, int RestockThreshold, int MaxStockThreshold, List<ProductImagePayload>? DeleteImages, List<ProductImagePayload>? NewImages);
+public record UpdateProductPayload(string Id, string Name, string Description, double Price, ProductType Type, int RestockThreshold, int MaxStockThreshold, List<ProductImagePayload>? DeleteImages, List<ProductImagePayload>? NewImages);
 
 public record UpdateProductCommand(string? TenantId, string? CurrentUserId, UpdateProductPayload Payload)
     : IRequest;
@@ -53,22 +50,12 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
             RuleFor(x => x.Type)
                 .IsInEnum().WithMessage("Invalid product type.");
 
-            RuleFor(x => x.Status)
-                .IsInEnum().WithMessage("Invalid product status.");
-
-            RuleFor(x => x.AvailableStock)
-                .GreaterThanOrEqualTo(0).WithMessage("Available stock must be greater than or equal 0.");
-
             RuleFor(x => x.RestockThreshold)
                 .GreaterThanOrEqualTo(5).WithMessage("Restock threshold must be greater than or equal 5.");
 
             RuleFor(x => x.MaxStockThreshold)
                 .GreaterThanOrEqualTo(10).WithMessage("Maximum stock threshold must be greater than or equal 10")
                 .LessThanOrEqualTo(1000).WithMessage("Maximum stock threshold must be less than or equal 1000.");
-
-            RuleFor(x => x.NewImages)
-                .Must(NotExceedPrimaryImageQuantity).WithMessage("Exceeding required primary image quantity.")
-                .When(x => x.NewImages != null);
 
             RuleForEach(x => x.NewImages)
                 .SetValidator(new ProductImagePayloadValidator())
@@ -78,17 +65,14 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
                 .SetValidator(new ProductImagePayloadValidator())
                 .When(x => x.DeleteImages != null);
         }
-
-        private bool NotExceedPrimaryImageQuantity(List<ProductImagePayload>? images) 
-            => images?.Where(x => x.IsPrimary).Count() <= 1;
     }
 }
 
 
-internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHandler> logger, ApplicationDbContext context) : IRequestHandler<UpdateProductCommand>
+internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHandler> logger, IProductRepository productRepository) : IRequestHandler<UpdateProductCommand>
 {
-    private readonly ApplicationDbContext _context = context;
     private readonly ILogger<UpdateProductCommandHandler> _logger = logger;
+    private readonly IProductRepository _productRepository = productRepository;
 
     public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
@@ -99,71 +83,35 @@ internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHa
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var product = await _context.Products
-            .Include(p => p.Images)
-            .FirstOrDefaultAsync(p => p.Id == requestPayload.Id && p.TenantId == request.TenantId, cancellationToken);
-        if (product == null) 
+        var product = await _productRepository.GetById(requestPayload.Id, cancellationToken);
+        if (product == null)
             throw new NotFoundException($"Product with id: {requestPayload.Id} not found.");
 
-        /* Check if product has primary image */
-        var deleteImages = Enumerable.Empty<Image>();
-        if (requestPayload.DeleteImages != null && requestPayload.DeleteImages.Any()) 
-        {
-            deleteImages = product.Images.Where(i => requestPayload.DeleteImages.Any(di => di.URL == i.URL));
-        }
-
-        var newImages = Enumerable.Empty<Image>();
         if (requestPayload.NewImages != null && requestPayload.NewImages.Any())
         {
-            newImages = requestPayload.NewImages.Select(ni => ToEntity(request.CurrentUserId, ni));
+            var newPrimaryImage = requestPayload.NewImages.SingleOrDefault(ni => ni.IsPrimary);
+            if (newPrimaryImage != null)
+                product.UpdatePrimaryImage(newPrimaryImage);
+
+            product.AddImages([..requestPayload.NewImages.Where(ni => !ni.IsPrimary)]);
         }
 
-        var newPrimaryImage = newImages.FirstOrDefault(ni => ni.IsPrimary);
-        var deletePrimaryImage = deleteImages.FirstOrDefault(di => di.IsPrimary);
-        var isMissingPrimaryImage = deletePrimaryImage != null && newPrimaryImage == null;
-        var isExceedingPrimaryImage = deletePrimaryImage == null && newPrimaryImage != null;
-        if (isMissingPrimaryImage || isExceedingPrimaryImage)
-        {
-            throw new ValidationException("Missing or exceeding required primary image quantity.");
-        }
-
-        /* Check if images exceed maximum quantity */
-        var count = product.Images.Count() - deleteImages.Count() + newImages.Count();
-        if (count > ProductConstants.MAXIMUM_IMAGE_QUANTITY) 
-            throw new ValidationException("Exceeding maximum image quantity.");
+        if (requestPayload.DeleteImages != null && requestPayload.DeleteImages.Any())
+            product.RemoveImages([..requestPayload.DeleteImages.Where(ni => !ni.IsPrimary)]);
 
         /* Perform update */
-        product.Name = requestPayload.Name;
-        product.Description = requestPayload.Description;
-        product.Price = requestPayload.Price;
-        product.Type = requestPayload.Type;
-        product.Status = requestPayload.Status;
-        product.AvailableStock = requestPayload.AvailableStock;
-        product.RestockThreshold = requestPayload.RestockThreshold;
-        product.MaxStockThreshold = requestPayload.MaxStockThreshold;
-        product.LastModifiedBy = request.CurrentUserId;
-
-        if (deleteImages.Any())
-            product.Images = product.Images.Where(i => !deleteImages.Contains(i)).ToList();
-
-        if (newImages.Any())
-            product.Images.AddRange(newImages);
+        product.UpdateDetails(
+            requestPayload.Name,
+            requestPayload.Description,
+            requestPayload.Price,
+            requestPayload.Type,
+            requestPayload.RestockThreshold,
+            requestPayload.MaxStockThreshold,
+            request.CurrentUserId);
 
         _logger.LogInformation("Updating product to database: {@UpdatedProduct}", product);
         
-        _context.Update(product);
-        
-        await _context.SaveChangesAsync(cancellationToken);
+        _productRepository.Update(product);
+        await _productRepository.SaveChangesAsync(cancellationToken);
     }
-
-    private static Image ToEntity(string modifiedBy, ProductImagePayload image) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Filename = image.Filename,
-        URL = image.URL,
-        AltText = image.AltText,
-        Size = image.Size,
-        IsPrimary = image.IsPrimary,
-        LastModifiedBy = modifiedBy
-    };
 }

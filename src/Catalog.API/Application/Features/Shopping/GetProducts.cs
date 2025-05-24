@@ -5,8 +5,8 @@ using Shared.Common.Enums;
 using Shared.Common.Models;
 using Shared.Common.Mappings;
 
-using FluentValidation;
 using MediatR;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

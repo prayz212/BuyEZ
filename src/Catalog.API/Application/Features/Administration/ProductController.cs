@@ -1,13 +1,13 @@
 using CatalogAPI.Application.Shared.Dtos;
 
+using Shared.Common;
+using Shared.Common.Constants;
+using Shared.Common.Exceptions;
+
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-using Shared.Common;
-using Shared.Common.Constants;
-using Shared.Common.Exceptions;
 
 namespace CatalogAPI.Application.Features.Administration;
 
