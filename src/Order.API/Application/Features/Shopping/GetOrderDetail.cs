@@ -1,4 +1,3 @@
-using OrderAPI.Application.Domain;
 using OrderAPI.Application.Shared.Dtos;
 using OrderAPI.Application.Infrastructure.Persistence;
 
@@ -28,13 +27,13 @@ internal sealed class GetOrderDetailQueryHandler(ILogger<GetOrderDetailQueryHand
             throw new UnauthorizedAccessException("Invalid token.");
 
         var order = await _context.Orders
-            .Include(o => EF.Property<List<OrderItem>>(o, "_orderItems")) // Since we cannot directly access to Backing fields
-            .Include(o => EF.Property<List<OrderHistory>>(o, "_orderHistories")) // Since we cannot directly access to Backing fields
+            .Include(o => o.OrderItems)
+            .Include(o => o.OrderHistories)
             .FirstOrDefaultAsync(o => o.Id == request.OrderId && o.CreatedBy == request.CurrentUserId);
 
         if (order is null)
             throw new NotFoundException($"Order with id: {request.OrderId} not found.");
 
-        return Order.ToDto(order);
+        return order.ToDto();
     }
 }

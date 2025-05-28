@@ -1,17 +1,16 @@
-using OrderAPI.Application.Shared.Dtos;
 using Shared.Common;
 
 namespace OrderAPI.Application.Domain;
 
 public class OrderItem : AuditableEntity
 {
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
     public int Quantity { get; private set; }
 
     public double TotalPrice { get; private set; } = 0.0;
 
-    public string OrderId { get; set; } = string.Empty;
+    public string OrderId { get; private set; } = string.Empty;
 
     // Copy of relevant properties
     public string ProductId { get; private set; } = string.Empty;
@@ -19,9 +18,6 @@ public class OrderItem : AuditableEntity
     public string ProductName { get; private set; } = string.Empty;
 
     public double ProductPrice { get; private set; }
-
-    // Navigation Properties
-    public Order? Order { get; set; }
 
     // Constructors
     /*
@@ -32,7 +28,7 @@ public class OrderItem : AuditableEntity
      */
     internal OrderItem() { } 
 
-    public OrderItem(
+    private OrderItem(
         string productId, string productName, double productPrice, int quantity, string createdBy)
     {
         Id = Guid.NewGuid().ToString();
@@ -45,19 +41,21 @@ public class OrderItem : AuditableEntity
         UpdateTotalPrice();
     }
 
-    private void UpdateTotalPrice() 
+    public static OrderItem CreateNew(
+        ProductReference product,
+        int quantity,
+        string createdBy)
+    {
+        return new(
+            product.Id,
+            product.Name,
+            product.Price,
+            quantity,
+            createdBy);
+    }
+
+    private void UpdateTotalPrice()
     {
         TotalPrice = Math.Round(ProductPrice * Quantity, 2, MidpointRounding.AwayFromZero);
-    }        
-
-    public static OrderItemResponse ToDto(OrderItem orderItem)
-    {
-        return new OrderItemResponse(
-            orderItem.ProductId,
-            orderItem.ProductName,
-            orderItem.ProductPrice,
-            orderItem.Quantity,
-            orderItem.TotalPrice
-        );
     }
 }

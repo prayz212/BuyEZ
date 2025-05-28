@@ -17,6 +17,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<OrderHistory> OrderHistories => Set<OrderHistory>();
+    public DbSet<ProductReference> ProductReferences => Set<ProductReference>();
 
     public ApplicationDbContext(ILogger<ApplicationDbContext> logger, DbContextOptions<ApplicationDbContext> options, IDomainEventService domainEventService) : base(options)
     {
@@ -45,9 +46,12 @@ public class ApplicationDbContext : DbContext
             }
         }
 
-        var events = ChangeTracker.Entries<IHasDomainEvent>()
-            .Select(x => x.Entity.DomainEvents)
-            .SelectMany(x => x)
+        var entities = ChangeTracker.Entries<IAggregateRoot>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .Select(x => x.Entity);
+
+        var events = entities
+            .SelectMany(x => x.DomainEvents)
             .Where(domainEvent => !domainEvent.IsPublished)
             .ToList();
 
@@ -56,6 +60,7 @@ public class ApplicationDbContext : DbContext
 
         _logger.LogInformation($"Dispatching {events.Count} events...");
         await DispatchEvents(events);
+        entities.ToList().ForEach(e => e.ClearDomainEvents());
 
         return result;
     }
@@ -70,7 +75,7 @@ public class ApplicationDbContext : DbContext
     {
         foreach (var @event in events)
         {
-            @event.IsPublished = true;
+            @event.MarkAsPublished();
             await _domainEventService.Publish(@event);
         }
     }
