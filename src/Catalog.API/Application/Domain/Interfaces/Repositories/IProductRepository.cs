@@ -6,7 +6,7 @@ public interface IProductRepository
 
     void Update(Product product);
 
-    Task<Product?> GetById(string id, CancellationToken cancellationToken);
+    Task<Product?> GetByIdAsync(string id, CancellationToken cancellationToken);
 
     Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
 }

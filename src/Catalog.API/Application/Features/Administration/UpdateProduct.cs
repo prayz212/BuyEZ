@@ -83,7 +83,7 @@ internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHa
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var product = await _productRepository.GetById(requestPayload.Id, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(requestPayload.Id, cancellationToken);
         if (product == null)
             throw new NotFoundException($"Product with id: {requestPayload.Id} not found.");
 

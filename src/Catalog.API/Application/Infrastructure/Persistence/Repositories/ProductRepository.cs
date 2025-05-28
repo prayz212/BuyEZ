@@ -19,7 +19,7 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
         _context.Update(product);
     }
 
-    public async Task<Product?> GetById(string id, CancellationToken cancellationToken)
+    public async Task<Product?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
         return await _context.Products
             .Include(p => p.Images)
