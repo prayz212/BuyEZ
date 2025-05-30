@@ -5,8 +5,7 @@ using CatalogAPI.Application.Domain.Events;
 using Shared.Common;
 using Shared.Common.Enums;
 using Shared.Common.Interfaces;
-
-using FluentValidation;
+using Shared.Common.Exceptions;
 
 namespace CatalogAPI.Application.Domain;
 
