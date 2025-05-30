@@ -8,7 +8,7 @@ public record OrderHistoryResponse(string Id, OrderStatus Status, string Reason,
 
 public record OrderDetailResponse(string Id, OrderCustomerInfo CustomerInfo, OrderStatus Status, double TotalAmount, List<OrderItemResponse> Items, List<OrderHistoryResponse> Histories, DateTimeOffset createdAt);
 
-public static class OrderDetailExtensions
+public static partial class ResponseExtensions
 {
     public static OrderDetailResponse ToDto(this Order order)
     {
