@@ -1,8 +1,7 @@
 using ClientManagementAPI.Application.Domain;
-using ClientManagementAPI.Application.Shared.Common;
-using ClientManagementAPI.Application.Shared.Dtos;
+using ClientManagementAPI.Application.Domain.Dtos;
 using ClientManagementAPI.Application.Shared.Validators;
-using ClientManagementAPI.Application.Infrastructure.Persistence;
+using ClientManagementAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Enums;
 using Shared.Common.Exceptions;
@@ -10,13 +9,12 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
 
 
-public record UpdateClientPayload(string Id, string Name, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImagePayload? Logo);
+public record UpdateClientPayload(string Id, string Name, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, ClientImagePayload? Logo);
 
 public record UpdateClientCommand(string? CurrentUserId, UpdateClientPayload Payload) : IRequest;
 
@@ -45,54 +43,22 @@ public class UpdateClientCommandValidator : AbstractValidator<UpdateClientComman
             RuleFor(x => x.SubscriptionType)
                 .IsInEnum().WithMessage("Invalid subscription type.");
 
-            RuleFor(x => x.ProductTypes)
-                .NotEmpty().WithMessage("At least one product type must be selected.")
-                .Must(NotContainDuplicatedTypes).WithMessage("Contains duplicate product types.");
-
             RuleForEach(x => x.ProductTypes)
                 .IsInEnum().WithMessage("Invalid product types.");
-
-            RuleFor(x => x.ValidTo)
-                .NotEmpty().WithMessage("Valid To is required.")
-                .GreaterThan(DateTime.Now).WithMessage("Valid date must be greater than current datetime.");
 
             RuleFor(x => x.Logo!)
                 .SetValidator(new ClientImagePayloadValidator())
                 .When(x => x.Logo != null);
-
-            RuleFor(x => x)
-                .Must(NotExceedAllowedProductTypes)
-                .WithMessage("Exceeded the maximum allowed product types for current subscription.")
-                .OverridePropertyName("ProductTypes");
-        }
-
-        private bool NotContainDuplicatedTypes(ProductType[] productTypes)
-        {
-            return productTypes.Distinct().Count() == productTypes.Length;
-        }
-
-        private bool NotExceedAllowedProductTypes(UpdateClientPayload request)
-        {
-            switch (request.SubscriptionType)
-            {
-                case SubscriptionType.Basic:
-                    return request.ProductTypes.Length <= ClientConstants.MAXIMUM_PRODUCT_TYPES_BASIC_SUB;
-                case SubscriptionType.Standard:
-                    return request.ProductTypes.Length <= ClientConstants.MAXIMUM_PRODUCT_TYPES_STANDARD_SUB;
-                case SubscriptionType.Premium:
-                    return true;
-                default:
-                    return false;
-            }
         }
     }
 }
 
 
-internal sealed class UpdateClientCommandHandler(ILogger<UpdateClientCommandHandler> logger, ApplicationDbContext context) : IRequestHandler<UpdateClientCommand>
+internal sealed class UpdateClientCommandHandler(ILogger<UpdateClientCommandHandler> logger, IClientRepository clientRepository) 
+    : IRequestHandler<UpdateClientCommand>
 {
     private readonly ILogger<UpdateClientCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IClientRepository _clientRepository = clientRepository;
 
     public async Task Handle(UpdateClientCommand request, CancellationToken cancellationToken)
     {
@@ -103,44 +69,21 @@ internal sealed class UpdateClientCommandHandler(ILogger<UpdateClientCommandHand
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var client = await _context.Clients
-            .Include(c => c.Logo)
-            .FirstOrDefaultAsync(c => c.Id == requestPayload.Id, cancellationToken);
+        var client = await _clientRepository.GetByIdAsync(requestPayload.Id, cancellationToken);
         if (client is null)
             throw new NotFoundException($"Client with id: {requestPayload.Id} not found.");
 
-        if (!client.IsActivated)
-            throw new ValidationException($"Client with id: {requestPayload.Id} is not activated.");
-
         /* Perform update */
-        client.Name = requestPayload.Name;
-        client.BriefDescription = requestPayload.BriefDescription;
-        client.SubscriptionType = requestPayload.SubscriptionType;
-        client.RegisteredProductType = requestPayload.ProductTypes;
-        client.ValidUntil = requestPayload.ValidTo;
-        client.LastModifiedBy = request.CurrentUserId;
-
-        var hasChangedLogo = requestPayload.Logo?.URL != client.Logo?.URL;
-        /* Remove the old logo */
-        if (hasChangedLogo && client.Logo is not null)
-            client.Logo = null;
-
-        /* Add the new logo */
-        if (hasChangedLogo && requestPayload.Logo is not null)
-            client.Logo = ToEntity(request.CurrentUserId, requestPayload.Logo);
+        client.UpdateDetails(
+            requestPayload.Name,
+            requestPayload.BriefDescription,
+            requestPayload.SubscriptionType,
+            requestPayload.ProductTypes,
+            requestPayload.Logo,
+            request.CurrentUserId);
 
         _logger.LogInformation("Updating client to database: {@UpdatedClient}", client);
-        _context.Clients.Update(client);
-        await _context.SaveChangesAsync(cancellationToken);
+        _clientRepository.Update(client);
+        await _clientRepository.SaveChangesAsync(cancellationToken);
     }
-
-    private static Image ToEntity(string modifiedBy, ClientImagePayload request) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Filename = request.Filename,
-        URL = request.URL,
-        AltText = request.AltText,
-        Size = request.Size,
-        LastModifiedBy = modifiedBy
-    };
 }

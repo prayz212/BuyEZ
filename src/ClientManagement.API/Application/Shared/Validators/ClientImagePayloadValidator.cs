@@ -1,4 +1,5 @@
-using ClientManagementAPI.Application.Shared.Dtos;
+using ClientManagementAPI.Application.Domain.Dtos;
+
 using FluentValidation;
 
 namespace ClientManagementAPI.Application.Shared.Validators;

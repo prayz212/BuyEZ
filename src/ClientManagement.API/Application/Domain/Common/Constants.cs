@@ -1,4 +1,4 @@
-namespace ClientManagementAPI.Application.Shared.Common;
+namespace ClientManagementAPI.Application.Domain.Common;
 
 public static class ClientConstants
 {

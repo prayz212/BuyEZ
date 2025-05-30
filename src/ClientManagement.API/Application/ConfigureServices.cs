@@ -1,5 +1,7 @@
 using ClientManagementAPI.Application.Options;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
+using ClientManagementAPI.Application.Domain.Interfaces.Repositories;
+using ClientManagementAPI.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Options;
 using Shared.Common.Behaviors;
@@ -112,15 +114,25 @@ public static class DependencyInjection {
             });
         });
 
-        services.AddScoped<IDomainEventService, DomainEventService>();
-        services.AddScoped<ApplicationDbContextInitializer>();
-        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-
         services.AddSingleton(provider =>
         {
-            var channel = GrpcChannel.ForAddress(identityAddress);
+            // TODO: using SSL certificate in real production and remove this workaround
+            var httpHandler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            };
+
+            var channel = GrpcChannel.ForAddress(identityAddress, new GrpcChannelOptions
+            {
+                HttpClient = new(httpHandler)
+            });
             return channel.CreateGrpcService<IAccountService>();
         });
+
+        services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IClientRepository, ClientRepository>();
+        services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;
     }
