@@ -77,20 +77,19 @@ public class Product : AuditableEntity, IAggregateRoot
         ProductType type,
         ProductImagePayload? primaryImage,
         string tenantId,
-        string? createdBy = default)
+        string createdBy)
     {
         if (primaryImage == null || !primaryImage.IsPrimary)
             throw new ValidationException("Required a primary image for product creation.");
 
-        var createdByUserId = createdBy ?? "Unknown";
         return new Product(
             name,
             description,
             price,
             type,
             tenantId,
-            [Image.CreateNew(primaryImage, createdByUserId)],
-            createdByUserId);
+            [Image.CreateNew(primaryImage, createdBy)],
+            createdBy);
     }
 
     public void AddToInventory(int quantity)
@@ -130,7 +129,7 @@ public class Product : AuditableEntity, IAggregateRoot
         ProductType type,
         int restockThreshold,
         int maxStockThreshold,
-        string lastModifiedBy)
+        string modifiedBy)
     {
         Name = name;
         Description = description;
@@ -138,7 +137,7 @@ public class Product : AuditableEntity, IAggregateRoot
         Type = type;
         RestockThreshold = restockThreshold;
         MaxStockThreshold = maxStockThreshold;
-        LastModifiedBy = lastModifiedBy;
+        LastModifiedBy = modifiedBy;
     }
 
     public void AddImages(List<ProductImagePayload> images)
