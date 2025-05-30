@@ -1,4 +1,5 @@
 using CatalogAPI.Application.Domain;
+using CatalogAPI.Application.Domain.Dtos;
 using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Shared.Validators;
 using CatalogAPI.Application.Domain.Interfaces.Repositories;

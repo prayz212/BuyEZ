@@ -1,4 +1,5 @@
-using CatalogAPI.Application.Shared.Dtos;
+using CatalogAPI.Application.Domain.Dtos;
+
 using FluentValidation;
 
 namespace CatalogAPI.Application.Shared.Validators;

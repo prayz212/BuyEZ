@@ -1,6 +1,6 @@
+using CatalogAPI.Application.Domain.Dtos;
+using CatalogAPI.Application.Domain.Common;
 using CatalogAPI.Application.Domain.Events;
-using CatalogAPI.Application.Shared.Common;
-using CatalogAPI.Application.Shared.Dtos;
 
 using Shared.Common;
 using Shared.Common.Enums;

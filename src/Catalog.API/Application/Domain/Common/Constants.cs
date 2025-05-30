@@ -1,4 +1,4 @@
-namespace CatalogAPI.Application.Shared.Common;
+namespace CatalogAPI.Application.Domain.Common;
 
 public static class ProductConstants
 {
