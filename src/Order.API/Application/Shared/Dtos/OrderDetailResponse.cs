@@ -1,4 +1,5 @@
 using OrderAPI.Application.Domain;
+using OrderAPI.Application.Domain.Dtos;
 
 namespace OrderAPI.Application.Shared.Dtos;
 

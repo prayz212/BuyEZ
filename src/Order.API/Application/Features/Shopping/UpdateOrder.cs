@@ -1,4 +1,4 @@
-using OrderAPI.Application.Shared.Dtos;
+using OrderAPI.Application.Domain.Dtos;
 using OrderAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Exceptions;

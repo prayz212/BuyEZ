@@ -1,8 +1,8 @@
+using OrderAPI.Application.Domain.Dtos;
+
 using Shared.Common;
 using Shared.Common.Interfaces;
 using ValidationException = Shared.Common.Exceptions.ValidationException;
-
-using OrderAPI.Application.Shared.Dtos;
 
 namespace OrderAPI.Application.Domain;
 
