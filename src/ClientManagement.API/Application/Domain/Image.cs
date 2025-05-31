@@ -6,7 +6,7 @@ namespace ClientManagementAPI.Application.Domain;
 
 public class Image : ImageBase
 {
-    public string ClientId { get; set; } = string.Empty;
+    public string ClientId { get; private set; } = string.Empty;
 
     // Constructors
     /*

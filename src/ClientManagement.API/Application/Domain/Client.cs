@@ -10,24 +10,24 @@ namespace ClientManagementAPI.Application.Domain;
 
 public class Client : AuditableEntity, IAggregateRoot
 {
-    public string Id { get; set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    public string AliasName { get; set; } = string.Empty;
+    public string AliasName { get; private set; } = string.Empty;
 
-    public string BriefDescription { get; set; } = string.Empty;
+    public string BriefDescription { get; private set; } = string.Empty;
 
-    public SubscriptionType SubscriptionType { get; set; }
+    public SubscriptionType SubscriptionType { get; private set; }
 
-    public ProductType[] RegisteredProductType { get; set;} = [];
+    public ProductType[] RegisteredProductType { get; private set; } = [];
 
-    public DateTimeOffset ValidUntil { get; set; } = DateTimeOffset.UtcNow.AddYears(1);
+    public DateTimeOffset ValidUntil { get; private set; } = DateTimeOffset.UtcNow.AddYears(1);
 
-    public bool IsActivated { get; set; } = false;
+    public bool IsActivated { get; private set; } = false;
 
     // Navigation property for the related Client
-    public Image? Logo { get; set; }
+    public Image? Logo { get; private set; }
 
     // Domain Events property
     private readonly List<DomainEvent> _domainEvents = [];
