@@ -30,12 +30,12 @@ public class Image : ImageBase
         CreatedBy = createdBy;
     }
 
-    public static Image CreateNew(ProductImagePayload productImage, string? createdBy = default) =>
+    public static Image CreateNew(ProductImagePayload productImage, string createdBy) =>
         new(
             productImage.Filename,
             productImage.URL,
             productImage.AltText,
             productImage.Size,
             productImage.IsPrimary,
-            createdBy ?? "Unknown");
+            createdBy);
 }
