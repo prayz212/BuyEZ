@@ -116,6 +116,7 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
         
         _logger.LogInformation("Creating default tenant admin account for new client: {@NewAccount}", grpcRequestPayload);
+        // TODO: Handle failure user creation, skip for now
         await _accountService.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
         return newClient.ToDto();
