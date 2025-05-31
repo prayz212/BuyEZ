@@ -74,8 +74,6 @@ internal sealed class ResetPasswordCommandHandler(
             _logger.LogError("Failed to reset password for user: {UserId}. Error: {@Errors}", user.Id, result.Errors);
             throw new ValidationException("Password reset failed.");
         }
-
-        user.LastModified = DateTime.UtcNow;
         
         _logger.LogInformation("Reset password for user: {UserId} completed successfully.", user.Id);
         await _userManager.UpdateAsync(user);

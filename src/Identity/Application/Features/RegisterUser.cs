@@ -1,15 +1,12 @@
 using Identity.Application.Domain;
-using Identity.Application.Infrastructure.Persistence;
+using Identity.Application.Shared.Dtos;
+using Identity.Application.Shared.Validators;
 
-using ValidationException = Shared.Common.Exceptions.ValidationException;
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 
 using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Identity.Application.Shared.Dtos;
-using Identity.Application.Shared.Validators;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features;
@@ -45,59 +42,41 @@ public class RegisterUserCommandValidator : AbstractValidator<RegisterUserComman
 
 
 internal sealed class RegisterUserCommandHandler(
-    ILogger<RegisterUserCommandHandler> logger,
-    ApplicationDbContext context, 
-    IPasswordHasher<User> passwordHasher, 
+    ILogger<RegisterUserCommandHandler> logger, 
     UserManager<User> userManager
 ) : IRequestHandler<RegisterUserCommand, UserDetailResponse>
 {
     private readonly ILogger<RegisterUserCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
-    private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task<UserDetailResponse> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Handling request register user: {@Request}", request with { Payload = request.Payload with { Password = "###" }});
         var requestPayload = request.Payload;
-        
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.UserName == requestPayload.UserName || u.Email == requestPayload.Email, cancellationToken);
 
-        if (user?.UserName == requestPayload.UserName)
-            throw new ValidationException("UserName already exists.");
-        if (user?.Email == requestPayload.Email)
-            throw new ValidationException("Email already exists.");
-        
-        var newAccount = ToEntity(requestPayload);
-        _logger.LogInformation("Adding new account to database: {@NewAccount}", newAccount);
+        var userNameExists = await _userManager.FindByNameAsync(requestPayload.UserName) != null;
+        var userEmailExists = await _userManager.FindByEmailAsync(requestPayload.Email) != null;
+        if (userNameExists || userEmailExists)
+            throw new ValidationException("UserName or Email already exists.");
 
-        newAccount.PasswordHash = _passwordHasher.HashPassword(newAccount, requestPayload.Password);
-        newAccount.SecurityStamp = Guid.NewGuid().ToString();
+        var newUser = User.CreateNew(
+            requestPayload.FirstName,
+            requestPayload.LastName,
+            requestPayload.UserName,
+            requestPayload.Email,
+            requestPayload.PhoneNumber
+        );
 
-        await _context.Users.AddAsync(newAccount, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        _logger.LogInformation("Adding new account to database: {@NewUser}", newUser);
 
-        await _userManager.AddToRoleAsync(newAccount, IdentityConstants.Role.USER);
+        var createUserResult = await _userManager.CreateAsync(newUser, requestPayload.Password);
+        if (createUserResult.Errors.Any())
+            throw new Exception(createUserResult.Errors.First().Description);
 
-        // TODO: trigger an event new user created to send email notification before returning the result
-        return ToDto(newAccount);
+        var addUserRoleResult = await _userManager.AddToRoleAsync(newUser, IdentityConstants.Role.USER);
+        if (addUserRoleResult.Errors.Any())
+            throw new Exception(addUserRoleResult.Errors.First().Description);
+
+        return newUser.ToDto();
     }
-
-    private static User ToEntity(RegisterUserPayload request) => new()
-    {
-        Id = Guid.NewGuid(),
-        FirstName = request.FirstName,
-        LastName = request.LastName,
-        UserName = request.UserName,
-        NormalizedUserName = request.UserName.ToUpper(),
-        Email = request.Email,
-        NormalizedEmail = request.Email.ToUpper(),
-        PhoneNumber = request.PhoneNumber,
-        Created = DateTimeOffset.UtcNow
-    };
-
-    private static UserDetailResponse ToDto(User user) => new(
-        user.Id.ToString(), user.FirstName, user.LastName, user.UserName!, user.Email!
-    );
 }
