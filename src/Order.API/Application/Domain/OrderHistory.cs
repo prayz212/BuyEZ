@@ -1,20 +1,16 @@
-using OrderAPI.Application.Shared.Dtos;
 using Shared.Common;
 
 namespace OrderAPI.Application.Domain;
 
 public class OrderHistory : AuditableEntity
 {
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
-    public OrderStatus HistoryStatus { get; set; }
+    public OrderStatus HistoryStatus { get; private set; }
 
-    public string Reason { get; set; } = string.Empty;
+    public string Reason { get; private set; } = string.Empty;
 
-    public string OrderId { get; set; } = string.Empty;
-
-    // Navigation Properties
-    public Order? Order { get; set; }
+    public string OrderId { get; private set; } = string.Empty;
 
     // Constructors
     /*
@@ -25,15 +21,21 @@ public class OrderHistory : AuditableEntity
      */
     internal OrderHistory() { }
 
-    public OrderHistory(OrderStatus status, string createdBy, string? reason = null)
+    private OrderHistory(OrderStatus status, string createdBy, string reason)
     {
         Id = Guid.NewGuid().ToString();
         HistoryStatus = status;
-        Reason = reason ?? GetReasonByStatus(status);
+        Reason = reason;
         CreatedBy = createdBy;
     }
 
-    private string GetReasonByStatus(OrderStatus status) => status switch
+    public static OrderHistory CreateNew(OrderStatus status, string createdBy, string? reason = default)
+    {
+        var changedReason = reason ?? GetReasonByStatus(status);
+        return new(status, createdBy, changedReason);
+    }
+
+    private static string GetReasonByStatus(OrderStatus status) => status switch
     {
         OrderStatus.Pending => "Order created",
         OrderStatus.Paid => "Payment received",
@@ -43,14 +45,4 @@ public class OrderHistory : AuditableEntity
         OrderStatus.Cancelled => "Order cancelled",
         _ => throw new InvalidOperationException("Invalid OrderStatus")
     };
-
-    public static OrderHistoryResponse ToDto(OrderHistory orderHistory)
-    {
-        return new OrderHistoryResponse(
-            orderHistory.Id,
-            orderHistory.HistoryStatus,
-            orderHistory.Reason,
-            orderHistory.Created
-        );
-    }
 }

@@ -1,5 +1,7 @@
 using OrderAPI.Application.Options;
 using OrderAPI.Application.Infrastructure.Persistence;
+using OrderAPI.Application.Domain.Interfaces.Repositories;
+using OrderAPI.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Options;
 using Shared.GrpcProto.Catalog;
@@ -109,6 +111,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 

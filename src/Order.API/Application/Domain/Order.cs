@@ -1,11 +1,14 @@
-using OrderAPI.Application.Shared.Dtos;
+using OrderAPI.Application.Domain.Dtos;
+
 using Shared.Common;
+using Shared.Common.Interfaces;
+using Shared.Common.Exceptions;
 
 namespace OrderAPI.Application.Domain;
 
-public class Order : AuditableEntity, IHasDomainEvent
+public class Order : AuditableEntity, IAggregateRoot
 {
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
     public double TotalAmount { get; private set; } = 0.0;
 
@@ -13,13 +16,11 @@ public class Order : AuditableEntity, IHasDomainEvent
 
     public string CustomerId { get; private set; } = string.Empty;
 
-    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerName { get; private set; } = string.Empty;
 
-    public string CustomerAddress { get; set; } = string.Empty;
+    public string CustomerAddress { get; private set; } = string.Empty;
 
-    public string CustomerPhoneNumber { get; set; } = string.Empty;
-
-    public List<DomainEvent> DomainEvents { get; } = [];
+    public string CustomerPhoneNumber { get; private set; } = string.Empty;
 
     // Navigation Properties
     private readonly List<OrderItem> _orderItems = [];
@@ -27,6 +28,10 @@ public class Order : AuditableEntity, IHasDomainEvent
 
     private readonly List<OrderHistory> _orderHistories = [];
     public IReadOnlyList<OrderHistory> OrderHistories => _orderHistories.AsReadOnly();
+
+    // Domain Events property
+    private readonly List<DomainEvent> _domainEvents = [];
+    public IReadOnlyList<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Constructors
     /*
@@ -37,55 +42,95 @@ public class Order : AuditableEntity, IHasDomainEvent
      */
     internal Order() { }
 
-    public Order(string customerId, string customerName, string customerAddress, string customerPhoneNumber, string createdBy)
+    private Order(string customerId, string customerName, string customerAddress, string customerPhoneNumber, List<OrderItem> orderItems)
     {
         Id = Guid.NewGuid().ToString();
         CustomerId = customerId;
         CustomerName = customerName;
         CustomerAddress = customerAddress;
         CustomerPhoneNumber = customerPhoneNumber;
-        CreatedBy = createdBy;
+        CreatedBy = customerId;
 
-        UpdateOrderStatus(OrderStatus.Pending);
-    }
+        _orderItems = orderItems;
 
-    public void AddOrderItems(List<OrderItem> orderItems)
-    {
-        _orderItems.AddRange(orderItems);
         UpdateTotalAmount();
+        UpdateOrderStatus(OrderStatus.Pending);
+
+        // TODO: Publish new order event
     }
 
-    public void UpdateOrderStatus(OrderStatus status, string? reason = null)
+    public static Order CreateNew(
+        string customerId,
+        string customerName,
+        string customerAddress,
+        string customerPhoneNumber,
+        List<OrderItemInfo> items)
+    {
+        if (!items.Any())
+            throw new ValidationException("Order must have at least one item.");
+
+        var orderItems = items.Select(oi => OrderItem.CreateNew(oi.Product, oi.Quantity, customerId));
+
+        return new(
+            customerId,
+            customerName,
+            customerAddress,
+            customerPhoneNumber,
+            [.. orderItems]);
+    }
+
+    public void UpdateDetails(OrderCustomerInfo customerInfo, string modifiedBy)
+    {
+        if (!IsAllowedToUpdateCustomerInfo(Status))
+            throw new ValidationException("Only allow to update customer info in Pending or Packaging status.");
+
+        CustomerName = customerInfo.Name;
+        CustomerAddress = customerInfo.Address;
+        CustomerPhoneNumber = customerInfo.PhoneNumber;
+        LastModifiedBy = modifiedBy;
+    }
+
+    public void CancelOrder(string modifiedBy)
+    {
+        if (!IsAllowedToCancelOrder(Status))
+            throw new ValidationException("Order can't be cancelled.");
+
+        LastModifiedBy = modifiedBy;
+        UpdateOrderStatus(OrderStatus.Cancelled);
+
+        // TODO: Publish cancelled order event
+    }
+
+    private void UpdateOrderStatus(OrderStatus status, string? reason = null)
     {
         Status = status;
 
-        _orderHistories.Add(new OrderHistory(
-            status: Status, 
-            createdBy: LastModifiedBy ?? CreatedBy!, 
+        _orderHistories.Add(OrderHistory.CreateNew(
+            status: Status,
+            createdBy: LastModifiedBy ?? CreatedBy!,
             reason: reason
         ));
     }
+
+    private bool IsAllowedToUpdateCustomerInfo(OrderStatus status) =>
+        status == OrderStatus.Pending || status == OrderStatus.Packaging;
+
+    private bool IsAllowedToCancelOrder(OrderStatus status) => 
+        status == OrderStatus.Pending;
 
     private void UpdateTotalAmount()
     {
         TotalAmount = Math.Round(_orderItems.Sum(oi => oi.TotalPrice), 2, MidpointRounding.AwayFromZero);
     }
-
-    public static OrderDetailResponse ToDto(Order order)
+    
+    public void AddDomainEvent(DomainEvent @event)
     {
-        return new OrderDetailResponse(
-            order.Id,
-            new OrderCustomerInfo(
-                order.CustomerName,
-                order.CustomerAddress,
-                order.CustomerPhoneNumber
-            ),
-            order.Status,
-            order.TotalAmount,
-            order.OrderItems.Select(OrderItem.ToDto).ToList(),
-            order.OrderHistories.Select(OrderHistory.ToDto).ToList(),
-            order.Created
-        );
+        _domainEvents.Add(@event);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }
 

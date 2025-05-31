@@ -1,9 +1,9 @@
 using ClientManagementAPI.Application.Options;
 using ClientManagementAPI.Application.Domain;
-using ClientManagementAPI.Application.Shared.Common;
+using ClientManagementAPI.Application.Domain.Dtos;
 using ClientManagementAPI.Application.Shared.Dtos;
 using ClientManagementAPI.Application.Shared.Validators;
-using ClientManagementAPI.Application.Infrastructure.Persistence;
+using ClientManagementAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Options;
 using Shared.Common.Enums;
@@ -14,15 +14,14 @@ using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 using MediatR;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace ClientManagementAPI.Application.Features.Administration;
 
 
-public record AddClientPayload(string Name, string AliasName, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, DateTime ValidTo, ClientImagePayload? Logo);
+public record AddClientPayload(string Name, string AliasName, string BriefDescription, SubscriptionType SubscriptionType, ProductType[] ProductTypes, ClientImagePayload? Logo);
 
 public record AddClientCommand(string? CurrentUserId, AddClientPayload Payload) : IRequest<ClientDetailResponse>;
 
@@ -56,50 +55,17 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
             RuleFor(x => x.SubscriptionType)
                 .IsInEnum().WithMessage("Invalid subscription type.");
 
-            RuleFor(x => x.ProductTypes)
-                .NotEmpty().WithMessage("At least one product type must be selected.")
-                .Must(NotContainDuplicatedTypes).WithMessage("Contains duplicate product types.");
-
             RuleForEach(x => x.ProductTypes)
                 .IsInEnum().WithMessage("Invalid product types.");
-
-            RuleFor(x => x.ValidTo)
-                .NotEmpty().WithMessage("Valid To is required.")
-                .GreaterThan(DateTime.Now).WithMessage("Valid date must be greater than current datetime.");
 
             RuleFor(x => x.Logo!)
                 .SetValidator(new ClientImagePayloadValidator())
                 .When(x => x.Logo != null);
-
-            RuleFor(x => x)
-                .Must(NotExceedAllowedProductTypes)
-                .WithMessage("Exceeded the maximum allowed product types for current subscription.")
-                .OverridePropertyName("ProductTypes");
         }
 
         private bool BeAValidAlias(string aliasName)
         {
             return new Regex(@"^[0-9a-z\-]+$").IsMatch(aliasName);
-        }
-
-        private bool NotContainDuplicatedTypes(ProductType[] productTypes)
-        {
-            return productTypes.Distinct().Count() == productTypes.Length;
-        }
-
-        private bool NotExceedAllowedProductTypes(AddClientPayload request)
-        {
-            switch (request.SubscriptionType)
-            {
-                case SubscriptionType.Basic:
-                    return request.ProductTypes.Length <= ClientConstants.MAXIMUM_PRODUCT_TYPES_BASIC_SUB;
-                case SubscriptionType.Standard:
-                    return request.ProductTypes.Length <= ClientConstants.MAXIMUM_PRODUCT_TYPES_STANDARD_SUB;
-                case SubscriptionType.Premium:
-                    return true;
-                default:
-                    return false;
-            }
         }
     }
 }
@@ -108,14 +74,14 @@ public class AddClientCommandValidator : AbstractValidator<AddClientCommand>
 internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand, ClientDetailResponse>
 {
     private readonly ILogger<AddClientCommandHandler> _logger;
-    private readonly ApplicationDbContext _context;
+    private readonly IClientRepository _clientRepository;
     private readonly IAccountService _accountService;
     private readonly GrpcBaseOptions _grpcClientOptions;
 
-    public AddClientCommandHandler(ILogger<AddClientCommandHandler> logger, ApplicationDbContext context, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
+    public AddClientCommandHandler(ILogger<AddClientCommandHandler> logger, IClientRepository clientRepository, IAccountService accountService, IOptions<GrpcClientOptions> clientOptions)
     {
         _logger = logger;
-        _context = context;
+        _clientRepository = clientRepository;
         _accountService = accountService;
         _grpcClientOptions = clientOptions.Value.Identity;
     }
@@ -129,52 +95,32 @@ internal sealed class AddClientCommandHandler : IRequestHandler<AddClientCommand
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var isExistedAliasName = await _context.Clients.AnyAsync(c => c.AliasName == requestPayload.AliasName);
+        var isExistedAliasName = await _clientRepository.CheckAliasNameExists(requestPayload.AliasName, cancellationToken);
         if (isExistedAliasName)
             throw new ValidationException("Alias Name already exists.");
 
-        var newClient = ToEntity(request.CurrentUserId, request.Payload);
-        if (requestPayload.Logo != null)
-        {
-            var clientLogo = ToEntity(request.CurrentUserId, requestPayload.Logo);
-            newClient.Logo = clientLogo;
-        }
+        var newClient = Client.CreateNew(
+            requestPayload.Name,
+            requestPayload.AliasName,
+            requestPayload.BriefDescription,
+            requestPayload.SubscriptionType,
+            requestPayload.ProductTypes,
+            requestPayload.Logo,
+            request.CurrentUserId);
 
         _logger.LogInformation("Adding new client to database: {@NewClient}", newClient);
-        await _context.Clients.AddAsync(newClient, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _clientRepository.AddAsync(newClient, cancellationToken);
+        await _clientRepository.SaveChangesAsync(cancellationToken);
 
         var grpcRequestPayload = GenerateGrpcRequestPayload(request.CurrentUserId, newClient);
         var callContext = GrpcUtils.GetCallOptions(_grpcClientOptions);
         
         _logger.LogInformation("Creating default tenant admin account for new client: {@NewAccount}", grpcRequestPayload);
+        // TODO: Handle failure user creation, skip for now
         await _accountService.AddIdentityAccountAsync(grpcRequestPayload, callContext);
 
-        return Client.ToDto(newClient);
+        return newClient.ToDto();
     }
-
-    private static Client ToEntity(string createdBy, AddClientPayload client) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Name = client.Name,
-        AliasName = client.AliasName,
-        BriefDescription = client.BriefDescription,
-        SubscriptionType = client.SubscriptionType,
-        RegisteredProductType = client.ProductTypes,
-        ValidUntil = client.ValidTo,
-        IsActivated = false,
-        CreatedBy = createdBy
-    };
-
-    private static Image ToEntity(string createdBy, ClientImagePayload clientImage) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Filename = clientImage.Filename,
-        URL = clientImage.URL,
-        AltText = clientImage.AltText,
-        Size = clientImage.Size,
-        CreatedBy = createdBy
-    };
 
     private static AddIdentityAccountPayload GenerateGrpcRequestPayload(string currentUserId, Client newClient)
     {

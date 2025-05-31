@@ -1,9 +1,8 @@
-using ClientManagementAPI.Application.Infrastructure.Persistence;
+using ClientManagementAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Exceptions;
 
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace ClientManagementAPI.Application.Features.Administration;
@@ -14,10 +13,10 @@ public record DeactivateClientPayload(string Id);
 public record DeactivateClientCommand(string? CurrentUserId, DeactivateClientPayload Payload) : IRequest;
 
 
-internal sealed class DeactivateClientCommandHandler(ILogger<DeactivateClientCommandHandler> logger, ApplicationDbContext context) : IRequestHandler<DeactivateClientCommand>
+internal sealed class DeactivateClientCommandHandler(ILogger<DeactivateClientCommandHandler> logger, IClientRepository clientRepository) : IRequestHandler<DeactivateClientCommand>
 {
     private readonly ILogger<DeactivateClientCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IClientRepository _clientRepository = clientRepository;
 
     public async Task Handle(DeactivateClientCommand request, CancellationToken cancellationToken)
     {
@@ -28,16 +27,15 @@ internal sealed class DeactivateClientCommandHandler(ILogger<DeactivateClientCom
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var client = await _context.Clients.FirstOrDefaultAsync(c => c.Id == requestPayload.Id && c.IsActivated);
+        var client = await _clientRepository.GetByIdAsync(requestPayload.Id, cancellationToken);
         if (client == null)
             throw new NotFoundException($"Client with id: {requestPayload.Id} is not found or already de-activated.");
 
-        client.IsActivated = false;
-        client.LastModifiedBy = request.CurrentUserId;
+        client.Deactivate(request.CurrentUserId);
 
         _logger.LogInformation("Updating client to database: {@DeactivatedClient}", client);
-        _context.Update(client);
+        _clientRepository.Update(client);
         
-        await _context.SaveChangesAsync(cancellationToken);
+        await _clientRepository.SaveChangesAsync(cancellationToken);
     }
 }

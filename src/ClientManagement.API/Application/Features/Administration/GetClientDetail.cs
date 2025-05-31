@@ -1,4 +1,3 @@
-using ClientManagementAPI.Application.Domain;
 using ClientManagementAPI.Application.Shared.Dtos;
 using ClientManagementAPI.Application.Infrastructure.Persistence;
 
@@ -33,6 +32,6 @@ internal sealed class GetClientDetailQueryHandler(ILogger<GetClientDetailQueryHa
         if (client is null)
             throw new NotFoundException($"Client with id: {request.Id} not found.");
 
-        return Client.ToDto(client);
+        return client.ToDto();
     }
 }

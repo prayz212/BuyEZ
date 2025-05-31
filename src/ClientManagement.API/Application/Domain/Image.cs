@@ -1,17 +1,38 @@
-using ClientManagementAPI.Application.Shared.Dtos;
+using ClientManagementAPI.Application.Domain.Dtos;
+
 using Shared.Domain;
 
 namespace ClientManagementAPI.Application.Domain;
 
 public class Image : ImageBase
 {
-    public string ClientId { get; set; } = string.Empty;
+    public string ClientId { get; private set; } = string.Empty;
 
-    public static ImageDetailResponse ToDto(Image image) => new 
+    // Constructors
+    /*
+        - By default, compiler will create a default parameterless constructor.
+            => Compiler will NOT generate a parameterless constructor in case we already defined parameters constructor
+     
+        - Parameterless constructor for EF Core to instantiate the object with the data got from database
+     */
+    internal Image() { }
+
+    private Image(string filename, string url, string altText, int size, string createdBy)
+    {
+        Id = Guid.NewGuid().ToString();
+        Filename = filename;
+        URL = url;
+        AltText = altText;
+        Size = size;
+        CreatedBy = createdBy;
+    }
+
+    public static Image CreateNew(ClientImagePayload clientImage, string createdBy) => new
     (
-        image.Filename, 
-        image.URL, 
-        image.AltText, 
-        image.Size
+        clientImage.Filename,
+        clientImage.URL,
+        clientImage.AltText,
+        clientImage.Size,
+        createdBy
     );
 }

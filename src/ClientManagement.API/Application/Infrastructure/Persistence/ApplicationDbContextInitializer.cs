@@ -74,15 +74,9 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
 
         _logger.LogInformation("Seeding clients...");
 
-        List<Client> clients = sourceItems.ToList();
-        clients.ForEach(client => 
-        {
-            client.ValidUntil = DateTime.Now.AddYears(1);
-        });
-
-        await _context.AddRangeAsync(clients);
+        await _context.AddRangeAsync(sourceItems);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Added {total} client record(s)", clients.Count());
+        _logger.LogInformation("Added {total} client record(s)", sourceItems.Count());
     }
 }

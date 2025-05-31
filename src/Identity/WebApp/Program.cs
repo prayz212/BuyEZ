@@ -1,6 +1,7 @@
 using Identity.Application;
 using Identity.Application.Extensions;
 using Identity.Application.Infrastructure.Persistence;
+
 using Shared.Common;
 using Shared.Extensions;
 

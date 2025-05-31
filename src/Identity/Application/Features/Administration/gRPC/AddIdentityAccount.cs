@@ -1,5 +1,4 @@
 using Identity.Application.Domain;
-using Identity.Application.Infrastructure.Persistence;
 
 using Shared.GrpcProto.Account;
 using Shared.Common.Exceptions;
@@ -9,7 +8,6 @@ using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Identity.Application.Features.Administration.gRPC;
@@ -72,14 +70,10 @@ public class AddIdentityAccountCommandValidator : AbstractValidator<AddIdentityA
 
 internal sealed class AddIdentityAccountCommandHandler(
     ILogger<AddIdentityAccountCommandHandler> logger,
-    ApplicationDbContext context, 
-    IPasswordHasher<User> passwordHasher, 
     UserManager<User> userManager
 ) : IRequestHandler<AddIdentityAccountCommand, IdentityAccountDetailResponse>
 {
     private readonly ILogger<AddIdentityAccountCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
-    private readonly IPasswordHasher<User> _passwordHasher = passwordHasher;
     private readonly UserManager<User> _userManager = userManager;
     
     public async Task<IdentityAccountDetailResponse> Handle(AddIdentityAccountCommand request, CancellationToken cancellationToken)
@@ -94,43 +88,36 @@ internal sealed class AddIdentityAccountCommandHandler(
         var requestingUserRole = await _userManager.GetRolesAsync(requestingUser);
         if (!requestingUserRole.Contains(IdentityConstants.Role.SYSTEM_ADMIN))
             throw new ForbiddenException();
-        
-        // TODO: call to ClientManagement to check tenant existence
-        var isExistedUserName = await _context.Users.FirstOrDefaultAsync(u => 
-            u.UserName == requestPayload.UserName && u.TenantId == requestPayload.TenantId) != null;
-        if (isExistedUserName)
-            throw new ValidationException("UserName already exists.");
-        
-        var newAccount = ToEntity(requestPayload);
-        _logger.LogInformation("Adding new account to database: {@NewAccount}", newAccount);
-        
-        var randomPassword = GenerateRandomPassword();
-        newAccount.PasswordHash = _passwordHasher.HashPassword(newAccount, randomPassword);
-        newAccount.SecurityStamp = Guid.NewGuid().ToString();
 
-        await _context.Users.AddAsync(newAccount);
-        await _context.SaveChangesAsync();
+        // TODO: call to ClientManagement to check tenant existence
+        var userNameExists = await _userManager.FindByNameAsync(requestPayload.UserName) != null;
+        var userEmailExists = await _userManager.FindByEmailAsync(requestPayload.Email) != null;
+        if (userNameExists || userEmailExists)
+            throw new ValidationException("UserName or Email already exists.");
+        
+        var newUser = User.CreateNew(
+            requestPayload.FirstName,
+            requestPayload.LastName,
+            requestPayload.UserName,
+            requestPayload.Email,
+            tenantId: requestPayload.TenantId,
+            createdBy: requestPayload.RequestingUserId
+        );
+
+        _logger.LogInformation("Adding new account to database: {@NewUser}", newUser);
+        
+        var createUserResult = await _userManager.CreateAsync(newUser, GenerateRandomPassword());
+        if (createUserResult.Errors.Any())
+            throw new Exception(createUserResult.Errors.First().Description);
 
         _logger.LogInformation("Adding new account's role  to database: {@AccountRole}", requestPayload.Role);
-        await _userManager.AddToRoleAsync(newAccount, requestPayload.Role);
 
-        // TODO: trigger an event new user created to send email notification before returning the result
-        return ToDto(newAccount);
+        var addUserRoleResult = await _userManager.AddToRoleAsync(newUser, requestPayload.Role);
+        if (addUserRoleResult.Errors.Any())
+            throw new Exception(addUserRoleResult.Errors.First().Description);
+        
+        return ToDto(newUser);
     }
-
-    private static User ToEntity(AddIdentityAccountPayload request) => new()
-    {
-        Id = Guid.NewGuid(),
-        FirstName = request.FirstName,
-        LastName = request.LastName,
-        UserName = request.UserName,
-        NormalizedUserName = request.UserName.ToUpper(),
-        Email = request.Email,
-        NormalizedEmail = request.Email.ToUpper(),
-        TenantId = request.TenantId,
-        CreatedBy = request.RequestingUserId,
-        Created = DateTimeOffset.UtcNow
-    };
 
     private static IdentityAccountDetailResponse ToDto(User user) => new()
     {
@@ -143,5 +130,5 @@ internal sealed class AddIdentityAccountCommandHandler(
     };
 
     // TODO: replace this with a real implementation for generating random password
-    private string GenerateRandomPassword() => "password123";
+    private string GenerateRandomPassword() => "passwOrd123!";
 }

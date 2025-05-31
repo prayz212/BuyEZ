@@ -1,5 +1,7 @@
 using CatalogAPI.Application.Features.Shopping.gRPC;
 using CatalogAPI.Application.Infrastructure.Persistence;
+using CatalogAPI.Application.Domain.Interfaces.Repositories;
+using CatalogAPI.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Options;
 using Shared.GrpcProto;
@@ -125,6 +127,7 @@ public static class DependencyInjection {
         services.AddCodeFirstGrpcReflection();
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
 
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();

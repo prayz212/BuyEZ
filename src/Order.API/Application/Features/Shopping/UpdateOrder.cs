@@ -1,13 +1,10 @@
-using OrderAPI.Application.Shared.Dtos;
-using OrderAPI.Application.Infrastructure.Persistence;
-using OrderAPI.Application.Domain;
+using OrderAPI.Application.Domain.Dtos;
+using OrderAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Exceptions;
-using ValidationException = Shared.Common.Exceptions.ValidationException;
 
 using MediatR;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Application.Features.Shopping;
@@ -54,11 +51,11 @@ public class UpdateOrderCommandValidator : AbstractValidator<UpdateOrderCommand>
 
 internal sealed class UpdateOrderCommandHandler(
     ILogger<UpdateOrderCommandHandler> logger, 
-    ApplicationDbContext context
+    IOrderRepository orderRepository
 ) : IRequestHandler<UpdateOrderCommand>
 {
     private readonly ILogger<UpdateOrderCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IOrderRepository _orderRepository = orderRepository;
 
     public async Task Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
     {
@@ -68,23 +65,13 @@ internal sealed class UpdateOrderCommandHandler(
             throw new UnauthorizedAccessException("Invalid token.");
 
         var payload = request.Payload;
-        var order = await _context.Orders.FirstOrDefaultAsync(o => 
-            o.Id == payload.Id && o.CustomerId == request.CurrentUserId);
+        var order = await _orderRepository.GetByIdAsync(payload.Id, cancellationToken);
         if (order is null) throw new NotFoundException("Order not found.");
 
-        if (!IsAllowedToUpdateCustomerInfo(order.Status))
-            throw new ValidationException("Only allow to update customer info in Pending or Packaging status.");
-
-        order.CustomerName = payload.CustomerInfo.Name;
-        order.CustomerAddress = payload.CustomerInfo.Address;
-        order.CustomerPhoneNumber = payload.CustomerInfo.PhoneNumber;
-        order.LastModifiedBy = request.CurrentUserId;
+        order.UpdateDetails(payload.CustomerInfo, request.CurrentUserId);
 
         _logger.LogInformation("Updating order to database: {@UpdatedOrder}", order);
-        _context.Orders.Update(order);
-        await _context.SaveChangesAsync(cancellationToken);
+        _orderRepository.Update(order);
+        await _orderRepository.SaveChangesAsync(cancellationToken);
     }
-
-    private bool IsAllowedToUpdateCustomerInfo(OrderStatus status) =>
-        status == OrderStatus.Pending || status == OrderStatus.Packaging;
 }

@@ -1,8 +1,8 @@
 using CatalogAPI.Application.Domain;
-using CatalogAPI.Application.Shared.Common;
+using CatalogAPI.Application.Domain.Dtos;
 using CatalogAPI.Application.Shared.Dtos;
 using CatalogAPI.Application.Shared.Validators;
-using CatalogAPI.Application.Infrastructure.Persistence;
+using CatalogAPI.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common.Enums;
 
@@ -46,28 +46,18 @@ public class AddProductCommandValidator : AbstractValidator<AddProductCommand>
             RuleFor(x => x.Type)
                 .IsInEnum().WithMessage("Invalid product type.");
 
-            RuleFor(x => x.Images)
-                .Must(NotExceedImageQuantity).WithMessage($"Only allowed maximum {ProductConstants.MAXIMUM_IMAGE_QUANTITY} images.")
-                .Must(HaveOnlyOnePrimaryImage).WithMessage("Missing or exceeding required primary image quantity.");
-
             RuleForEach(x => x.Images)
                 .SetValidator(new ProductImagePayloadValidator());
         }
-
-        private bool HaveOnlyOnePrimaryImage(List<ProductImagePayload> images) 
-            => images.Where(x => x.IsPrimary).Count() == 1;
-
-        private bool NotExceedImageQuantity(List<ProductImagePayload> images)
-            => images.Count <= ProductConstants.MAXIMUM_IMAGE_QUANTITY;
     }
 }
 
 
-internal sealed class AddProductCommandHandler(ILogger<AddProductCommandHandler> logger, ApplicationDbContext context)
+internal sealed class AddProductCommandHandler(ILogger<AddProductCommandHandler> logger, IProductRepository productRepository)
     : IRequestHandler<AddProductCommand, ProductDetailResponse>
 {
     private readonly ILogger<AddProductCommandHandler> _logger = logger;
-    private readonly ApplicationDbContext _context = context;
+    private readonly IProductRepository _productRepository = productRepository;
 
     public async Task<ProductDetailResponse> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
@@ -78,36 +68,20 @@ internal sealed class AddProductCommandHandler(ILogger<AddProductCommandHandler>
             throw new UnauthorizedAccessException("Invalid token.");
 
         var requestPayload = request.Payload;
-        var newProduct = ToEntity(request.TenantId, request.CurrentUserId, requestPayload);
-        var newProductImages = requestPayload.Images.Select(i => ToEntity(request.CurrentUserId, i));
-        newProduct.Images = newProductImages.ToList();
+        var newProduct = Product.CreateNew(
+            requestPayload.Name,
+            requestPayload.Description,
+            requestPayload.Price,
+            requestPayload.Type,
+            requestPayload.Images.FirstOrDefault(i => i.IsPrimary),
+            request.TenantId,
+            request.CurrentUserId);
+        newProduct.AddImages([.. requestPayload.Images.Where(i => !i.IsPrimary)]);
 
         _logger.LogInformation("Adding product to database: {@NewProduct}", newProduct);
-        await _context.Products.AddAsync(newProduct, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _productRepository.AddAsync(newProduct, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
 
-        return Product.ToDto(newProduct);
+        return newProduct.ToDto();
     }
-
-    private static Product ToEntity(string tenantId, string createdBy, AddProductPayload product) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Name = product.Name,
-        Description = product.Description,
-        Price = product.Price,
-        Type = product.Type,
-        TenantId = tenantId,
-        CreatedBy = createdBy
-    };
-
-    private static Image ToEntity(string createdBy, ProductImagePayload image) => new()
-    {
-        Id = Guid.NewGuid().ToString(),
-        Filename = image.Filename,
-        URL = image.URL,
-        AltText = image.AltText,
-        Size = image.Size,
-        IsPrimary = image.IsPrimary,
-        CreatedBy = createdBy
-    };
 }
