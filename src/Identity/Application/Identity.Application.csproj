@@ -13,8 +13,6 @@
     <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="7.0.4" />
     <PackageReference Include="Duende.IdentityServer.EntityFramework" Version="7.0.4" />
 
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
-
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.2.2" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore.Reflection" Version="1.2.2" />
     
