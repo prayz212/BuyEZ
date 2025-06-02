@@ -1,6 +1,10 @@
 namespace Shared.Domain;
 
-public class JobExecutionHistory<TTrackingEvent>
+/*
+    JobExecutionHistory is more of an operational log. 
+    It is not part of domain's invariants; instead, it belongs to a separate context (e.g BackgroundJobDbContext)
+*/
+public class JobExecutionHistory
 {
     public string Id { get; private set; } = string.Empty;
 
@@ -13,10 +17,6 @@ public class JobExecutionHistory<TTrackingEvent>
     public DateTimeOffset? CompletedAt { get; private set; }
 
     public string? ErrorMessage { get; private set; }
-
-    // Navigation Properties
-    private readonly List<TTrackingEvent> _trackingEvents = [];
-    public IReadOnlyList<TTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
 
     // Constructors
     /*
@@ -46,11 +46,6 @@ public class JobExecutionHistory<TTrackingEvent>
         Status = ExecutionStatus.Failed;
         CompletedAt = DateTimeOffset.UtcNow;
         ErrorMessage = errorMessage ?? "Unknown error message.";
-    }
-
-    public void AddTrackingEvents(List<TTrackingEvent> @events)
-    {
-        _trackingEvents.AddRange(@events);
     }
 }
 

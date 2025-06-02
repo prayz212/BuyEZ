@@ -1,5 +1,5 @@
 using Shared.Domain;
-using Shared.Infrastructure.Persistence;
+using Shared.Common.Interfaces;
 
 using Quartz;
 using Microsoft.Extensions.Logging;
@@ -7,19 +7,17 @@ using Microsoft.Extensions.Logging;
 namespace Shared.Common;
 
 [DisallowConcurrentExecution]
-public abstract class BaseJob<TJob, TDbContext, TTrackingEvent> : IJob where TDbContext : JobDbContext<TTrackingEvent>
+public abstract class BaseJob<TJob> : IJob
 {
     protected readonly ILogger<TJob> _logger;
-    protected readonly TDbContext _context;
-    protected readonly JobExecutionHistory<TTrackingEvent> _executionHistory;
-    protected readonly List<TTrackingEvent> _events;
+    protected readonly IJobHistoryRepository _repository;
+    private readonly JobExecutionHistory _executionHistory;
 
-    public BaseJob(ILogger<TJob> logger, TDbContext context)
+    public BaseJob(ILogger<TJob> logger, IJobHistoryRepository repository)
     {
         _logger = logger;
-        _context = context;
-        _executionHistory = new JobExecutionHistory<TTrackingEvent>(GetType().Name);
-        _events = [];
+        _repository = repository;
+        _executionHistory = new JobExecutionHistory(GetType().Name);
     }
 
     public abstract Task JobExecute(IJobExecutionContext context);
@@ -28,11 +26,10 @@ public abstract class BaseJob<TJob, TDbContext, TTrackingEvent> : IJob where TDb
     {
         _logger.LogInformation("Executing {JobName} background job...", GetType().Name);
 
-        try 
+        try
         {
             await JobExecute(context);
-            
-            if (_events.Any()) _executionHistory.AddTrackingEvents(_events);
+
             _executionHistory.ExecuteSuccess();
         }
         catch (Exception ex)
@@ -42,10 +39,15 @@ public abstract class BaseJob<TJob, TDbContext, TTrackingEvent> : IJob where TDb
         }
         finally
         {
-            await _context.JobExecutionHistories.AddAsync(_executionHistory);
-            await _context.SaveChangesAsync();
+            await _repository.AddAsync(_executionHistory);
+            await _repository.SaveChangesAsync();
         }
 
         _logger.LogInformation("Executed {JobName} background job.", GetType().Name);
+    }
+
+    protected string GetJobExecutionId()
+    {
+        return _executionHistory.Id;
     }
 }
