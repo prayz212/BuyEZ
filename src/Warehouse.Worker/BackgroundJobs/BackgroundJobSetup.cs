@@ -1,7 +1,7 @@
 using WarehouseWorker.Application.Options;
+using WarehouseWorker.BackgroundJobs.Jobs;
 
 using Quartz;
-using WarehouseWorker.BackgroundJobs.Jobs;
 
 namespace WarehouseWorker.BackgroundJobs;
 

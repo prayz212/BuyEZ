@@ -1,32 +1,41 @@
 using WarehouseWorker.Application.Domain;
-using WarehouseWorker.Application.Infrastructure.Persistence;
+using WarehouseWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
+using Shared.Common.Interfaces;
 
 using Quartz;
-using Microsoft.EntityFrameworkCore;
 
 namespace WarehouseWorker.BackgroundJobs.Jobs;
 
-public class NotifyShippingVendor : BaseJob<NotifyShippingVendor, ApplicationDbContext, PackageTrackingEvent>
+public class NotifyShippingVendor : BaseJob<NotifyShippingVendor>
 {
-    public NotifyShippingVendor(ILogger<NotifyShippingVendor> logger, ApplicationDbContext context) 
-        : base(logger, context) { }
+    private readonly IPackageRepository _packageRepository;
+
+    public NotifyShippingVendor(
+        ILogger<NotifyShippingVendor> logger,
+        IJobHistoryRepository jobRepository,
+        IPackageRepository packageRepository)
+        : base(logger, jobRepository)
+    {
+        _packageRepository = packageRepository;
+    }
 
     public override async Task JobExecute(IJobExecutionContext context)
     {
-        var packages = await _context.Packages.Where(p => p.Status == PackageStatus.ReadyToShip).ToListAsync();
+        var packages = await _packageRepository.GetPackagesByStatus(PackageStatus.ReadyToShip);
 
         _logger.LogInformation("Found {PackageCount} packages need to notify", packages.Count);
 
+        var jobExecutionId = GetJobExecutionId();
         foreach (var package in packages)
         {
             _logger.LogInformation("Notifying shipping vendor for package: {@Package}", package);
 
-            _events.Add(new(package, _executionHistory, PackageStatus.AwaitingShipment));
-            package.UpdateStatus(PackageStatus.AwaitingShipment);
+            package.NotifyShippingVendor(jobExecutionId);
+            _packageRepository.Update(package);
         }
 
-        await _context.SaveChangesAsync();
+        await _packageRepository.SaveChangesAsync();
     }
 }

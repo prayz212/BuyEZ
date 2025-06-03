@@ -11,12 +11,6 @@ public class PackageConfiguration : IEntityTypeConfiguration<Package>
     public void Configure(EntityTypeBuilder<Package> builder)
     {
         builder.Ignore(s => s.DomainEvents);
-        builder.Ignore(s => s.TrackingEvents);
-
-        builder.HasMany<PackageTrackingEvent>("_trackingEvents")
-            .WithOne(te => te.Package)
-            .HasForeignKey(te => te.PackageId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(s => s.Status)
             .HasConversion(new EnumToStringConverter<PackageStatus>());

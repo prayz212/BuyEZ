@@ -1,10 +1,11 @@
 using Shared.Common;
+using Shared.Common.Interfaces;
 
 namespace WarehouseWorker.Application.Domain;
 
-public class Package : AuditableEntity, IHasDomainEvent
+public class Package : AuditableEntity, IAggregateRoot
 {
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
     public PackageStatus Status { get; private set; } = PackageStatus.Pending;
 
@@ -12,11 +13,13 @@ public class Package : AuditableEntity, IHasDomainEvent
 
     public string OrderId { get; private set; } = string.Empty;
 
-    public List<DomainEvent> DomainEvents { get; } = [];
-
     // Navigation Properties
     private List<PackageTrackingEvent> _trackingEvents = [];
     public IReadOnlyList<PackageTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
+
+    // Domain Events property
+    private readonly List<DomainEvent> _domainEvents = [];
+    public IReadOnlyList<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Constructors
     /*
@@ -27,22 +30,59 @@ public class Package : AuditableEntity, IHasDomainEvent
      */
     internal Package() { }
 
-    public Package(string orderId, string? reason = null)
+    private Package(string orderId, string reason)
     {
         Id = Guid.NewGuid().ToString();
         OrderId = orderId;
-        Reason = reason ?? "New order created";
+        Reason = reason;
     }
 
-    public void UpdateStatus(PackageStatus status)
+    public static Package CreateNew(string orderId, string? reason = default)
     {
-        Status = status;
+        return new(orderId, reason ?? "New order created.");
+    }
 
-        if (status == PackageStatus.AwaitingShipment)
-        {
-            // TODO: add update order status event
-            Console.WriteLine("UpdateOrderStatus event to DeliveringOrder");
-        }
+    public void PackOrder(string executionHistoryId)
+    {
+        if (Status != PackageStatus.Pending)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to ReadyToShip.");
+
+        var newStatus = PackageStatus.ReadyToShip;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Package is already packed.";
+    }
+
+    public void NotifyShippingVendor(string executionHistoryId)
+    {
+        if (Status != PackageStatus.ReadyToShip)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to AwaitingShipment.");
+
+        var newStatus = PackageStatus.AwaitingShipment;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Package is waiting for shipping vendor to collect.";
+    }
+
+    private void AddTrackingEvent(string executionHistoryId, PackageStatus newStatus)
+    {
+        _trackingEvents.Add(
+            PackageTrackingEvent.CreateNew(
+                this,
+                executionHistoryId,
+                newStatus));
+    }
+
+    public void AddDomainEvent(DomainEvent @event)
+    {
+        _domainEvents.Add(@event);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }
 

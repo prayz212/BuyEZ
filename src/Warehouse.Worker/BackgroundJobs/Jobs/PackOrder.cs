@@ -1,32 +1,41 @@
 using WarehouseWorker.Application.Domain;
-using WarehouseWorker.Application.Infrastructure.Persistence;
+using WarehouseWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
 
 using Quartz;
-using Microsoft.EntityFrameworkCore;
+using Shared.Common.Interfaces;
 
 namespace WarehouseWorker.BackgroundJobs.Jobs;
 
-public class PackOrder : BaseJob<PackOrder, ApplicationDbContext, PackageTrackingEvent>
+public class PackOrder : BaseJob<PackOrder>
 {
-    public PackOrder(ILogger<PackOrder> logger, ApplicationDbContext context) 
-        : base(logger, context) { }
+    private readonly IPackageRepository _packageRepository;
+
+    public PackOrder(
+        ILogger<PackOrder> logger,
+        IJobHistoryRepository jobRepository,
+        IPackageRepository packageRepository)
+        : base(logger, jobRepository)
+    {
+        _packageRepository = packageRepository;
+    }
 
     public override async Task JobExecute(IJobExecutionContext context)
     {
-        var packages = await _context.Packages.Where(p => p.Status == PackageStatus.Pending).ToListAsync();
+        var packages = await _packageRepository.GetPackagesByStatus(PackageStatus.Pending);
 
         _logger.LogInformation("Found {PackageCount} orders need to pack", packages.Count);
 
+        var jobExecutionId = GetJobExecutionId();
         foreach (var package in packages)
         {
             _logger.LogInformation("Packing order: {@Package}", package);
 
-            _events.Add(new(package, _executionHistory, PackageStatus.ReadyToShip));
-            package.UpdateStatus(PackageStatus.ReadyToShip);
+            package.PackOrder(jobExecutionId);
+            _packageRepository.Update(package);
         }
 
-        await _context.SaveChangesAsync();
+        await _packageRepository.SaveChangesAsync();
     }
 }
