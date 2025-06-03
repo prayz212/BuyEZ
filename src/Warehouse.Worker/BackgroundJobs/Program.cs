@@ -1,7 +1,8 @@
 using WarehouseWorker.Application;
+using WarehouseWorker.BackgroundJobs;
 using WarehouseWorker.Application.Domain;
 using WarehouseWorker.Application.Infrastructure.Persistence;
-using WarehouseWorker.BackgroundJobs;
+using WarehouseWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
 using Shared.Extensions;
@@ -33,12 +34,12 @@ app.UseHttpsRedirection();
 
 
 // TODO: remove it when integrate with event sourcing
-app.MapGet("/dummy", async (ApplicationDbContext context) =>
+app.MapGet("/dummy", async (IPackageRepository repository) =>
 {
-    var package = new Package(Guid.NewGuid().ToString());
+    var package = Package.CreateNew(Guid.NewGuid().ToString());
 
-    await context.Packages.AddAsync(package);
-    await context.SaveChangesAsync();
+    await repository.AddAsync(package);
+    await repository.SaveChangesAsync();
 })
 .WithName("GenerateDummyPackage")
 .WithOpenApi();

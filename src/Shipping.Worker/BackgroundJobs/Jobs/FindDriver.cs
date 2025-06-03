@@ -1,32 +1,43 @@
 using ShippingWorker.Application.Domain;
-using ShippingWorker.Application.Infrastructure.Persistence;
+using ShippingWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
+using Shared.Common.Interfaces;
 
 using Quartz;
-using Microsoft.EntityFrameworkCore;
 
 namespace ShippingWorker.BackgroundJobs.Jobs;
 
-public class FindDriver : BaseJob<FindDriver, ApplicationDbContext, ShipmentTrackingEvent>
+public class FindDriver : BaseJob<FindDriver>
 {
-    public FindDriver(ILogger<FindDriver> logger, ApplicationDbContext context) 
-        : base(logger, context) { }
+    private readonly IShipmentRepository _shipmentRepository;
+
+    public FindDriver(
+        ILogger<FindDriver> logger,
+        IJobHistoryRepository jobRepository,
+        IShipmentRepository shipmentRepository)
+        : base(logger, jobRepository)
+    {
+        _shipmentRepository = shipmentRepository;
+    }
 
     public override async Task JobExecute(IJobExecutionContext context)
     {
-        var shipments = await _context.Shipments.Where(s => s.Status == ShipmentStatus.FindingDriver).ToListAsync();
+        var shipments = await _shipmentRepository.GetShipmentsByStatus(ShipmentStatus.FindingDriver);
 
         _logger.LogInformation("Found {ShipmentCount} shipments need to assign driver", shipments.Count);
 
+        var jobExecutionId = GetJobExecutionId();
+        // TODO: Make driver name randomly
+        var driverName = "Lee Wan Shi";
         foreach (var shipment in shipments)
         {
             _logger.LogInformation("Assigning driver to shipment: {@Shipment}", shipment);
 
-            _events.Add(new(shipment, _executionHistory, ShipmentStatus.DriverAssigned));
-            shipment.UpdateStatus(ShipmentStatus.DriverAssigned);
+            shipment.AssignDriver(driverName, jobExecutionId);
+            _shipmentRepository.Update(shipment);
         }
 
-        await _context.SaveChangesAsync();
+        await _shipmentRepository.SaveChangesAsync();
     }
 }

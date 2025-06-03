@@ -151,7 +151,7 @@ public class Product : AuditableEntity, IAggregateRoot
             throw new ValidationException("Missing or exceeding required primary image quantity.");
 
         foreach (var image in images)
-            _images.Add(Image.CreateNew(image, CreatedBy));
+            _images.Add(Image.CreateNew(image, LastModifiedBy ?? CreatedBy ?? "Unknown"));
     }
 
     public void RemoveImages(List<ProductImagePayload> images)
@@ -177,7 +177,7 @@ public class Product : AuditableEntity, IAggregateRoot
         var imageToRemove = _images.First(i => i.IsPrimary);
         _images.Remove(imageToRemove);
 
-        var imageToUpdate = Image.CreateNew(image);
+        var imageToUpdate = Image.CreateNew(image, LastModifiedBy ?? CreatedBy ?? "Unknown");
         _images.Add(imageToUpdate);
     }
 

@@ -1,21 +1,14 @@
-using Shared.Domain;
-
 namespace ShippingWorker.Application.Domain;
 
 public class ShipmentTrackingEvent
 {
-    public string ShipmentId { get; private set; } = string.Empty;
+    public string ShipmentId { get; init; } = string.Empty;
 
-    public string ExecutionId { get; private set; } = string.Empty;
+    public string ExecutionId { get; init; } = string.Empty;
 
     public ShipmentStatus CurrentStatus { get; private set; }
 
     public ShipmentStatus NewStatus { get; private set; }
-
-    // Navigation Properties
-    public Shipment? Shipment { get; private set; }
-
-    public JobExecutionHistory<ShipmentTrackingEvent>? ExecutionHistory { get; private set; }
 
     // Constructors
     /*
@@ -26,14 +19,27 @@ public class ShipmentTrackingEvent
      */
     internal ShipmentTrackingEvent() { }
 
-    public ShipmentTrackingEvent(
-        Shipment shipment,
-        JobExecutionHistory<ShipmentTrackingEvent> executionHistory,
+    private ShipmentTrackingEvent(
+        string shipmentId,
+        string executionHistoryId,
+        ShipmentStatus currentStatus,
         ShipmentStatus newStatus)
     {
-        ShipmentId = shipment.Id;
-        ExecutionId = executionHistory.Id;
-        CurrentStatus = shipment.Status;
+        ShipmentId = shipmentId;
+        ExecutionId = executionHistoryId;
+        CurrentStatus = currentStatus;
         NewStatus = newStatus;
+    }
+
+    public static ShipmentTrackingEvent CreateNew(
+        Shipment shipment,
+        string executionHistoryId,
+        ShipmentStatus newStatus)
+    {
+        return new(
+            shipment.Id,
+            executionHistoryId,
+            shipment.Status,
+            newStatus);
     }
 }

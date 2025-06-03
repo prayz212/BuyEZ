@@ -86,19 +86,7 @@ internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHa
         var product = await _productRepository.GetByIdAsync(requestPayload.Id, cancellationToken);
         if (product == null)
             throw new NotFoundException($"Product with id: {requestPayload.Id} not found.");
-
-        if (requestPayload.NewImages != null && requestPayload.NewImages.Any())
-        {
-            var newPrimaryImage = requestPayload.NewImages.SingleOrDefault(ni => ni.IsPrimary);
-            if (newPrimaryImage != null)
-                product.UpdatePrimaryImage(newPrimaryImage);
-
-            product.AddImages([..requestPayload.NewImages.Where(ni => !ni.IsPrimary)]);
-        }
-
-        if (requestPayload.DeleteImages != null && requestPayload.DeleteImages.Any())
-            product.RemoveImages([..requestPayload.DeleteImages.Where(ni => !ni.IsPrimary)]);
-
+            
         /* Perform update */
         product.UpdateDetails(
             requestPayload.Name,
@@ -108,6 +96,18 @@ internal sealed class UpdateProductCommandHandler(ILogger<UpdateProductCommandHa
             requestPayload.RestockThreshold,
             requestPayload.MaxStockThreshold,
             request.CurrentUserId);
+
+        if (requestPayload.NewImages != null && requestPayload.NewImages.Any())
+        {
+            var newPrimaryImage = requestPayload.NewImages.SingleOrDefault(ni => ni.IsPrimary);
+            if (newPrimaryImage != null)
+                product.UpdatePrimaryImage(newPrimaryImage);
+
+            product.AddImages([.. requestPayload.NewImages.Where(ni => !ni.IsPrimary)]);
+        }
+
+        if (requestPayload.DeleteImages != null && requestPayload.DeleteImages.Any())
+            product.RemoveImages([..requestPayload.DeleteImages.Where(ni => !ni.IsPrimary)]);
 
         _logger.LogInformation("Updating product to database: {@UpdatedProduct}", product);
         

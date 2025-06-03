@@ -11,12 +11,6 @@ public class ShipmentConfiguration : IEntityTypeConfiguration<Shipment>
     public void Configure(EntityTypeBuilder<Shipment> builder)
     {
         builder.Ignore(s => s.DomainEvents);
-        builder.Ignore(s => s.TrackingEvents);
-
-        builder.HasMany<ShipmentTrackingEvent>("_trackingEvents")
-            .WithOne(te => te.Shipment)
-            .HasForeignKey(te => te.ShipmentId)
-            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(s => s.Status)
             .HasConversion(new EnumToStringConverter<ShipmentStatus>());

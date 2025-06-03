@@ -1,5 +1,7 @@
 using WarehouseWorker.Application.Options;
 using WarehouseWorker.Application.Infrastructure.Persistence;
+using WarehouseWorker.Application.Domain.Interfaces.Repositories;
+using WarehouseWorker.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
@@ -45,7 +47,12 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options => 
             options.UseNpgsql(
                 connectionString,
-                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                b => b.MigrationsHistoryTable("__WarehouseMigrationsHistory")));
+
+        services.AddDbContext<BackgroundJobDbContext>(options => 
+            options.UseNpgsql(
+                connectionString,
+                b => b.MigrationsHistoryTable("__BackgroundJobMigrationsHistory")));
 
         services.AddQuartz();
         services.AddQuartzHostedService(configure => 
@@ -54,6 +61,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IPackageRepository, PackageRepository>();
+        services.AddScoped<IJobHistoryRepository, JobHistoryRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;

@@ -1,10 +1,11 @@
 using Shared.Common;
+using Shared.Common.Interfaces;
 
 namespace ShippingWorker.Application.Domain;
 
-public class Shipment : AuditableEntity, IHasDomainEvent
+public class Shipment : AuditableEntity, IAggregateRoot
 {
-    public string Id { get; private set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
     public ShipmentStatus Status { get; private set; } = ShipmentStatus.FindingDriver;
 
@@ -12,11 +13,13 @@ public class Shipment : AuditableEntity, IHasDomainEvent
 
     public string OrderId { get; private set; } = string.Empty;
 
-    public List<DomainEvent> DomainEvents { get; } = [];
-
     // Navigation Properties
     private List<ShipmentTrackingEvent> _trackingEvents = [];
     public IReadOnlyList<ShipmentTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
+
+    // Domain Events property
+    private readonly List<DomainEvent> _domainEvents = [];
+    public IReadOnlyList<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Constructors
     /*
@@ -27,22 +30,72 @@ public class Shipment : AuditableEntity, IHasDomainEvent
      */
     internal Shipment() { }
 
-    public Shipment(string orderId, string? reason = null)
+    private Shipment(string orderId, string reason)
     {
         Id = Guid.NewGuid().ToString();
         OrderId = orderId;
-        Reason = reason ?? "New order created";
+        Status = ShipmentStatus.FindingDriver;
+        Reason = reason;
     }
 
-    public void UpdateStatus(ShipmentStatus status)
+    public static Shipment CreateNew(string orderId, string? reason = default)
     {
-        Status = status;
+        return new(orderId, reason ?? "New order created.");
+    }
 
-        if (Status == ShipmentStatus.DeliveringOrder)
-        {
-            // TODO: add update order status event
-            Console.WriteLine("UpdateOrderStatus event to DeliveringOrder");
-        }
+    public void AssignDriver(string driverName, string executionHistoryId)
+    {
+        if (Status != ShipmentStatus.FindingDriver)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to DriverAssigned.");
+
+        var newStatus = ShipmentStatus.DriverAssigned;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = $"Shipment assigned to driver: {driverName}.";
+    }
+
+    public void PickUpOrder(string executionHistoryId)
+    {
+        if (Status != ShipmentStatus.DriverAssigned)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to PickingUpOrder.");
+
+        var newStatus = ShipmentStatus.PickingUpOrder;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Driver is picking up the order.";
+    }
+
+    public void DeliverOrder(string executionHistoryId)
+    {
+        if (Status != ShipmentStatus.PickingUpOrder)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to DeliveringOrder.");
+
+        var newStatus = ShipmentStatus.DeliveringOrder;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Driver is delivering the order.";
+    }
+
+    private void AddTrackingEvent(string executionHistoryId, ShipmentStatus newStatus)
+    {
+        _trackingEvents.Add(
+            ShipmentTrackingEvent.CreateNew(
+                this,
+                executionHistoryId,
+                newStatus));
+    }
+
+    public void AddDomainEvent(DomainEvent @event)
+    {
+        _domainEvents.Add(@event);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
     }
 }
 

@@ -1,21 +1,14 @@
-using Shared.Domain;
-
 namespace WarehouseWorker.Application.Domain;
 
 public class PackageTrackingEvent
 {
-    public string PackageId { get; private set; } = string.Empty;
+    public string PackageId { get; init; } = string.Empty;
 
-    public string ExecutionId { get; private set; } = string.Empty;
+    public string ExecutionId { get; init; } = string.Empty;
 
     public PackageStatus CurrentStatus { get; private set; }
 
     public PackageStatus NewStatus { get; private set; }
-
-    // Navigation Properties
-    public Package? Package { get; private set; }
-
-    public JobExecutionHistory<PackageTrackingEvent>? ExecutionHistory { get; private set; }
 
     // Constructors
     /*
@@ -26,14 +19,27 @@ public class PackageTrackingEvent
      */
     internal PackageTrackingEvent() { }
 
-    public PackageTrackingEvent(
-        Package package,
-        JobExecutionHistory<PackageTrackingEvent> executionHistory,
+    private PackageTrackingEvent(
+        string packageId,
+        string executionHistoryId,
+        PackageStatus currentStatus,
         PackageStatus newStatus)
     {
-        PackageId = package.Id;
-        ExecutionId = executionHistory.Id;
-        CurrentStatus = package.Status;
+        PackageId = packageId;
+        ExecutionId = executionHistoryId;
+        CurrentStatus = currentStatus;
         NewStatus = newStatus;
+    }
+
+    public static PackageTrackingEvent CreateNew(
+        Package package,
+        string executionHistoryId,
+        PackageStatus newStatus)
+    {
+        return new(
+            package.Id,
+            executionHistoryId,
+            package.Status,
+            newStatus);
     }
 }
