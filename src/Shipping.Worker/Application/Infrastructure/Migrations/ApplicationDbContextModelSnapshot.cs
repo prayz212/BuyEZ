@@ -23,33 +23,6 @@ namespace Shipping.Application.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ShippingWorker.Application.Domain.JobExecutionHistory", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("ExecutedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("JobName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobExecutionHistories");
-                });
-
             modelBuilder.Entity("ShippingWorker.Application.Domain.Shipment", b =>
                 {
                     b.Property<string>("Id")
@@ -81,7 +54,7 @@ namespace Shipping.Application.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Shipments");
+                    b.ToTable("Shipments", (string)null);
                 });
 
             modelBuilder.Entity("ShippingWorker.Application.Domain.ShipmentTrackingEvent", b =>
@@ -102,38 +75,21 @@ namespace Shipping.Application.Infrastructure.Migrations
 
                     b.HasKey("ShipmentId", "ExecutionId");
 
-                    b.HasIndex("ExecutionId");
-
-                    b.ToTable("ShipmentTrackingEvents");
+                    b.ToTable("ShipmentTrackingEvents", (string)null);
                 });
 
             modelBuilder.Entity("ShippingWorker.Application.Domain.ShipmentTrackingEvent", b =>
                 {
-                    b.HasOne("ShippingWorker.Application.Domain.JobExecutionHistory", "ExecutionHistory")
-                        .WithMany("_trackingEvents")
-                        .HasForeignKey("ExecutionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShippingWorker.Application.Domain.Shipment", "Shipment")
-                        .WithMany("_trackingEvents")
+                    b.HasOne("ShippingWorker.Application.Domain.Shipment", null)
+                        .WithMany("TrackingEvents")
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ExecutionHistory");
-
-                    b.Navigation("Shipment");
-                });
-
-            modelBuilder.Entity("ShippingWorker.Application.Domain.JobExecutionHistory", b =>
-                {
-                    b.Navigation("_trackingEvents");
                 });
 
             modelBuilder.Entity("ShippingWorker.Application.Domain.Shipment", b =>
                 {
-                    b.Navigation("_trackingEvents");
+                    b.Navigation("TrackingEvents");
                 });
 #pragma warning restore 612, 618
         }

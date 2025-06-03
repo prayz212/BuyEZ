@@ -11,22 +11,6 @@ namespace Shipping.Application.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "JobExecutionHistories",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    JobName = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    ExecutedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CompletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    ErrorMessage = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_JobExecutionHistories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Shipments",
                 columns: table => new
                 {
@@ -57,23 +41,12 @@ namespace Shipping.Application.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_ShipmentTrackingEvents", x => new { x.ShipmentId, x.ExecutionId });
                     table.ForeignKey(
-                        name: "FK_ShipmentTrackingEvents_JobExecutionHistories_ExecutionId",
-                        column: x => x.ExecutionId,
-                        principalTable: "JobExecutionHistories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_ShipmentTrackingEvents_Shipments_ShipmentId",
                         column: x => x.ShipmentId,
                         principalTable: "Shipments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ShipmentTrackingEvents_ExecutionId",
-                table: "ShipmentTrackingEvents",
-                column: "ExecutionId");
         }
 
         /// <inheritdoc />
@@ -81,9 +54,6 @@ namespace Shipping.Application.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ShipmentTrackingEvents");
-
-            migrationBuilder.DropTable(
-                name: "JobExecutionHistories");
 
             migrationBuilder.DropTable(
                 name: "Shipments");

@@ -1,7 +1,8 @@
+using ShippingWorker.BackgroundJobs;
 using ShippingWorker.Application;
 using ShippingWorker.Application.Domain;
 using ShippingWorker.Application.Infrastructure.Persistence;
-using ShippingWorker.BackgroundJobs;
+using ShippingWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
 using Shared.Extensions;
@@ -32,12 +33,12 @@ await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>(app.Environme
 app.UseHttpsRedirection();
 
 // TODO: remove it when integrate with event sourcing
-app.MapGet("/dummy", async (ApplicationDbContext context) =>
+app.MapGet("/dummy", async (IShipmentRepository repository) =>
 {
-    var shipment = new Shipment(Guid.NewGuid().ToString());
+    var shipment = Shipment.CreateNew(Guid.NewGuid().ToString());
 
-    await context.Shipments.AddAsync(shipment);
-    await context.SaveChangesAsync();
+    await repository.AddAsync(shipment);
+    await repository.SaveChangesAsync();
 })
 .WithName("GenerateDummyShipment")
 .WithOpenApi();

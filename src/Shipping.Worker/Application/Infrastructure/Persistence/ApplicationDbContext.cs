@@ -2,7 +2,6 @@ using ShippingWorker.Application.Domain;
 
 using Shared.Common;
 using Shared.Common.Interfaces;
-using Shared.Infrastructure.Persistence;
 
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ShippingWorker.Application.Infrastructure.Persistence;
 
-public class ApplicationDbContext : JobDbContext<ShipmentTrackingEvent>
+public class ApplicationDbContext : DbContext
 {
     private readonly ILogger<ApplicationDbContext> _logger;
     private readonly IDomainEventService _domainEventService;
@@ -48,9 +47,12 @@ public class ApplicationDbContext : JobDbContext<ShipmentTrackingEvent>
             }
         }
 
-        var events = ChangeTracker.Entries<IHasDomainEvent>()
-            .Select(x => x.Entity.DomainEvents)
-            .SelectMany(x => x)
+        var entities = ChangeTracker.Entries<IAggregateRoot>()
+            .Where(e => e.Entity.DomainEvents.Any())
+            .Select(x => x.Entity);
+
+        var events = entities
+            .SelectMany(x => x.DomainEvents)
             .Where(domainEvent => !domainEvent.IsPublished)
             .ToList();
 
@@ -59,6 +61,7 @@ public class ApplicationDbContext : JobDbContext<ShipmentTrackingEvent>
 
         _logger.LogInformation($"Dispatching {events.Count} events...");
         await DispatchEvents(events);
+        entities.ToList().ForEach(e => e.ClearDomainEvents());
 
         return result;
     }
@@ -73,7 +76,7 @@ public class ApplicationDbContext : JobDbContext<ShipmentTrackingEvent>
     {
         foreach (var @event in events)
         {
-            @event.IsPublished = true;
+            @event.MarkAsPublished();
             await _domainEventService.Publish(@event);
         }
     }

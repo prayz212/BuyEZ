@@ -1,32 +1,41 @@
 using ShippingWorker.Application.Domain;
-using ShippingWorker.Application.Infrastructure.Persistence;
+using ShippingWorker.Application.Domain.Interfaces.Repositories;
 
 using Shared.Common;
+using Shared.Common.Interfaces;
 
 using Quartz;
-using Microsoft.EntityFrameworkCore;
 
 namespace ShippingWorker.BackgroundJobs.Jobs;
 
-public class DeliverOrder : BaseJob<DeliverOrder, ApplicationDbContext, ShipmentTrackingEvent>
+public class DeliverOrder : BaseJob<DeliverOrder>
 {
-    public DeliverOrder(ILogger<DeliverOrder> logger, ApplicationDbContext context)
-        : base(logger, context) { }
+    private readonly IShipmentRepository _shipmentRepository;
+
+    public DeliverOrder(
+        ILogger<DeliverOrder> logger,
+        IJobHistoryRepository jobRepository,
+        IShipmentRepository shipmentRepository)
+        : base(logger, jobRepository)
+    {
+        _shipmentRepository = shipmentRepository;
+    }
 
     public override async Task JobExecute(IJobExecutionContext context)
     {
-        var shipments = await _context.Shipments.Where(s => s.Status == ShipmentStatus.PickingUpOrder).ToListAsync();
+        var shipments = await _shipmentRepository.GetShipmentsByStatus(ShipmentStatus.PickingUpOrder);
 
         _logger.LogInformation("Found {ShipmentCount} shipments need to deliver order", shipments.Count);
 
+        var jobExecutionId = GetJobExecutionId();
         foreach (var shipment in shipments)
         {
             _logger.LogInformation("Delivering shipment: {@Shipment}", shipment);
 
-            _events.Add(new(shipment, _executionHistory, ShipmentStatus.DeliveringOrder));
-            shipment.UpdateStatus(ShipmentStatus.DeliveringOrder);
+            shipment.DeliverOrder(jobExecutionId);
+            _shipmentRepository.Update(shipment);
         }
 
-        await _context.SaveChangesAsync();
+        await _shipmentRepository.SaveChangesAsync();
     }
 }

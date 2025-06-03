@@ -1,5 +1,7 @@
 using ShippingWorker.Application.Options;
 using ShippingWorker.Application.Infrastructure.Persistence;
+using ShippingWorker.Application.Domain.Interfaces.Repositories;
+using ShippingWorker.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
@@ -45,7 +47,12 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options => 
             options.UseNpgsql(
                 connectionString,
-                b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+                b => b.MigrationsHistoryTable("__ShipmentMigrationsHistory")));
+
+        services.AddDbContext<BackgroundJobDbContext>(options => 
+            options.UseNpgsql(
+                connectionString,
+                b => b.MigrationsHistoryTable("__BackgroundJobMigrationsHistory")));
 
         services.AddQuartz();
         services.AddQuartzHostedService(configure => 
@@ -54,6 +61,8 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IDomainEventService, DomainEventService>();
+        services.AddScoped<IShipmentRepository, ShipmentRepository>();
+        services.AddScoped<IJobHistoryRepository, JobHistoryRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
 
         return services;
