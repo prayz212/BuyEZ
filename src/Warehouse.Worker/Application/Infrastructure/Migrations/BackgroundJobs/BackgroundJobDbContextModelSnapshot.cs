@@ -41,8 +41,9 @@ namespace WarehouseWorker.Application.Infrastructure.Migrations.BackgroundJobs
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
