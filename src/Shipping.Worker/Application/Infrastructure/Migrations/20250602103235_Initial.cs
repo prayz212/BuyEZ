@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Shipping.Application.Infrastructure.Migrations
+namespace ShippingWorker.Application.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration

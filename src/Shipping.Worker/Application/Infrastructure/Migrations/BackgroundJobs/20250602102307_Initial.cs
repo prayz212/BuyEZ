@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Shipping.Application.Infrastructure.Migrations.BackgroundJobs
+namespace ShippingWorker.Application.Infrastructure.Migrations.BackgroundJobs
 {
     /// <inheritdoc />
     public partial class Initial : Migration

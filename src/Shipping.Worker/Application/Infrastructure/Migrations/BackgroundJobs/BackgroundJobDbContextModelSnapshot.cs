@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Shipping.Application.Infrastructure.Migrations.BackgroundJobs
+namespace ShippingWorker.Application.Infrastructure.Migrations.BackgroundJobs
 {
     [DbContext(typeof(BackgroundJobDbContext))]
     partial class BackgroundJobDbContextModelSnapshot : ModelSnapshot
