@@ -1,3 +1,5 @@
+using ShippingWorker.Application.Domain.Events;
+
 using Shared.Common;
 using Shared.Common.Interfaces;
 
@@ -77,6 +79,8 @@ public class Shipment : AuditableEntity, IAggregateRoot
 
         Status = newStatus;
         Reason = "Driver is delivering the order.";
+
+        _domainEvents.Add(new DeliveryStartedDomainEvent(OrderId, executionHistoryId));
     }
 
     private void AddTrackingEvent(string executionHistoryId, ShipmentStatus newStatus)

@@ -1,4 +1,5 @@
 using OrderAPI.Application.Options;
+using OrderAPI.Application.Features.Consumers;
 using OrderAPI.Application.Infrastructure.Persistence;
 using OrderAPI.Application.Domain.Interfaces.Repositories;
 using OrderAPI.Application.Infrastructure.Persistence.Repositories;
@@ -8,8 +9,10 @@ using Shared.GrpcProto.Catalog;
 using Shared.Common.Constants;
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
+using Shared.IntegrationEvents;
 using Shared.Infrastructure.Services;
 
+using MassTransit;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
 using System.Reflection;
@@ -24,13 +27,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace OrderAPI.Application;
 
-public static class DependencyInjection 
+public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(options => 
+        services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -49,7 +52,13 @@ public static class DependencyInjection
 
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options => 
+        // Add IOptions configurations
+        services.AddOptions<KafkaOptions>()
+            .BindConfiguration(KafkaOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
@@ -64,13 +73,13 @@ public static class DependencyInjection
             throw new Exception("Catalog:Address is a required configuration.");
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => 
+            .AddJwtBearer(options =>
             {
                 options.Authority = identityOptions["IssuerUri"];
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = identityOptions["IssuerUri"], 
+                    ValidIssuer = identityOptions["IssuerUri"],
 
                     // TODO: need to investigate why we don't have audience in Identity Server's token
                     ValidateAudience = false,
@@ -95,20 +104,23 @@ public static class DependencyInjection
             });
         });
 
-        services.AddSingleton(provider => 
+        services.AddSingleton(provider =>
         {
             // TODO: using SSL certificate in real production and remove this workaround
             var httpHandler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
             };
-            
+
             var channel = GrpcChannel.ForAddress(catalogAddress, new GrpcChannelOptions
             {
                 HttpClient = new(httpHandler)
             });
             return channel.CreateGrpcService<ICatalogService>();
         });
+
+        services.AddMassTransit(config =>
+            config.ConfigureMassTransit(services.BuildServiceProvider()));
 
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IOrderRepository, OrderRepository>();
@@ -117,5 +129,35 @@ public static class DependencyInjection
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;
+    }
+
+    public static void ConfigureMassTransit(this IBusRegistrationConfigurator config, IServiceProvider provider)
+    {
+        var options = provider.GetRequiredService<IOptions<KafkaOptions>>().Value;
+
+        // TODO: using product broker instead, such as: Azure Service Bus, RabbitMQ
+        config.UsingInMemory();
+
+        config.AddRider(rider =>
+        {
+            var producers = options.Producers;
+            rider.AddProducer<OrderPlacedIntegrationEvent>(producers.OrderPlacedEvent);
+
+            var consumers = options.Consumers;
+            rider.AddConsumer<DeliveryStartedConsumer>();
+
+            rider.UsingKafka((context, configurator) =>
+            {
+                configurator.Host(options.BootstrapServer);
+
+                configurator.TopicEndpoint<DeliveryStartedIntegrationEvent>(
+                    consumers.DeliveryStartedEvent.Topic,
+                    consumers.DeliveryStartedEvent.GroupId,
+                    e =>
+                    {
+                        e.ConfigureConsumer<DeliveryStartedConsumer>(context);
+                    });
+            });
+        });
     }
 }

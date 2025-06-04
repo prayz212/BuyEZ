@@ -1,4 +1,5 @@
 using OrderAPI.Application.Domain.Dtos;
+using OrderAPI.Application.Domain.Events;
 
 using Shared.Common;
 using Shared.Common.Interfaces;
@@ -54,9 +55,10 @@ public class Order : AuditableEntity, IAggregateRoot
         _orderItems = orderItems;
 
         UpdateTotalAmount();
-        UpdateOrderStatus(OrderStatus.Pending);
+        UpdateOrderStatus(OrderStatus.Packaging); // Temporary hard coding Packaging, should be Pending
 
-        // TODO: Publish new order event
+        // TODO: add more info later
+        _domainEvents.Add(new OrderPlacedDomainEvent(Id));
     }
 
     public static Order CreateNew(
@@ -99,6 +101,15 @@ public class Order : AuditableEntity, IAggregateRoot
         UpdateOrderStatus(OrderStatus.Cancelled);
 
         // TODO: Publish cancelled order event
+    }
+
+    public void DeliveringOrder(string modifiedBy)
+    {
+        if (Status != OrderStatus.Packaging)
+            throw new ValidationException("Order must be in Packaging status before move to Delivering.");
+
+        LastModifiedBy = modifiedBy;
+        UpdateOrderStatus(OrderStatus.Delivering);
     }
 
     private void UpdateOrderStatus(OrderStatus status, string? reason = null)
