@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-await app.InitializeDatabaseAsync<ApplicationDbContextInitializer>(app.Environment);
+await app.InitializeDatabaseAsync<DbContextInitializer>(app.Environment);
 
 app.UseHttpsRedirection();
 
