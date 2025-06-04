@@ -76,7 +76,7 @@ public static class DependencyInjection
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IShipmentRepository, ShipmentRepository>();
         services.AddScoped<IJobHistoryRepository, JobHistoryRepository>();
-        services.AddScoped<ApplicationDbContextInitializer>();
+        services.AddScoped<DbContextInitializer>();
 
         return services;
     }
