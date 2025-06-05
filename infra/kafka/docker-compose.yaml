@@ -22,21 +22,22 @@ services:
     ports:
       - "9092:9092" # For other Docker services (kafka-ui, .NET in Docker)
       - "29092:29092" # For your host machine
+      - "19092:19092" # For other Docker containers
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
       # 1) Define both an internal and an external listener
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTRA://0.0.0.0:19092,PLAINTEXT_HOST://0.0.0.0:29092
 
       # 2) Advertise each listener by name/address
       # kafka:9092 for other Docker services
       # localhost:29092 for your host machine
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_INTRA://host.docker.internal:19092,PLAINTEXT_HOST://localhost:29092
 
       # 3) Map both listener names to plaintext
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTRA:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
 
       # 4) Use 'PLAINTEXT' for inter-broker traffic
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
