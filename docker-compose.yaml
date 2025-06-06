@@ -100,6 +100,8 @@ services:
       GrpcClientOptions__Catalog__Address: https://catalog-svc:17205
       Kafka__BootstrapServer: host.docker.internal:19092
       Kafka__Producers__OrderPlacedEvent: order-placed
+      Kafka__Consumers__OrderPackingStartedEvent__Topic: order-packing-started
+      Kafka__Consumers__OrderPackingStartedEvent__GroupId: order-svc
       Kafka__Consumers__DeliveryStartedEvent__Topic: delivery-started
       Kafka__Consumers__DeliveryStartedEvent__GroupId: order-svc
       Serilog__ApplicationName: "order-api"
@@ -223,6 +225,7 @@ services:
       JobCronOptions__PackOrder: 0 */15 * ? * *
       JobCronOptions__NotifyShippingVendor: 0 * * ? * *
       Kafka__BootstrapServer: host.docker.internal:19092
+      Kafka__Producers__OrderPackingStartedEvent: order-packing-started
       Kafka__Producers__OrderPackedEvent: order-packed
       Kafka__Consumers__OrderPlacedEvent__Topic: order-placed
       Kafka__Consumers__OrderPlacedEvent__GroupId: warehouse-svc

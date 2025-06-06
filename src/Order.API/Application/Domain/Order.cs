@@ -55,10 +55,7 @@ public class Order : AuditableEntity, IAggregateRoot
         _orderItems = orderItems;
 
         UpdateTotalAmount();
-        UpdateOrderStatus(OrderStatus.Packaging); // Temporary hard coding Packaging, should be Pending
-
-        // TODO: add more info later
-        _domainEvents.Add(new OrderPlacedDomainEvent(Id));
+        UpdateOrderStatus(OrderStatus.Pending);
     }
 
     public static Order CreateNew(
@@ -103,7 +100,16 @@ public class Order : AuditableEntity, IAggregateRoot
         // TODO: Publish cancelled order event
     }
 
-    public void DeliveringOrder(string modifiedBy)
+    public void PackOrder(string modifiedBy)
+    {
+        if (Status != OrderStatus.Paid)
+            throw new ValidationException("Order must be in Paid status before move to Packaging.");
+
+        LastModifiedBy = modifiedBy;
+        UpdateOrderStatus(OrderStatus.Packaging);
+    }
+
+    public void DeliverOrder(string modifiedBy)
     {
         if (Status != OrderStatus.Packaging)
             throw new ValidationException("Order must be in Packaging status before move to Delivering.");

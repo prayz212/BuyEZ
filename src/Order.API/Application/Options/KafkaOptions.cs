@@ -30,6 +30,9 @@ public class OrderConsumer
     [Required(ErrorMessage = "ProductCreatedEvent configuration is required.")]
     public required EventOptions ProductCreatedEvent { get; set; }
 
+    [Required(ErrorMessage = "OrderPackingStartedEvent configuration is required.")]
+    public required EventOptions OrderPackingStartedEvent { get; set; }
+
     [Required(ErrorMessage = "DeliveryStartedEvent configuration is required.")]
     public required EventOptions DeliveryStartedEvent { get; set; }    
 }

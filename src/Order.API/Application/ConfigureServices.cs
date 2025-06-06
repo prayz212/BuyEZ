@@ -144,19 +144,22 @@ public static class DependencyInjection
             rider.AddProducer<OrderPlacedIntegrationEvent>(producers.OrderPlacedEvent);
 
             var consumers = options.Consumers;
+            rider.AddConsumer<OrderPackingStartedConsumer>();
             rider.AddConsumer<DeliveryStartedConsumer>();
 
             rider.UsingKafka((context, configurator) =>
             {
                 configurator.Host(options.BootstrapServer);
 
+                configurator.TopicEndpoint<OrderPackingStartedIntegrationEvent>(
+                    consumers.OrderPackingStartedEvent.Topic,
+                    consumers.OrderPackingStartedEvent.GroupId,
+                    e => e.ConfigureConsumer<OrderPackingStartedConsumer>(context));
+
                 configurator.TopicEndpoint<DeliveryStartedIntegrationEvent>(
                     consumers.DeliveryStartedEvent.Topic,
                     consumers.DeliveryStartedEvent.GroupId,
-                    e =>
-                    {
-                        e.ConfigureConsumer<DeliveryStartedConsumer>(context);
-                    });
+                    e => e.ConfigureConsumer<DeliveryStartedConsumer>(context));
             });
         });
     }
