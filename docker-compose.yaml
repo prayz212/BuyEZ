@@ -99,6 +99,7 @@ services:
       GrpcClientOptions__Catalog__ApiKey: EBhUiAjNsIn92aToaxnNqgZkggeWnR
       GrpcClientOptions__Catalog__Address: https://catalog-svc:17205
       Kafka__BootstrapServer: host.docker.internal:19092
+      Kafka__Producers__OrderCreatedEvent: order-created
       Kafka__Producers__OrderPlacedEvent: order-placed
       Kafka__Consumers__OrderPackingStartedEvent__Topic: order-packing-started
       Kafka__Consumers__OrderPackingStartedEvent__GroupId: order-svc

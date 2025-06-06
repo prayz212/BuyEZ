@@ -56,6 +56,22 @@ public class Order : AuditableEntity, IAggregateRoot
 
         UpdateTotalAmount();
         UpdateOrderStatus(OrderStatus.Pending);
+
+        // TODO: Implement Card user input, hard coding it now
+        var cardNumber = "4916116383772539";
+        var cardHolderName = "Colten Hoeger";
+        var securityCode = "669";
+        var expirationDate = "10/25";
+
+        _domainEvents.Add(new OrderCreatedDomainEvent(
+            Id,
+            TotalAmount,
+            OrderItems,
+            cardNumber,
+            cardHolderName,
+            expirationDate,
+            securityCode
+        ));
     }
 
     public static Order CreateNew(

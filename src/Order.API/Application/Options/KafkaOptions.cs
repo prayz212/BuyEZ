@@ -21,6 +21,9 @@ public class KafkaOptions
 
 public class OrderProducer
 {
+    [Required(ErrorMessage = "OrderCreatedEvent configuration is required.")]
+    public required string OrderCreatedEvent { get; set; }
+
     [Required(ErrorMessage = "OrderPlacedEvent configuration is required.")]
     public required string OrderPlacedEvent { get; set; }
 }

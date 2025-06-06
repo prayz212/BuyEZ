@@ -141,6 +141,7 @@ public static class DependencyInjection
         config.AddRider(rider =>
         {
             var producers = options.Producers;
+            rider.AddProducer<OrderCreatedIntegrationEvent>(producers.OrderCreatedEvent);
             rider.AddProducer<OrderPlacedIntegrationEvent>(producers.OrderPlacedEvent);
 
             var consumers = options.Consumers;
