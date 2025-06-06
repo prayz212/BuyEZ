@@ -28,7 +28,7 @@ public class DeliveryStartedConsumer(
         if (order == null)
             throw new NotFoundException($"Order with id: {message.OrderId} not found.");
 
-        order.DeliveringOrder($"bgj.shipping.{message.Id}");
+        order.DeliverOrder($"bgj.shipping.{message.JobId}");
         _repository.Update(order);
 
         await _repository.SaveChangesAsync();
