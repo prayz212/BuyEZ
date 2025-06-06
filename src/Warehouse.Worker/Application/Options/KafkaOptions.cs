@@ -23,6 +23,9 @@ public class WarehouseProducer
 {
     [Required(ErrorMessage = "OrderPackedEvent configuration is required.")]
     public required string OrderPackedEvent { get; set; }
+
+    [Required(ErrorMessage = "OrderPackingStartedEvent configuration is required.")]
+    public required string OrderPackingStartedEvent { get; set; }
 }
 
 public class WarehouseConsumer

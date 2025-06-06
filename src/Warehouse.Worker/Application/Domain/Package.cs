@@ -36,6 +36,7 @@ public class Package : AuditableEntity, IAggregateRoot
     {
         Id = Guid.NewGuid().ToString();
         OrderId = orderId;
+        Status = PackageStatus.Pending;
         Reason = reason;
     }
 
@@ -47,18 +48,20 @@ public class Package : AuditableEntity, IAggregateRoot
     public void PackOrder(string executionHistoryId)
     {
         if (Status != PackageStatus.Pending)
-            throw new InvalidOperationException($"Cannot change the current status ({Status}) to ReadyToShip.");
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to Packing.");
 
-        var newStatus = PackageStatus.ReadyToShip;
+        var newStatus = PackageStatus.Packing;
         AddTrackingEvent(executionHistoryId, newStatus);
 
         Status = newStatus;
-        Reason = "Package is already packed.";
+        Reason = "Order is now packing.";
+
+        _domainEvents.Add(new OrderPackingStartedDomainEvent(OrderId, executionHistoryId));
     }
 
-    public void NotifyShippingVendor(string executionHistoryId)
+    public void MarkOrderReadyForShipment(string executionHistoryId)
     {
-        if (Status != PackageStatus.ReadyToShip)
+        if (Status != PackageStatus.Packing)
             throw new InvalidOperationException($"Cannot change the current status ({Status}) to AwaitingShipment.");
 
         var newStatus = PackageStatus.AwaitingShipment;
@@ -67,7 +70,7 @@ public class Package : AuditableEntity, IAggregateRoot
         Status = newStatus;
         Reason = "Package is waiting for shipping vendor to collect.";
 
-        _domainEvents.Add(new OrderPackedDomainEvent(OrderId));
+        _domainEvents.Add(new OrderPackedDomainEvent(OrderId, executionHistoryId));
     }
 
     private void AddTrackingEvent(string executionHistoryId, PackageStatus newStatus)
@@ -93,7 +96,7 @@ public class Package : AuditableEntity, IAggregateRoot
 public enum PackageStatus
 {
     Pending = 1,
-    ReadyToShip,
+    Packing,
     AwaitingShipment,
     PackageDelivered,
     PackageReturned,

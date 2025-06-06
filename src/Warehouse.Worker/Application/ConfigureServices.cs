@@ -90,6 +90,7 @@ public static class DependencyInjection
 
         config.AddRider(rider =>
         {
+            rider.AddProducer<OrderPackingStartedIntegrationEvent>(options.Producers.OrderPackingStartedEvent);
             rider.AddProducer<OrderPackedIntegrationEvent>(options.Producers.OrderPackedEvent);
 
             rider.AddConsumer<OrderPlacedConsumer>();
