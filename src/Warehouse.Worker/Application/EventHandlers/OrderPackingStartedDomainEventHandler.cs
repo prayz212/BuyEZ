@@ -19,13 +19,16 @@ public class OrderPackingStartedDomainEventHandler(
 
     public async Task Handle(DomainEventNotification<OrderPackingStartedDomainEvent> notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Executing {nameof(OrderPackingStartedDomainEventHandler)} event...");
+        _logger.LogInformation("Executing domain event handler OrderPackingStarted: {@DomainEvent}", notification);
 
         var @event = notification.DomainEvent;
-        await _producer.Produce(new OrderPackingStartedIntegrationEvent
+        var integrationEvent = new OrderPackingStartedIntegrationEvent
         {
             OrderId = @event.OrderId,
             JobId = @event.JobId
-        });
+        };
+
+        _logger.LogInformation("Producing integration event OrderPackingStarted: {@IntegrationEvent}", integrationEvent);
+        await _producer.Produce(integrationEvent);
     }
 }

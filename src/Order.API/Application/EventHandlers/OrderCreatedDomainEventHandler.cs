@@ -19,11 +19,10 @@ public class OrderCreatedDomainEventHandler(
 
     public async Task Handle(DomainEventNotification<OrderCreatedDomainEvent> notification, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Executing {nameof(OrderCreatedDomainEventHandler)} event...");
+        _logger.LogInformation("Executing domain event handler OrderCreated: {@DomainEvent}", notification);
 
         var @event = notification.DomainEvent;
-
-        await _producer.Produce(new OrderCreatedIntegrationEvent
+        var integrationEvent = new OrderCreatedIntegrationEvent
         {
             OrderId = @event.OrderId,
             TotalAmount = @event.TotalAmount,
@@ -34,6 +33,9 @@ public class OrderCreatedDomainEventHandler(
             CardHolderName = @event.CardHolderName,
             SecurityCode = @event.SecurityCode,
             ExpirationDate = @event.ExpirationDate
-        });
+        };
+
+        _logger.LogInformation("Producing integration event OrderCreated: {@IntegrationEvent}", integrationEvent);
+        await _producer.Produce(integrationEvent);
     }
 }
