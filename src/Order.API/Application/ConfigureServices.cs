@@ -9,9 +9,11 @@ using Shared.GrpcProto.Catalog;
 using Shared.Common.Constants;
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
+using Shared.Common.Publishers;
 using Shared.IntegrationEvents;
 using Shared.Infrastructure.Services;
 
+using MediatR;
 using MassTransit;
 using Grpc.Net.Client;
 using ProtoBuf.Grpc.Client;
@@ -40,6 +42,10 @@ public static class DependencyInjection
             options.AddOpenBehavior(typeof(ValidationBehavior<,>));
             options.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             options.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
+
+            options.NotificationPublisher = services
+                .BuildServiceProvider()
+                .GetRequiredService<INotificationPublisher>();
         });
 
         services.AddOptions<GrpcClientOptions>()
@@ -122,6 +128,7 @@ public static class DependencyInjection
         services.AddMassTransit(config =>
             config.ConfigureMassTransit(services.BuildServiceProvider()));
 
+        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();

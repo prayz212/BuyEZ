@@ -8,8 +8,10 @@ using Shared.GrpcProto;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
+using Shared.Common.Publishers;
 using Shared.Infrastructure.Services;
 
+using MediatR;
 using System.Reflection;
 using FluentValidation;
 using ProtoBuf.Grpc.Server;
@@ -29,13 +31,17 @@ public static class DependencyInjection {
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(options => 
+        services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 
             options.AddOpenBehavior(typeof(ValidationBehavior<,>));
             options.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             options.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
+            
+            options.NotificationPublisher = services
+                .BuildServiceProvider()
+                .GetRequiredService<INotificationPublisher>();
         });
 
         services.AddOptions<GrpcServerOptions>()
@@ -126,10 +132,10 @@ public static class DependencyInjection {
 
         services.AddCodeFirstGrpcReflection();
 
+        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
-
         services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
         return services;

@@ -6,10 +6,12 @@ using WarehouseWorker.Application.Infrastructure.Persistence.Repositories;
 
 using Shared.Common.Behaviors;
 using Shared.Common.Interfaces;
+using Shared.Common.Publishers;
 using Shared.IntegrationEvents;
 using Shared.Infrastructure.Services;
 
 using Quartz;
+using MediatR;
 using MassTransit;
 using FluentValidation;
 using System.Reflection;
@@ -33,6 +35,10 @@ public static class DependencyInjection
             options.AddOpenBehavior(typeof(ValidationBehavior<,>));
             options.AddOpenBehavior(typeof(PerformanceBehavior<,>));
             options.AddOpenBehavior(typeof(UnhandledExceptionBehavior<,>));
+
+            options.NotificationPublisher = services
+                .BuildServiceProvider()
+                .GetRequiredService<INotificationPublisher>();
         });
 
         services.AddOptions<JobCronOptions>()
@@ -73,6 +79,7 @@ public static class DependencyInjection
         services.AddMassTransit(config =>
             config.ConfigureMassTransit(services.BuildServiceProvider()));
 
+        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IPackageRepository, PackageRepository>();
         services.AddScoped<IJobHistoryRepository, JobHistoryRepository>();
