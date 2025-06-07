@@ -18,7 +18,7 @@ public class OrderPackedConsumer(
 
     public async Task Consume(ConsumeContext<OrderPackedIntegrationEvent> context)
     {
-        _logger.LogInformation($"Consuming {nameof(OrderPackedConsumer)} event...");
+        _logger.LogInformation("Consuming integration event OrderPacked: {@IntegrationEvent}", context.Message);
 
         var message = context.Message;
 
@@ -32,7 +32,8 @@ public class OrderPackedConsumer(
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error encountered: {ex.Message}", ex);
+            _logger.LogError(ex, "Unhandled Exception encountered: {ErrorMessage}", ex.Message);
+
             throw;
         }
     }

@@ -19,18 +19,28 @@ public class OrderPackingStartedConsumer(
     public async Task Consume(ConsumeContext<OrderPackingStartedIntegrationEvent> context)
     {
         // TODO: Apply try catch
-        _logger.LogInformation($"Consuming {nameof(OrderPackingStartedConsumer)} event...");
+        _logger.LogInformation("Consuming integration event OrderPackingStarted: {@IntegrationEvent}", context.Message);
 
         var message = context.Message;
 
-        var order = await _repository.GetByIdAsync(message.OrderId);
+        try
+        {
+            var order = await _repository.GetByIdAsync(message.OrderId);
+            if (order == null)
+                throw new NotFoundException($"Order with id: {message.OrderId} not found.");
 
-        if (order == null)
-            throw new NotFoundException($"Order with id: {message.OrderId} not found.");
+            var modifiedBy = $"bgj.warehouse.{message.JobId}";
+            _logger.LogInformation("Packing order {OrderId}, modified by {ModifiedBy}", order.Id, modifiedBy);
+            order.PackOrder(modifiedBy);
 
-        order.PackOrder($"bgj.warehouse.{message.JobId}");
-        _repository.Update(order);
-
-        await _repository.SaveChangesAsync();
+            _repository.Update(order);
+            await _repository.SaveChangesAsync();   
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled Exception encountered: {ErrorMessage}", ex.Message);
+            
+            throw;
+        }
     }
 }

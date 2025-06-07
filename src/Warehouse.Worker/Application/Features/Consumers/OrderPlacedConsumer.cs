@@ -18,7 +18,7 @@ public class OrderPlacedConsumer(
 
     public async Task Consume(ConsumeContext<OrderPlacedIntegrationEvent> context)
     {
-        _logger.LogInformation($"Consuming {nameof(OrderPlacedConsumer)} event...");
+        _logger.LogInformation("Consuming integration event OrderPlaced: {@IntegrationEvent}", context.Message);
 
         var message = context.Message;
 
@@ -32,7 +32,8 @@ public class OrderPlacedConsumer(
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error encountered: {ex.Message}", ex);
+            _logger.LogError(ex, "Unhandled Exception encountered: {ErrorMessage}", ex.Message);
+
             throw;
         }
     }
