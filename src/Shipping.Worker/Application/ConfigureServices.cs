@@ -28,6 +28,7 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -79,7 +80,6 @@ public static class DependencyInjection
         services.AddMassTransit(config =>
             config.ConfigureMassTransit(services.BuildServiceProvider()));
 
-        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IShipmentRepository, ShipmentRepository>();
         services.AddScoped<IJobHistoryRepository, JobHistoryRepository>();

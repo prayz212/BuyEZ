@@ -31,6 +31,7 @@ public static class DependencyInjection {
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
+        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -132,7 +133,6 @@ public static class DependencyInjection {
 
         services.AddCodeFirstGrpcReflection();
 
-        services.AddSingleton<INotificationPublisher, FaultTolerantNotificationPublisher>();
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();

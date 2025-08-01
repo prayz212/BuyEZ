@@ -70,7 +70,7 @@ public class Package : AuditableEntity, IAggregateRoot
         Status = newStatus;
         Reason = "Package is waiting for shipping vendor to collect.";
 
-        _domainEvents.Add(new OrderPackedDomainEvent(OrderId, executionHistoryId));
+        _domainEvents.Add(new OrderPackedDomainEvent(OrderId));
     }
 
     private void AddTrackingEvent(string executionHistoryId, PackageStatus newStatus)
