@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shared.Options;
 
+// Delete this file
 public class IdentityOptions
 {
     // TODO: using Fluent Validation instead (limit: not validate nested options)
