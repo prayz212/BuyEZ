@@ -67,6 +67,7 @@ public class Product : AuditableEntity, IAggregateRoot
         CreatedBy = createdBy;
 
         _images = images;
+        _domainEvents.Add(new ProductCreatedDomainEvent(Id, Name, Price));
     }
 
     public static Product CreateNew(
@@ -113,12 +114,15 @@ public class Product : AuditableEntity, IAggregateRoot
         if (AvailableStock < quantity)
             throw new ValidationException("Do not have enough available product.");
 
+        var originalAvailableStock = AvailableStock;
         AvailableStock -= quantity;
 
         if (AvailableStock == 0)
             Status = ProductStatus.OutOfStock;
 
-        _domainEvents.Add(new RestockThresholdReachedDomainEvent(Id, AvailableStock));
+        var isFirstTimeRestockReached = originalAvailableStock > RestockThreshold && AvailableStock <= RestockThreshold;
+        if (isFirstTimeRestockReached)
+            _domainEvents.Add(new RestockThresholdReachedDomainEvent(Id, AvailableStock));
     }
 
     public void UpdateDetails(
@@ -136,7 +140,9 @@ public class Product : AuditableEntity, IAggregateRoot
         Type = type;
         RestockThreshold = restockThreshold;
         MaxStockThreshold = maxStockThreshold;
-        LastModifiedBy = modifiedBy;
+        LastModifiedBy = lastModifiedBy;
+
+        _domainEvents.Add(new ProductDetailsUpdatedDomainEvent(Id, name, price));
     }
 
     public void AddImages(List<ProductImagePayload> images)

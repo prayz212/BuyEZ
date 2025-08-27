@@ -59,7 +59,6 @@ dotnet ef database update MigrationName --project .\Application --startup-projec
 3. **Combine two of them with Redis cache**
    > **Idea**: Use Redis or in-memory caching for relevant data frequently used by service.
 
-
 ## API Gateway
 
 ### Route Mapping Rules:
@@ -87,6 +86,7 @@ dotnet ef database update MigrationName --project .\Application --startup-projec
    => `http://localhost:5205/v1/api/products-administrations`
 
 # Docker
+
 ## Dockerfile
 
 To build a Dockerfile manually, standing at folder BuyEZ/src then run the following command:
@@ -94,9 +94,11 @@ To build a Dockerfile manually, standing at folder BuyEZ/src then run the follow
 ```bash
 docker build -t <service-name>:<version> -f Dockerfile ../../
 ```
+
 > Use environment variables in **env.txt** to configure when running docker container
 
 ## Docker Compose
+
 To build and run docker containers automatically, standing at folder BuyEZ then run the following command:
 
 ```bash
@@ -123,18 +125,18 @@ docker-compose down
 
 Should maintain clean, understandable and easily navigate project history by following the Git commit message pattern as table below:
 
-| Type | Description |
-| --- | --- |
-| feat | Introduce a new feature. |
-| fix | Bug fix or error correction. |
-| docs | Documentation updates only. |
-| style | Changes in code style (e.g., formatting). |
-| refactor | Code refactoring without behavior changes. |
-| test | Adding or updating tests. |
-| chore | Maintenance tasks (e.g., dependency updates). |
-| perf | Improve performance. |
-| ci | Changes to CI/CD configuration. |
-| build | Changes to build system. |
+| Type     | Description                                   |
+| -------- | --------------------------------------------- |
+| feat     | Introduce a new feature.                      |
+| fix      | Bug fix or error correction.                  |
+| docs     | Documentation updates only.                   |
+| style    | Changes in code style (e.g., formatting).     |
+| refactor | Code refactoring without behavior changes.    |
+| test     | Adding or updating tests.                     |
+| chore    | Maintenance tasks (e.g., dependency updates). |
+| perf     | Improve performance.                          |
+| ci       | Changes to CI/CD configuration.               |
+| build    | Changes to build system.                      |
 
 # How to run the application
 
@@ -149,3 +151,11 @@ docker-compose up -d --build
 ## Step 2: Seed data (1st time only)
 
 To seeding dummy data, we need to stop all services in group buyez-api, excluding buyez-db container. Then, manually run these 3 applications using the port of buyez-db (which is **15432** in my case): Catalog.API, ClientManagement.API, Identity.API
+
+## Step 3: Build Kafka and related components
+
+To run the Kafka for message brokers, use the below command and wait until all 3 images are pulled and run
+
+```bash
+docker compose -f .\infra\kafka\docker-compose.yaml up -d --build
+```

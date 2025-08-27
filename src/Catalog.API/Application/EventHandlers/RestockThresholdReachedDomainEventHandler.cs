@@ -7,7 +7,8 @@ using Microsoft.Extensions.Logging;
 
 namespace CatalogAPI.Application.EventHandlers;
 
-public class RestockThresholdReachedDomainEventHandler(ILogger<RestockThresholdReachedDomainEventHandler> logger) : INotificationHandler<DomainEventNotification<RestockThresholdReachedDomainEvent>>
+public class RestockThresholdReachedDomainEventHandler(ILogger<RestockThresholdReachedDomainEventHandler> logger) 
+    : INotificationHandler<DomainEventNotification<RestockThresholdReachedDomainEvent>>
 {
     private readonly ILogger<RestockThresholdReachedDomainEventHandler> _logger = logger;
 

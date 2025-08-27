@@ -1,3 +1,4 @@
+using CatalogAPI.Application.Options;
 using CatalogAPI.Application.Features.Shopping.gRPC;
 using CatalogAPI.Application.Infrastructure.Persistence;
 using CatalogAPI.Application.Domain.Interfaces.Repositories;
@@ -8,8 +9,10 @@ using Shared.GrpcProto;
 using Shared.Common.Behaviors;
 using Shared.Common.Constants;
 using Shared.Common.Interfaces;
+using Shared.IntegrationEvents;
 using Shared.Infrastructure.Services;
 
+using MassTransit;
 using System.Reflection;
 using FluentValidation;
 using ProtoBuf.Grpc.Server;
@@ -24,12 +27,13 @@ using Microsoft.AspNetCore.Builder;
 
 namespace CatalogAPI.Application;
 
-public static class DependencyInjection {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) 
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMediatR(options => 
+        services.AddMediatR(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -46,9 +50,15 @@ public static class DependencyInjection {
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration) 
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ApplicationDbContext>(options => 
+        // Add IOptions configurations
+        services.AddOptions<KafkaOptions>()
+            .BindConfiguration(KafkaOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
@@ -87,7 +97,7 @@ public static class DependencyInjection {
                 policy.RequireClaim("scope", IdentityConstants.StandardScopes.CATALOG_API);
                 policy.RequireRole(IdentityConstants.Role.TENANT_ADMIN);
             });
-            
+
             options.AddPolicy(PolicyConstants.TENANT_MANAGER_POLICY, policy =>
             {
                 policy.RequireAuthenticatedUser();
@@ -126,6 +136,9 @@ public static class DependencyInjection {
 
         services.AddCodeFirstGrpcReflection();
 
+        services.AddMassTransit(config =>
+            config.ConfigureMassTransit(services.BuildServiceProvider()));
+
         services.AddScoped<IDomainEventService, DomainEventService>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ApplicationDbContextInitializer>();
@@ -140,5 +153,23 @@ public static class DependencyInjection {
         app.MapGrpcService<CatalogService>();
 
         return app;
+    }
+
+    public static void ConfigureMassTransit(this IBusRegistrationConfigurator config, IServiceProvider provider)
+    {
+        var options = provider.GetRequiredService<IOptions<KafkaOptions>>().Value;
+
+        // TODO: using product broker instead, such as: Azure Service Bus, RabbitMQ
+        config.UsingInMemory();
+
+        config.AddRider(rider =>
+        {
+            rider.AddProducer<ProductCreatedIntegrationEvent>(options.ProductCreatedEvent.Topic);
+
+            rider.UsingKafka((context, configurator) =>
+            {
+                configurator.Host(options.BootstrapServer);
+            });
+        });
     }
 }
