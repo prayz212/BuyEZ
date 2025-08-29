@@ -2,12 +2,16 @@ using CatalogAPI.Application.Domain.Dtos;
 
 using Shared.Domain;
 
+using Newtonsoft.Json;
+
 namespace CatalogAPI.Application.Domain;
 
 public class Image : ImageBase
 {
+    [JsonProperty("isPrimary")]
     public bool IsPrimary { get; private set; } = false;
 
+    [JsonProperty("productId")]
     public string ProductId { get; private set; } = string.Empty;
 
     // Constructors
