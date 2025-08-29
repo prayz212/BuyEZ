@@ -1,8 +1,8 @@
-using System.Text.Json;
 using ClientManagementAPI.Application.Domain;
 
 using Shared.Infrastructure.Persistence;
 
+using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -61,10 +61,15 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
             return;
         }
 
-        var contentRootPath = $@"{Directory.GetParent(Environment.CurrentDirectory)?.Parent?.FullName}\ClientManagement.API\Application\Infrastructure";
+        var contentRootPath = Path.Combine(
+            Directory.GetParent(Environment.CurrentDirectory)?.FullName
+                ?? throw new ArgumentException("Could not get the current directory"),
+            "Application",
+            "Infrastructure"
+        );
         string sourcePath = Path.Combine(contentRootPath, "Seeds", "clients.json");
         string sourceJson = File.ReadAllText(sourcePath);
-        var sourceItems = JsonSerializer.Deserialize<Client[]>(sourceJson);
+        var sourceItems = JsonConvert.DeserializeObject<Client[]>(sourceJson);
 
         if (sourceItems is null || sourceItems.Length == 0)
         {

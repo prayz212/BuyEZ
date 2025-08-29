@@ -7,28 +7,40 @@ using Shared.Common.Enums;
 using Shared.Common.Interfaces;
 using Shared.Common.Exceptions;
 
+using Newtonsoft.Json;
+
 namespace CatalogAPI.Application.Domain;
 
 public class Product : AuditableEntity, IAggregateRoot
 {
+    [JsonProperty("id")]
     public string Id { get; init; } = string.Empty;
 
+    [JsonProperty("name")]
     public string Name { get; private set; } = string.Empty;
 
+    [JsonProperty("description")]
     public string Description { get; private set; } = string.Empty;
 
+    [JsonProperty("price")]
     public double Price { get; private set; } = 0;
 
+    [JsonProperty("type")]
     public ProductType Type { get; private set; }
 
+    [JsonProperty("availableStock")]
     public int AvailableStock { get; private set; } = 0;
 
+    [JsonProperty("restockThreshold")]
     public int RestockThreshold { get; private set; } = 5;
 
+    [JsonProperty("maxStockThreshold")]
     public int MaxStockThreshold { get; private set; } = 10;
 
+    [JsonProperty("status")]
     public ProductStatus Status { get; private set; } = ProductStatus.OutOfStock;
 
+    [JsonProperty("tenantId")]
     public string TenantId { get; private set; } = string.Empty;
 
     // Navigation property for the related Product

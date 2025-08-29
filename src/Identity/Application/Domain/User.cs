@@ -1,13 +1,17 @@
+using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 
 namespace Identity.Application.Domain;
 
 public class User : IdentityUser<Guid>
 {
+    [JsonProperty("firstName")]
     public string FirstName { get; set; } = string.Empty;
 
+    [JsonProperty("lastName")]
     public string LastName { get; set; } = string.Empty;
 
+    [JsonProperty("tenantId")]
     public string? TenantId { get; set; }
 
     /* Audit purposes */
