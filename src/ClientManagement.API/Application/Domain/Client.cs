@@ -6,24 +6,34 @@ using Shared.Common.Enums;
 using Shared.Common.Exceptions;
 using Shared.Common.Interfaces;
 
+using Newtonsoft.Json;
+
 namespace ClientManagementAPI.Application.Domain;
 
 public class Client : AuditableEntity, IAggregateRoot
 {
+    [JsonProperty("id")]
     public string Id { get; init; } = string.Empty;
 
+    [JsonProperty("name")]
     public string Name { get; private set; } = string.Empty;
 
+    [JsonProperty("aliasName")]
     public string AliasName { get; private set; } = string.Empty;
 
+    [JsonProperty("briefDescription")]
     public string BriefDescription { get; private set; } = string.Empty;
 
+    [JsonProperty("subscriptionType")]
     public SubscriptionType SubscriptionType { get; private set; }
 
+    [JsonProperty("registeredProductType")]
     public ProductType[] RegisteredProductType { get; private set; } = [];
 
+    [JsonProperty("validUntil")]
     public DateTimeOffset ValidUntil { get; private set; } = DateTimeOffset.UtcNow.AddYears(1);
 
+    [JsonProperty("isActivated")]
     public bool IsActivated { get; private set; } = false;
 
     // Navigation property for the related Client

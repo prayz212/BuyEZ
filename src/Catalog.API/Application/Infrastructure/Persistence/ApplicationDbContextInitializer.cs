@@ -2,7 +2,7 @@ using CatalogAPI.Application.Domain;
 
 using Shared.Infrastructure.Persistence;
 
-using System.Text.Json;
+using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -57,10 +57,15 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
             return;
         }
 
-        var contentRootPath = $@"{Directory.GetParent(Environment.CurrentDirectory)?.Parent?.FullName}\Catalog.API\Application\Infrastructure";
+        var contentRootPath = Path.Combine(
+            Directory.GetParent(Environment.CurrentDirectory)?.FullName
+                ?? throw new ArgumentException("Could not get the current directory"),
+            "Application",
+            "Infrastructure"
+        );
         string sourcePath = Path.Combine(contentRootPath, "Seeds", "products.json");
         string sourceJson = File.ReadAllText(sourcePath);
-        Product[]? sourceProductItems = JsonSerializer.Deserialize<Product[]>(sourceJson);
+        Product[]? sourceProductItems = JsonConvert.DeserializeObject<Product[]>(sourceJson);
 
         if (sourceProductItems is null || sourceProductItems.Length == 0)
         {
@@ -71,25 +76,25 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
         // Seed product data
         _logger.LogInformation("Seeding product data...");
         await _context.Products.AddRangeAsync(sourceProductItems);
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Added {total} product record(s)", sourceProductItems.Count());
+        _logger.LogInformation("Added {total} product record(s)", sourceProductItems.Length);
 
         // Seed product image data
         sourcePath = Path.Combine(contentRootPath, "Seeds", "images.json");
         sourceJson = File.ReadAllText(sourcePath);
-        Image[]? sourceImageItems = JsonSerializer.Deserialize<Image[]>(sourceJson);
+        Image[]? sourceImageItems = JsonConvert.DeserializeObject<Image[]>(sourceJson);
 
         if (sourceImageItems is null || sourceImageItems.Length == 0)
         {
             _logger.LogError("Cannot read image items from json file.");
             return;
-        }   
+        }
 
         _context.Images.RemoveRange(_context.Images);
 
         _logger.LogInformation("Seeding image data...");
         await _context.Images.AddRangeAsync(sourceImageItems);
-        _ = await _context.SaveChangesAsync();
-        _logger.LogInformation("Added {total} image records", sourceImageItems.Count());
+        _logger.LogInformation("Added {total} image records", sourceImageItems.Length);
+        
+        await _context.SaveChangesAsync();
     }
 }
