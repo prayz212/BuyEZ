@@ -3,8 +3,8 @@ using Identity.Application.Domain;
 using IdentityConstants = Shared.Common.Constants.IdentityConstants;
 using Shared.Infrastructure.Persistence;
 
+using Newtonsoft.Json;
 using System.Linq.Expressions;
-using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -92,10 +92,15 @@ public class ApplicationDbContextInitializer : IDbContextInitializer
             return Enumerable.Empty<User>();
         }
 
-        var contentRootPath = $@"{Directory.GetParent(Environment.CurrentDirectory)?.Parent?.FullName}\Identity\Application\Infrastructure";
+        var contentRootPath = Path.Combine(
+            Directory.GetParent(Environment.CurrentDirectory)?.FullName
+                ?? throw new ArgumentException("Could not get the current directory"),
+            "Application",
+            "Infrastructure"
+        );
         string sourcePath = Path.Combine(contentRootPath, "Seeds", jsonFileName);
         string sourceJson = File.ReadAllText(sourcePath);
-        User[]? sourceItems = JsonSerializer.Deserialize<User[]>(sourceJson);
+        User[]? sourceItems = JsonConvert.DeserializeObject<User[]>(sourceJson);
 
         if (sourceItems is null || sourceItems.Length == 0)
         {
