@@ -24,10 +24,10 @@ public class OrderPackedConsumer(
 
         try
         {
-            var package = Shipment.CreateNew(message.OrderId, "New order packed.");
-            _logger.LogInformation("Adding new shipment: {@Package}", package);
+            var shipment = Shipment.CreateNew(message.OrderId, "New order packed.");
+            _logger.LogInformation("Adding new shipment: {@Shipment}", shipment);
 
-            await _repository.AddAsync(package);
+            await _repository.AddAsync(shipment);
             await _repository.SaveChangesAsync();
         }
         catch (Exception ex)

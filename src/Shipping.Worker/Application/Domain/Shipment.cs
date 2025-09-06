@@ -15,6 +15,8 @@ public class Shipment : AuditableEntity, IAggregateRoot
 
     public string OrderId { get; private set; } = string.Empty;
 
+    public string? DriverName { get; private set; }
+
     // Navigation Properties
     private List<ShipmentTrackingEvent> _trackingEvents = [];
     public IReadOnlyList<ShipmentTrackingEvent> TrackingEvents => _trackingEvents.AsReadOnly();
@@ -42,7 +44,7 @@ public class Shipment : AuditableEntity, IAggregateRoot
 
     public static Shipment CreateNew(string orderId, string? reason = default)
     {
-        return new(orderId, reason ?? "New order created.");
+        return new(orderId, reason ?? "New order packed.");
     }
 
     public void AssignDriver(string driverName, string executionHistoryId)
@@ -54,12 +56,13 @@ public class Shipment : AuditableEntity, IAggregateRoot
         AddTrackingEvent(executionHistoryId, newStatus);
 
         Status = newStatus;
-        Reason = $"Shipment assigned to driver: {driverName}.";
+        DriverName = driverName;
+        Reason = $"Founded shipment driver.";
     }
 
     public void PickUpOrder(string executionHistoryId)
     {
-        if (Status != ShipmentStatus.DriverAssigned)
+        if (!IsAllowedToPickUpOrder(Status, DriverName))
             throw new InvalidOperationException($"Cannot change the current status ({Status}) to PickingUpOrder.");
 
         var newStatus = ShipmentStatus.PickingUpOrder;
@@ -80,7 +83,33 @@ public class Shipment : AuditableEntity, IAggregateRoot
         Status = newStatus;
         Reason = "Driver is delivering the order.";
 
-        _domainEvents.Add(new DeliveryStartedDomainEvent(OrderId, executionHistoryId));
+        _domainEvents.Add(new DeliveryStartedDomainEvent(OrderId, DriverName!, executionHistoryId));
+    }
+
+    public void MarkShipmentAsDeliverySuccess(string executionHistoryId)
+    {
+        if (Status != ShipmentStatus.DeliveringOrder)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to DeliverySuccess.");
+
+        var newStatus = ShipmentStatus.DeliverySuccess;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Order was successfully delivered.";
+
+        _domainEvents.Add(new DeliverySucceededDomainEvent(OrderId, executionHistoryId));
+    }
+
+    public void MarkShipmentAsDeliveryFailed(string executionHistoryId)
+    {
+        if (Status != ShipmentStatus.DeliveringOrder)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to DeliveryFailed.");
+
+        var newStatus = ShipmentStatus.DeliveryFailed;
+        AddTrackingEvent(executionHistoryId, newStatus);
+
+        Status = newStatus;
+        Reason = "Order was unabled to deliver.";
     }
 
     private void AddTrackingEvent(string executionHistoryId, ShipmentStatus newStatus)
@@ -101,6 +130,9 @@ public class Shipment : AuditableEntity, IAggregateRoot
     {
         _domainEvents.Clear();
     }
+
+    private bool IsAllowedToPickUpOrder(ShipmentStatus status, string? driverName) =>
+        status == ShipmentStatus.DriverAssigned && !string.IsNullOrWhiteSpace(driverName);
 }
 
 public enum ShipmentStatus

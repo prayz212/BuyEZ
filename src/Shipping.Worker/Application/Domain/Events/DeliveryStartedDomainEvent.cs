@@ -6,11 +6,14 @@ public class DeliveryStartedDomainEvent : DomainEvent
 {
     public string OrderId { get; }
 
+    public string DriverName { get; }
+
     public string JobId { get; }
 
-    public DeliveryStartedDomainEvent(string orderId, string jobId)
+    public DeliveryStartedDomainEvent(string orderId, string driverName, string jobId)
     {
         OrderId = orderId;
+        DriverName = driverName;
         JobId = jobId;
     }
 }

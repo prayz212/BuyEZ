@@ -99,6 +99,7 @@ public static class DependencyInjection
         {
             var producers = options.Producers;
             rider.AddProducer<DeliveryStartedIntegrationEvent>(producers.DeliveryStartedEvent);
+            rider.AddProducer<DeliverySucceededIntegrationEvent>(producers.DeliverySucceededEvent);
 
             rider.AddConsumer<OrderPackedConsumer>();
 

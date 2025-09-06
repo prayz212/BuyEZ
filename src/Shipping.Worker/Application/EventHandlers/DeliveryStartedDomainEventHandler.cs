@@ -25,6 +25,7 @@ public class DeliveryStartedDomainEventHandler(
         var integrationEvent = new DeliveryStartedIntegrationEvent
         {
             OrderId = @event.OrderId,
+            DriverName = @event.DriverName,
             JobId = @event.JobId
         };
 

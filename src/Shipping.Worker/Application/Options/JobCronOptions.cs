@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ShippingWorker.Application.Options;
 
-public class JobCronOptions 
+public class JobCronOptions
 {
     // TODO: using Fluent Validation instead (limit: not validate nested options)
     [Required(ErrorMessage = "Find driver cron expression is required for schedule job operations.")]
@@ -13,4 +13,7 @@ public class JobCronOptions
 
     [Required(ErrorMessage = "Deliver order cron expression is required for schedule job operations.")]
     public required string DeliverOrder { get; set; }
+    
+    [Required(ErrorMessage = "Deliver outcome cron expression is required for schedule job operations.")]
+    public required string DeliverOutcome { get; set; }
 }

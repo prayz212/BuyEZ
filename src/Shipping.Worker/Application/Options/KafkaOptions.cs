@@ -21,11 +21,11 @@ public class KafkaOptions
 
 public class ShippingProducer
 {
-    [Required(ErrorMessage = "DriverAssignedEvent configuration is required.")]
-    public required string DriverAssignedEvent { get; set; }
-
     [Required(ErrorMessage = "DeliveryStartedEvent configuration is required.")]
     public required string DeliveryStartedEvent { get; set; }
+
+    [Required(ErrorMessage = "DeliverySucceededEvent configuration is required.")]
+    public required string DeliverySucceededEvent { get; set; }
 }
 
 public class ShippingConsumer
