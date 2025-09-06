@@ -11,6 +11,10 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-logs:/var/lib/zookeeper/log
+      - zookeeper-secrets:/etc/zookeeper/secrets
     networks:
       - kafka-network
 
@@ -41,6 +45,9 @@ services:
 
       # 4) Use 'PLAINTEXT' for inter-broker traffic
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    volumes:
+      - broker-data:/var/lib/kafka/data
+      - broker-secrets:/etc/kafka/secrets
     networks:
       - kafka-network
 
@@ -57,6 +64,13 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     networks:
       - kafka-network
+
+volumes:
+  zookeeper-data:
+  zookeeper-logs:
+  zookeeper-secrets:
+  broker-data:
+  broker-secrets:
 
 networks:
   kafka-network:

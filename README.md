@@ -138,11 +138,32 @@ Should maintain clean, understandable and easily navigate project history by fol
 | ci       | Changes to CI/CD configuration.               |
 | build    | Changes to build system.                      |
 
-# How to run the application
+# How to set up Kafka infrastructure
 
 ## Step 1: Build and run Docker compose
 
-To dockerize and run the application, use the below command and wait until all 10 containers are running
+To download and run the Kafka components, open terminal and `cd` to **${HOME}/BuyEZ/infra/kafka** then use the below command and wait until all containers are running
+
+```bash
+docker-compose up -d --build
+```
+
+## Step 2: Precreate data (1st time only)
+
+To precreate data, you need to access the Apache Kafka UI via this address `http://localhost:8080/`, then navigate to local > Topics and add the following topics:
+1. **order-created**
+2. **order-packing-started**
+3. **order-packed**
+4. **delivery-started**
+5. **delivery-succeeded**
+
+> **Note**: Just entering `Topic Name` and set `Number of Partitions` to `1`, the remaining stay as default.
+
+# How to run the BuyEZ application
+
+## Step 1: Build and run Docker compose
+
+To dockerize and run the application, open terminal and `cd` to **${HOME}/BuyEZ** then use the below command and wait until all containers are running
 
 ```bash
 docker-compose up -d --build
@@ -150,12 +171,4 @@ docker-compose up -d --build
 
 ## Step 2: Seed data (1st time only)
 
-To seeding dummy data, we need to stop all services in group buyez-api, excluding buyez-db container. Then, manually run these 3 applications using the port of buyez-db (which is **15432** in my case): Catalog.API, ClientManagement.API, Identity.API
-
-## Step 3: Build Kafka and related components
-
-To run the Kafka for message brokers, use the below command and wait until all 3 images are pulled and run
-
-```bash
-docker compose -f .\infra\kafka\docker-compose.yaml up -d --build
-```
+To seeding dummy data, you need to stop all services in buyez-api container group, excluding buyez-db container. Then, in `appsettings.Development.json` file, change database port at `ConnectionStrings:DefaultConnection` to buyez-db's port (which is **15432**) and manually run these 4 projects: Catalog.API, ClientManagement.API, Identity.WebApp, Identity.API.

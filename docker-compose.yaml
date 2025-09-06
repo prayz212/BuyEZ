@@ -100,11 +100,12 @@ services:
       GrpcClientOptions__Catalog__Address: https://catalog-svc:17205
       Kafka__BootstrapServer: host.docker.internal:19092
       Kafka__Producers__OrderCreatedEvent: order-created
-      Kafka__Producers__OrderPlacedEvent: order-placed
       Kafka__Consumers__OrderPackingStartedEvent__Topic: order-packing-started
       Kafka__Consumers__OrderPackingStartedEvent__GroupId: order-svc
       Kafka__Consumers__DeliveryStartedEvent__Topic: delivery-started
       Kafka__Consumers__DeliveryStartedEvent__GroupId: order-svc
+      Kafka__Consumers__DeliverySucceededEvent__Topic: delivery-succeeded
+      Kafka__Consumers__DeliverySucceededEvent__GroupId: order-svc
       Serilog__ApplicationName: "order-api"
       Serilog__ElasticsearchUri: "http://elasticsearch:9200"
       Serilog__MinimumLevel__Default: "Information"
@@ -193,10 +194,11 @@ services:
       ConnectionStrings__DefaultConnection: Host=db;Database=BuyEZ-Shipping;Port=5432;User Id=${DB_USER};Password=${DB_PASSWORD}
       JobCronOptions__FindDriver: 0 * * ? * *
       JobCronOptions__PickUpOrder: 0 */10 * ? * *
-      JobCronOptions__DeliverOrder: 0 */30 * ? * *
+      JobCronOptions__DeliverOrder: 0 */15 * ? * *
+      JobCronOptions__DeliverOutcome: 0 */30 * ? * *
       Kafka__BootstrapServer: host.docker.internal:19092
-      Kafka__Producers__DriverAssignedEvent: driver-assigned
       Kafka__Producers__DeliveryStartedEvent: delivery-started
+      Kafka__Producers__DeliverySucceededEvent: delivery-succeeded
       Kafka__Consumers__OrderPackedEvent__Topic: order-packed
       Kafka__Consumers__OrderPackedEvent__GroupId: shipping-svc
       Serilog__ApplicationName: "shipping-worker"
@@ -228,8 +230,10 @@ services:
       Kafka__BootstrapServer: host.docker.internal:19092
       Kafka__Producers__OrderPackingStartedEvent: order-packing-started
       Kafka__Producers__OrderPackedEvent: order-packed
-      Kafka__Consumers__OrderPlacedEvent__Topic: order-placed
-      Kafka__Consumers__OrderPlacedEvent__GroupId: warehouse-svc
+      Kafka__Consumers__OrderCreatedEvent__Topic: order-created
+      Kafka__Consumers__OrderCreatedEvent__GroupId: warehouse-svc
+      Kafka__Consumers__DeliveryStartedEvent__Topic: delivery-started
+      Kafka__Consumers__DeliveryStartedEvent__GroupId: warehouse-svc
       Serilog__ApplicationName: "warehouse-worker"
       Serilog__ElasticsearchUri: "http://elasticsearch:9200"
       Serilog__MinimumLevel__Default: "Information"
