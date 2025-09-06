@@ -18,7 +18,6 @@ public class OrderPackingStartedConsumer(
 
     public async Task Consume(ConsumeContext<OrderPackingStartedIntegrationEvent> context)
     {
-        // TODO: Apply try catch
         _logger.LogInformation("Consuming integration event OrderPackingStarted: {@IntegrationEvent}", context.Message);
 
         var message = context.Message;
