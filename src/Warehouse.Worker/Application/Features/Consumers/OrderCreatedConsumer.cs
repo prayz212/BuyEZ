@@ -8,23 +8,23 @@ using Microsoft.Extensions.Logging;
 
 namespace WarehouseWorker.Application.Features.Consumers;
 
-public class OrderPlacedConsumer(
-    ILogger<OrderPlacedConsumer> logger,
+public class OrderCreatedConsumer(
+    ILogger<OrderCreatedConsumer> logger,
     IPackageRepository repository) 
-    : IConsumer<OrderPlacedIntegrationEvent>
+    : IConsumer<OrderCreatedIntegrationEvent>
 {
-    private readonly ILogger<OrderPlacedConsumer> _logger = logger;
+    private readonly ILogger<OrderCreatedConsumer> _logger = logger;
     private readonly IPackageRepository _repository = repository;
 
-    public async Task Consume(ConsumeContext<OrderPlacedIntegrationEvent> context)
+    public async Task Consume(ConsumeContext<OrderCreatedIntegrationEvent> context)
     {
-        _logger.LogInformation("Consuming integration event OrderPlaced: {@IntegrationEvent}", context.Message);
+        _logger.LogInformation("Consuming integration event OrderCreated: {@IntegrationEvent}", context.Message);
 
         var message = context.Message;
 
         try
         {
-            var package = Package.CreateNew(message.OrderId, "New order placed.");
+            var package = Package.CreateNew(message.OrderId, "New order created.");
             _logger.LogInformation("Adding new package: {@Package}", package);
 
             await _repository.AddAsync(package);

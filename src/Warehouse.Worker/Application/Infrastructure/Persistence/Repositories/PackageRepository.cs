@@ -28,4 +28,9 @@ public class PackageRepository(ApplicationDbContext context) : IPackageRepositor
     {
         return (await _context.SaveChangesAsync()) > 0;
     }
+
+    public async Task<Package?> GetPackageByOrderId(string orderId)
+    {
+        return await _context.Packages.FirstOrDefaultAsync(p => p.OrderId == orderId);
+    }
 }

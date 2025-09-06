@@ -30,6 +30,9 @@ public class WarehouseProducer
 
 public class WarehouseConsumer
 {
-    [Required(ErrorMessage = "OrderPlacedEvent configuration is required.")]
-    public required EventOptions OrderPlacedEvent { get; set; }
+    [Required(ErrorMessage = "OrderCreatedEvent configuration is required.")]
+    public required EventOptions OrderCreatedEvent { get; set; }
+
+    [Required(ErrorMessage = "DeliveryStartedEvent configuration is required.")]
+    public required EventOptions DeliveryStartedEvent { get; set; }
 }

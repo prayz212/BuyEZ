@@ -73,6 +73,18 @@ public class Package : AuditableEntity, IAggregateRoot
         _domainEvents.Add(new OrderPackedDomainEvent(OrderId));
     }
 
+    public void CollectPackage(string modifiedBy)
+    {
+        if (Status != PackageStatus.AwaitingShipment)
+            throw new InvalidOperationException($"Cannot change the current status ({Status}) to PackageCollected.");
+
+        var newStatus = PackageStatus.PackageCollected;
+        AddTrackingEvent(modifiedBy, newStatus);
+
+        Status = newStatus;
+        Reason = "Package is collected for shipment.";
+    }
+
     private void AddTrackingEvent(string executionHistoryId, PackageStatus newStatus)
     {
         _trackingEvents.Add(
@@ -98,6 +110,7 @@ public enum PackageStatus
     Pending = 1,
     Packing,
     AwaitingShipment,
+    PackageCollected,
     PackageDelivered,
     PackageReturned,
     ProductRefunded
