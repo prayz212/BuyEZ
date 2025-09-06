@@ -63,7 +63,7 @@ public class Order : AuditableEntity, IAggregateRoot
         var securityCode = "669";
         var expirationDate = "10/25";
 
-        _domainEvents.Add(new OrderCreatedDomainEvent(
+        _domainEvents.Add(new OrderPlacedDomainEvent(
             Id,
             TotalAmount,
             OrderItems,
@@ -132,6 +132,15 @@ public class Order : AuditableEntity, IAggregateRoot
 
         LastModifiedBy = modifiedBy;
         UpdateOrderStatus(OrderStatus.Delivering);
+    }
+
+    public void MarkOrderAsDelivered(string modifiedBy)
+    {
+        if (Status != OrderStatus.Delivering)
+            throw new ValidationException("Order must be in Delivering status before move to Delivered.");
+
+        LastModifiedBy = modifiedBy;
+        UpdateOrderStatus(OrderStatus.Delivered);
     }
 
     private void UpdateOrderStatus(OrderStatus status, string? reason = null)

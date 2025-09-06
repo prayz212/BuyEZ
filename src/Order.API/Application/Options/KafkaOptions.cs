@@ -23,9 +23,6 @@ public class OrderProducer
 {
     [Required(ErrorMessage = "OrderCreatedEvent configuration is required.")]
     public required string OrderCreatedEvent { get; set; }
-
-    [Required(ErrorMessage = "OrderPlacedEvent configuration is required.")]
-    public required string OrderPlacedEvent { get; set; }
 }
 
 public class OrderConsumer
@@ -38,4 +35,7 @@ public class OrderConsumer
 
     [Required(ErrorMessage = "DeliveryStartedEvent configuration is required.")]
     public required EventOptions DeliveryStartedEvent { get; set; }    
+
+    [Required(ErrorMessage = "DeliverySucceededEvent configuration is required.")]
+    public required EventOptions DeliverySucceededEvent { get; set; }    
 }

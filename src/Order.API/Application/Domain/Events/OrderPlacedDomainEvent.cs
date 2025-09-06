@@ -2,7 +2,7 @@ using Shared.Common;
 
 namespace OrderAPI.Application.Domain.Events;
 
-public class OrderCreatedDomainEvent : DomainEvent
+public class OrderPlacedDomainEvent : DomainEvent
 {
     public string OrderId { get; }
 
@@ -19,7 +19,7 @@ public class OrderCreatedDomainEvent : DomainEvent
 
     public string SecurityCode { get; }
 
-    public OrderCreatedDomainEvent(
+    public OrderPlacedDomainEvent(
         string id,
         double amount,
         IReadOnlyList<OrderItem> items,
