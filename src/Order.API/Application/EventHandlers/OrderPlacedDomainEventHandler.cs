@@ -6,16 +6,19 @@ using Shared.IntegrationEvents;
 using MediatR;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using OrderAPI.Application.Domain.Interfaces.Repositories;
 
 namespace OrderAPI.Application.EventHandlers;
 
 public class OrderPlacedDomainEventHandler(
     ILogger<OrderPlacedDomainEventHandler> logger,
-    ITopicProducer<OrderCreatedIntegrationEvent> producer)
+    ITopicProducer<OrderCreatedIntegrationEvent> producer,
+    IOrderRepository repository)
     : INotificationHandler<DomainEventNotification<OrderPlacedDomainEvent>>
 {
     private readonly ILogger<OrderPlacedDomainEventHandler> _logger = logger;
     private readonly ITopicProducer<OrderCreatedIntegrationEvent> _producer = producer;
+    private readonly IOrderRepository _repository = repository;
 
     public async Task Handle(DomainEventNotification<OrderPlacedDomainEvent> notification, CancellationToken cancellationToken)
     {
@@ -36,5 +39,12 @@ public class OrderPlacedDomainEventHandler(
 
         _logger.LogInformation("Producing integration event OrderCreated: {@IntegrationEvent}", integrationEvent);
         await _producer.Produce(integrationEvent);
+
+        // TODO: Remove this workaround when the SAGA is ready
+        var order = await _repository.GetByIdAsync(@event.OrderId);
+        order!.MarkOrderAsPaid("system");
+
+        _repository.Update(order);
+        await _repository.SaveChangesAsync();
     }
 }

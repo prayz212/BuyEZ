@@ -116,6 +116,15 @@ public class Order : AuditableEntity, IAggregateRoot
         // TODO: Publish cancelled order event
     }
 
+    public void MarkOrderAsPaid(string modifiedBy)
+    {
+        if (Status != OrderStatus.Pending)
+            throw new ValidationException("Order must be in Pending status before move to Paid.");
+
+        LastModifiedBy = modifiedBy;
+        UpdateOrderStatus(OrderStatus.Paid);
+    }
+
     public void PackOrder(string modifiedBy)
     {
         if (Status != OrderStatus.Paid)
